@@ -1,8 +1,8 @@
-# MAgPIE outputs R package for MAgPIE version 4.x
+# MAgPIE outputs R package for MAgPIE version 4.x for FSDP project
 
 R package **m4fsdp**, version **0.1**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/magpie4)](https://cran.r-project.org/package=magpie4) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1158582.svg)](https://doi.org/10.5281/zenodo.1158582) [![R build status](https://github.com/pik-piam/magpie4/workflows/check/badge.svg)](https://github.com/pik-piam/magpie4/actions) [![codecov](https://codecov.io/gh/pik-piam/magpie4/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/magpie4) [![r-universe](https://pik-piam.r-universe.dev/badges/magpie4)](https://pik-piam.r-universe.dev/ui#builds)
+[![Travis build status](https://travis-ci.com/pik-piam/mrplayground.svg?branch=master)](https://travis-ci.com/pik-piam/m4fsdp)  
 
 ## Purpose and Functionality
 
