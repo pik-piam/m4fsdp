@@ -1,4 +1,4 @@
-Package: magpie4
+Package: m4fsdp
 Type: Package
 Title: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project
 Version: 1.128.12
