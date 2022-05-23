@@ -1,8 +1,8 @@
 # MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project
 
-R package **magpie4**, version **1.128.12**
+R package **m4fsdp**, version **1.128.13**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/magpie4)](https://cran.r-project.org/package=magpie4)  [![R build status](https://github.com/pik-piam/m4fsdp/workflows/check/badge.svg)](https://github.com/pik-piam/m4fsdp/actions) [![codecov](https://codecov.io/gh/pik-piam/m4fsdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/m4fsdp) [![r-universe](https://pik-piam.r-universe.dev/badges/magpie4)](https://pik-piam.r-universe.dev/ui#builds)
+[![CRAN status](https://www.r-pkg.org/badges/version/m4fsdp)](https://cran.r-project.org/package=m4fsdp)  [![R build status](https://github.com/pik-piam/m4fsdp/workflows/check/badge.svg)](https://github.com/pik-piam/m4fsdp/actions) [![codecov](https://codecov.io/gh/pik-piam/m4fsdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/m4fsdp) 
 
 ## Purpose and Functionality
 
@@ -21,7 +21,7 @@ The additional repository can be made available permanently by adding the line a
 After that the most recent version of the package can be installed using `install.packages`:
 
 ```r 
-install.packages("magpie4")
+install.packages("m4fsdp")
 ```
 
 Package updates can be installed using `update.packages` (make sure that the additional repository has been added before running that command):
@@ -36,18 +36,18 @@ In case of questions / problems please contact Benjamin Leon Bodirsky <bodirsky@
 
 ## Citation
 
-To cite package **magpie4** in publications use:
+To cite package **m4fsdp** in publications use:
 
-Bodirsky B, Dietrich J (2022). _magpie4: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi: ? (URL: https://doi.org/?), R package version 1.128.12, <URL: https://github.com/pik-piam/m4fsdp>.
+Bodirsky B, Dietrich J (2022). _m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi: ? (URL: https://doi.org/?), R package version 1.128.13, <URL: https://github.com/pik-piam/m4fsdp>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Manual{,
-  title = {magpie4: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project},
+  title = {m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project},
   author = {Benjamin Leon Bodirsky and Jan Philipp Dietrich},
   year = {2022},
-  note = {R package version 1.128.12},
+  note = {R package version 1.128.13},
   doi = {?},
   url = {https://github.com/pik-piam/m4fsdp},
 }
