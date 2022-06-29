@@ -1,24 +1,27 @@
 Package: m4fsdp
 Type: Package
 Title: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project
-Version: 1.128.13
-Date: 2022-05-23
+Version: 0.1.0
+Date: 2022-06-29
 Authors@R: c(person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = c("aut","cre")),
-		person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"))
+		person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"),
+		person("Florian", "Humpenoeder", email = "humpenoeder@pik-potsdam.de", role = "aut"))
 Description: Output routines for extracting results from the MAgPIE framework (versions 4.x) for the FSDP project.
 Depends:
 	gdx(>= 1.30),
 	magclass(>= 2.40)
 Imports:
-	madrat,
-	magpiesets,
-	methods,
-	mstools
+	ggplot2,
+	ggiraph,
+	forcats,
+	data.table,
+	scales,
+	htmlwidgets
 URL: https://github.com/pik-piam/m4fsdp, https://doi.org/?
 BugReports: https://github.com/pik-piam/m4fsdp/issues
 Encoding: UTF-8
 License: LGPL-3 | file LICENSE
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Suggests:
     testthat,
     covr
