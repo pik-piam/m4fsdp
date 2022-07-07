@@ -84,14 +84,14 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     #  scale_fill_continuous(type = "viridis",breaks = c(-1, 0, 1), labels = c("low", "med", "high")) +
     scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "#ffffbf", na.value = "grey80", high = "#fc8d59", breaks = c(-1, 0, 1), labels = c("positive", "zero", "negative")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable), data_id = interaction(variable)), size = 3, color = "grey50") +
-    theme(axis.text.x = element_text(angle = 30, hjust = 1)) + labs(y = "Scenario", x = "Indicator", fill = "Impact\nrelative to\nBAU 2050") + theme(legend.position = "right") + guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)), reverse = FALSE, title.hjust = 0, title.vjust = 2, title.position = "top", barwidth = 1, barheight = 20, legend.direction = "vertical")) + theme(strip.background = element_rect(color = "grey50"), axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+    theme(axis.text.x = element_text(angle = 30, hjust = 1)) + labs(y = "Scenario", x = "Indicator", fill = "Impact\nrelative to\nBAU 2050") + theme(legend.position = "right") + guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)), reverse = FALSE, title.hjust = 0, title.vjust = 2, title.position = "top", barwidth = 1, barheight = 20, legend.direction = "vertical")) + theme(plot.background = element_rect(fill="white"),strip.background = element_rect(color = "grey50"), axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
   m <- m + facet_grid(vars(period), vars(vargroup), scales = "free", space = "free") + scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
 
   if (is.null(file)) {
     return(m)
   } else {
-    ggsave(file, m, scale = 1.2, height = 8, width = 7)
+    ggsave(file, m, scale = 1.2, height = 8, width = 7, bg = "white")
     p <- girafe(
       ggobj = m,
       options = list(
