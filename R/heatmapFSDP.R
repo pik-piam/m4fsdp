@@ -4,9 +4,8 @@
 #' @export
 #'
 #' @param rds_report rds file with all MAgPIE runs, produced with merge_report.R output script.
-#' @param title_prefix prefix in title of MAgPIE runs; will be removed from the scenario name in the plot
 #' @param region_sel Region that should be plotted
-#' @param file file name (e.g. heatmap.pdf or heatmap.png) or NULL
+#' @param file file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
 #' @author Florian Humpenoeder
@@ -15,15 +14,10 @@
 
 globalVariables(c("model", "scenario", "region","period","unit","variable","varunit","valuefill","value","label","vargroup",".",".label"))
 
-heatmapFSDP <- function(rds_report,title_prefix="v7_FSEC_",region_sel="World",file=NULL) {
-  rev <- title_prefix
-  rep <- as.data.table(readRDS(rds_report))
-  rep <- rep[!scenario %like% "calibration_FSEC",]
-  rep[, c("scenario") := gsub(paste0(rev),"",scenario)]
-  rep$scenario <- factor(rep$scenario)
-  rep[,varunit:=paste(variable,unit,sep=":")]
-  write.csv(unique(rep$varunit),"vars_magpie.csv",row.names = F,quote = F)
-  rep[,varunit:=NULL]
+heatmapFSDP <- function(rep_reg,region_sel="GLO",file=NULL) {
+
+  #### read in data files
+  rep <- convertReportFSDP(rep_reg,subset=FALSE)
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
