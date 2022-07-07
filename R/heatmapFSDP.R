@@ -3,7 +3,7 @@
 #'
 #' @export
 #'
-#' @param rds_report rds file with all MAgPIE runs, produced with merge_report.R output script.
+#' @param rds_report rds file or data.frame with all MAgPIE runs, produced with merge_report.R output script.
 #' @param region_sel Region that should be plotted
 #' @param file file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL
 #' @details blub
