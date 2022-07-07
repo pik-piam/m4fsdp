@@ -34,8 +34,10 @@ convertReportFSDP <- function(rep, subset = FALSE, varlist = NULL) {
   }
 
   if (subset) {
-    rep <- rep[region != "GLO", ]
-    rep <- rep[region != "World", ]
+    if(!is.null(rep$region)) {
+      rep <- rep[region != "GLO", ]
+      rep <- rep[region != "World", ]
+    }
 
     rep <- rep[period %in% c(2020, 2050) & scenario %in% c("BAU", "SDP"), ]
     rep <- rep[!(scenario == "SDP" & period == 2020), ]
@@ -45,5 +47,6 @@ convertReportFSDP <- function(rep, subset = FALSE, varlist = NULL) {
 
   rep <- droplevels(rep)
   if (length(unique(rep$region)) == 249 || length(unique(rep$region)) == 179) names(rep)[names(rep) == "region"] <- "iso_a3"
+  names(rep)[names(rep)=="country"] <- "iso_a3"
   return(rep)
 }
