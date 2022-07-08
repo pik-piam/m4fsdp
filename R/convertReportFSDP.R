@@ -22,7 +22,6 @@ convertReportFSDP <- function(rep, subset = FALSE, varlist = NULL) {
   rep$scenario <- factor(rep$scenario)
   rep <- rep[!scenario %in% c("SSP370", "SSP460", "SSP585"), ]
   rep <- droplevels(rep)
-  # paste0("variables_",gsub(".rds$", ".csv", basename(rep_file)))
   if (!is.null(varlist)) {
     if (!is.null(rep$unit)) {
       rep[, varunit := paste0(variable, " (", unit, ")")]
@@ -34,7 +33,7 @@ convertReportFSDP <- function(rep, subset = FALSE, varlist = NULL) {
   }
 
   if (subset) {
-    if(!is.null(rep$region)) {
+    if (!is.null(rep$region)) {
       rep <- rep[region != "GLO", ]
       rep <- rep[region != "World", ]
     }
@@ -46,7 +45,9 @@ convertReportFSDP <- function(rep, subset = FALSE, varlist = NULL) {
   }
 
   rep <- droplevels(rep)
-  if (length(unique(rep$region)) == 249 || length(unique(rep$region)) == 179) names(rep)[names(rep) == "region"] <- "iso_a3"
-  names(rep)[names(rep)=="country"] <- "iso_a3"
+  if (length(unique(rep$region)) == 249 || length(unique(rep$region)) == 179) {
+    names(rep)[names(rep) == "region"] <- "iso_a3"
+  }
+  names(rep)[names(rep) == "country"] <- "iso_a3"
   return(rep)
 }

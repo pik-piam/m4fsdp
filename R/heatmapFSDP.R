@@ -1,4 +1,5 @@
-globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "varunit", "valuefill", "value", "label", "vargroup", ".", ".label"))
+globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
+                  "varunit", "valuefill", "value", "label", "vargroup", ".", ".label"))
 #' @title heatmapFSDP
 #' @description creates a heatmap for FSDP MAgPIE runs
 #'
@@ -57,36 +58,56 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
 
   b[, valuefill := value - value[scenario == "BAU" & period == "2050"], by = .(variable)]
-  b[variable %in% c("Biodiversity Intactness (Index)", "Shannon croparea diversity index (Index)", "Agricultural wages (% of GDP)", "Agricultural employment (million people)"), valuefill := -valuefill]
+  b[variable %in% c("Biodiversity Intactness (Index)",
+                    "Shannon croparea diversity index (Index)",
+                    "Agricultural wages (% of GDP)",
+                    "Agricultural employment (million people)"
+                    ), valuefill := -valuefill]
   b[valuefill > 0, valuefill := rescale(valuefill, to = c(0, 1)), by = .(variable)]
   b[valuefill < 0, valuefill := rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
-  b[!scenario %in% c("SDP", "gdp_educ_inequ", "dietHealth") & variable %in% c("Prevalence of underweight (million people)", "Prevalence of obesity (million people)"), valuefill := NA]
+  b[!scenario %in% c("BAU", "population", "SDP", "gdp_educ_inequ", "dietHealth") &
+      variable %in% c("Prevalence of underweight (million people)", "Prevalence of obesity (million people)"),
+    valuefill := NA]
 
   b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
 
-  b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"), formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
+  b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
+                       formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
 
-  b[scenario == "BAU", scenario := paste(scenario, "SSP2", period)]
+  b[scenario == "BAU", scenario := paste("SSP2", period)]
   b <- droplevels(b)
-  # b[scenario %in% c("BAU SSP2 2020","BAU SSP2 2050","population","gdp_educ_inequ","energy","bioeconomy"),scengroup:="Group 1"]
-  # b[scenario %in% c("BAU SSP2 2020","BAU SSP2 2050","population","gdp_educ_inequ","energy","bioeconomy"),scengroup:="Group 1"]
-  scenFirst <- c("BAU SSP2 2020", "BAU SSP2 2050", "population", "gdp_educ_inequ", "energy", "bioeconomy")
+  scenFirst <- c("SSP2 2020", "SSP2 2050", "population", "gdp_educ_inequ", "energy", "bioeconomy")
   scenLast <- c("SDP")
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
   scenOrder <- c(rev(scenLast), scenOrder[!scenOrder %in% c(scenFirst, scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
   b <- droplevels(b)
 
-  m <- ggplot(b, aes(y = scenario, x = variable)) + theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
-    geom_tile_interactive(aes(fill = valuefill, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable), data_id = interaction(variable)), colour = "white") +
-    #  scale_fill_continuous(type = "viridis",breaks = c(-1, 0, 1), labels = c("low", "med", "high")) +
-    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "#ffffbf", na.value = "grey80", high = "#fc8d59", breaks = c(-1, 0, 1), labels = c("positive", "zero", "negative")) +
-    geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable), data_id = interaction(variable)), size = 3, color = "grey50") +
-    theme(axis.text.x = element_text(angle = 30, hjust = 1)) + labs(y = "Scenario", x = "Indicator", fill = "Impact\nrelative to\nBAU 2050") + theme(legend.position = "right") + guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)), reverse = FALSE, title.hjust = 0, title.vjust = 2, title.position = "top", barwidth = 1, barheight = 20, legend.direction = "vertical")) + theme(plot.background = element_rect(fill="white"),strip.background = element_rect(color = "grey50"), axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+  m <- ggplot(b, aes(y = scenario, x = variable)) + theme_minimal() +
+    theme(panel.border = element_rect(colour = NA, fill = NA)) +
+    geom_tile_interactive(aes(fill = valuefill,
+                              tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
+                              data_id = interaction(variable)), colour = "white") +
+    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "#ffffbf",
+                                     na.value = "grey80", high = "#fc8d59", breaks = c(-1, 0, 1),
+                                     labels = c("positive", "zero", "negative")) +
+    geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
+                              data_id = interaction(variable)), size = 3, color = "grey50") +
+    theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+    labs(y = "Scenario", x = "Indicator", fill = "Impact\nrelative to\nSSP2 2050") +
+    theme(legend.position = "right") +
+    guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)),
+                                             reverse = FALSE, title.hjust = 0, title.vjust = 2,
+                                             title.position = "top", barwidth = 1, barheight = 20,
+                                             legend.direction = "vertical")) +
+    theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
+          axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank())
 
-  m <- m + facet_grid(vars(period), vars(vargroup), scales = "free", space = "free") + scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
+  m <- m + facet_grid(vars(period), vars(vargroup), scales = "free", space = "free") +
+    scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
 
   if (is.null(file)) {
     return(m)
@@ -98,8 +119,10 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
         opts_sizing(rescale = TRUE, width = .95),
         opts_hover(css = "fill:NULL;cursor:pointer;"),
         opts_hover_inv(css = "opacity:0.1;"),
-        opts_selection(girafe_css(css = "fill:NULL;stroke:grey"), only_shiny = FALSE, type = "multiple", selected = NULL),
-        opts_tooltip(css = "background-color:white;padding:5px;border-radius:2px;border: black 1px solid;color:black;")
+        opts_selection(girafe_css(css = "fill:NULL;stroke:grey"),
+                       only_shiny = FALSE, type = "multiple", selected = NULL),
+        opts_tooltip(css = "background-color:white;padding:5px;
+                     border-radius:2px;border: black 1px solid;color:black;")
       ),
       width_svg = 10,
       height_svg = 10
