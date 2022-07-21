@@ -29,7 +29,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
            "Prices|Food Expenditure Index corrected for ghg costs",
            "Agricultural employment",
            "Labor costs per worker relative to GDP pc",
-           "Costs")
+           "Costs Without Incentives")
 
   names(var) <- c("Health|Prevalence of underweight (million people)",
                   "Health|Prevalence of obesity (million people)",
@@ -66,7 +66,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b[valuefill > 0, valuefill := rescale(valuefill, to = c(0, 1)), by = .(variable)]
   b[valuefill < 0, valuefill := rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
-  b[!scenario %in% c("BAU", "population", "SDP", "gdp_educ_inequ", "dietHealth") &
+  b[!scenario %in% c("BAU", "population", "FSDP", "gdp_educ_inequ", "dietHealth") &
       variable %in% c("Prevalence of underweight (million people)", "Prevalence of obesity (million people)"),
     valuefill := NA]
 
@@ -88,7 +88,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   m <- ggplot(b, aes(y = scenario, x = variable)) + theme_minimal() +
     theme(panel.border = element_rect(colour = NA, fill = NA)) +
     geom_tile_interactive(aes(fill = valuefill,
-                              tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
+                              tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), colour = "white") +
     scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "#ffffbf",
                                      na.value = "grey80", high = "#fc8d59", breaks = c(-1, 0, 1),

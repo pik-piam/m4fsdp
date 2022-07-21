@@ -38,10 +38,10 @@ convertReportFSDP <- function(rep, subset = FALSE, varlist = NULL) {
       rep <- rep[region != "World", ]
     }
 
-    rep <- rep[period %in% c(2020, 2050) & scenario %in% c("BAU", "SDP"), ]
-    rep <- rep[!(scenario == "SDP" & period == 2020), ]
+    rep <- rep[period %in% c(2020, 2050) & scenario %in% c("BAU", "FSDP"), ]
+    rep <- rep[!(scenario == "FSDP" & period == 2020), ]
     rep[, scenario := paste(scenario, period)]
-    rep$scenario <- factor(rep$scenario, levels = c("BAU 2020", "BAU 2050", "SDP 2050"))
+    rep$scenario <- factor(rep$scenario, levels = c("BAU 2020", "BAU 2050", "FSDP 2050"))
   }
 
   rep <- droplevels(rep)
