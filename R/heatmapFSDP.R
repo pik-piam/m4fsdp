@@ -28,7 +28,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
            "Emissions|CO2|Land|Cumulative|+|Land-use Change",
            "Prices|Food Expenditure Index corrected for ghg costs",
            "Agricultural employment",
-           "Labor costs per worker relative to GDP pc",
+           "Hourly labor costs relative to 2020",
            "Costs Without Incentives")
 
   names(var) <- c("Health|Prevalence of underweight (million people)",
@@ -40,7 +40,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                   "Environment|Cumulative CO2 emissions (GtCO2 since 1995)",
                   "Inclusion|Relative Poverty (Index 2020=100)",
                   "Inclusion|Agricultural employment (million people)",
-                  "Inclusion|Agricultural wages (% of GDP)",
+                  "Inclusion|Agricultural wages (index)",
                   "Costs|Agriculture (billion US$05/yr)")
 
   rep[region == "World", region := "GLO"]
@@ -60,14 +60,23 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b[, valuefill := value - value[scenario == "BAU" & period == "2050"], by = .(variable)]
   b[variable %in% c("Biodiversity Intactness (Index)",
                     "Shannon croparea diversity index (Index)",
-                    "Agricultural wages (% of GDP)",
+                    "Agricultural wages (index)",
                     "Agricultural employment (million people)"
                     ), valuefill := -valuefill]
   b[valuefill > 0, valuefill := rescale(valuefill, to = c(0, 1)), by = .(variable)]
   b[valuefill < 0, valuefill := rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
-  b[!scenario %in% c("BAU", "population", "FSDP", "gdp_educ_inequ", "dietHealth") &
+  #greying out nutrition scenarios
+  b[!scenario %in% c("BAU", "ssp1","ssp2","ssp3","ssp4","ssp5","FSDP",
+                     "NoOverweight","NoUnderweight",
+                     "Population", "ExternalPressures","AllInclusion", "SocioEconDevelop", "DietHealth") &
       variable %in% c("Prevalence of underweight (million people)", "Prevalence of obesity (million people)"),
+    valuefill := NA]
+
+  #greying out inclusion scenarios
+  b[!scenario %in% c("BAU", "ssp1","ssp2","ssp3","ssp4","ssp5","FSDP",
+                     "ExternalPressures","AllInclusion", "SocioEconDevelop") &
+      variable %in% c("Agricultural wages (index)"),
     valuefill := NA]
 
   b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
@@ -128,5 +137,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       height_svg = 10
     )
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
+    return(m)
   }
 }
