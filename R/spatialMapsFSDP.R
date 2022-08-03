@@ -52,7 +52,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   pop <- calcPolygon(pop)
 
   # theme for maps
-  myTheme <- theme_minimal() + theme(plot.margin = grid::unit(c(5, 0, 0, 0), "mm")) +
+  myTheme <- theme_minimal(base_family = "Arial") + theme(plot.margin = grid::unit(c(5, 0, 0, 0), "mm")) +
     theme(legend.justification = "left", legend.title = element_text(size = 12),
           plot.title = element_text(hjust = 0.5, vjust = 0, size = 12, face = "bold"),
           strip.text = element_text(size = 12), panel.background = element_rect(fill = "black"),

@@ -104,7 +104,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b$scenario <- factor(b$scenario, levels = scenOrder)
   b <- droplevels(b)
 
-  m <- ggplot(b, aes(y = scenario, x = variable)) + theme_minimal() +
+  m <- ggplot(b, aes(y = scenario, x = variable)) + theme_minimal(base_family = "Arial") +
     theme(panel.border = element_rect(colour = NA, fill = NA)) +
     geom_tile_interactive(aes(fill = valuefill,
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
