@@ -1,11 +1,12 @@
-globalVariables(c("scenario", "region", "period", "unit", "variable", "varunit", "value"))
+globalVariables(c("scenario", "scenset", "region", "period", "unit", "variable", "varunit", "value"))
 #' @title convertReportFSDP
 #' @description reads in FSDP reporting file
 #'
 #' @export
 #'
 #' @param rep reporting .rds file (produced by FDSP_collect.R output script)
-#' @param subset TRUE returns "BAU 2020","BAU 2050","SDP 2050". FALSE returns all scenarios
+#' @param scengroup options: FSECa, FSECb, FSECc, FSECd
+#' @param subset TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios
 #' @param varlist file name for plain text variable list (e.g. "var_names.csv")
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
@@ -13,14 +14,15 @@ globalVariables(c("scenario", "region", "period", "unit", "variable", "varunit",
 #' @import data.table quitte
 #' @importFrom utils write.csv
 
-convertReportFSDP <- function(rep, subset = FALSE, varlist = NULL) {
+convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = NULL) {
 
   if (!is.data.frame(rep)) rep <- readRDS(rep)
   rep <- as.data.table(rep)
   rep <- rep[!scenario %like% "calibration_FSEC", ]
-  rep[, scenario := sub("_", "", sub("[^_]+_([^_]+)*", "", scenario))]
+  rep[, c("version", "scenset", "scenario") := tstrsplit(scenario, "_", fixed = TRUE)]
+  rep[, version := NULL]
+  if (!is.null(scengroup)) rep <- rep[scenset %in% scengroup]
   rep$scenario <- factor(rep$scenario)
-  rep <- rep[!scenario %in% c("SSP370", "SSP460", "SSP585"), ]
   rep <- droplevels(rep)
   if (!is.null(varlist)) {
     if (!is.null(rep$unit)) {

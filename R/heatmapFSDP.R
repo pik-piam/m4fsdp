@@ -5,8 +5,9 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #'
 #' @export
 #'
-#' @param repReg rds file or data.frame with all MAgPIE runs, produced with merge_report.R output script. To produce a figure with a reduced size, merge only the scenarios you want to have in the plot, e.g. using the filter command when doing the runselection, and filtering for FSEC[ab] for the scenarios in table 1.
+#' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
 #' @param regionSel Region that should be plotted
+#' @param tableType options: 1 (FSECa,FSECc), 2 (FSECb,FSECc,FSECd)
 #' @param file file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
@@ -14,10 +15,17 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @import ggplot2 ggiraph forcats data.table scales htmlwidgets
 #' @importFrom utils write.csv
 
-heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
+heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   #### read in data files
-  rep <- convertReportFSDP(repReg, subset = FALSE, varlist = "magpie_vars.csv")
+  if (tableType == 1) {
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECc"), subset = FALSE, varlist = "magpie_vars.csv")
+  } else if (tableType == 2) {
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc", "FSECd"), subset = FALSE,
+                             varlist = "magpie_vars.csv")
+  } else {
+    stop("Table type does not exist")
+  }
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
@@ -66,16 +74,16 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b[valuefill > 0, valuefill := rescale(valuefill, to = c(0, 1)), by = .(variable)]
   b[valuefill < 0, valuefill := rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
-  #greying out nutrition scenarios
+  # greying out nutrition scenarios
   b[!scenario %in% c("BAU", "ssp1", "ssp2", "ssp3", "ssp4", "ssp5", "FSDP",
-                     "NoOverweight","NoUnderweight",
+                     "NoOverweight", "NoUnderweight",
                      "Population", "ExternalPressures", "AllInclusion",
                      "SocioEconDevelop", "DietHealth") &
       variable %in% c("Prevalence of underweight (million people)",
                       "Prevalence of obesity (million people)"),
     valuefill := NA]
 
-  #greying out inclusion scenarios
+  # greying out inclusion scenarios
   b[!scenario %in% c("BAU", "ssp1", "ssp2", "ssp3", "ssp4", "ssp5", "FSDP",
                      "ExternalPressures", "AllInclusion", "SocioEconDevelop") &
       variable %in% c("Agricultural wages (index)"),
@@ -139,6 +147,5 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       height_svg = 10
     )
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
-    return(m)
   }
 }

@@ -4,12 +4,14 @@
 \alias{heatmapFSDP}
 \title{heatmapFSDP}
 \usage{
-heatmapFSDP(repReg, regionSel = "GLO", file = NULL)
+heatmapFSDP(repReg, regionSel = "GLO", tableType = 1, file = NULL)
 }
 \arguments{
-\item{repReg}{rds file or data.frame with all MAgPIE runs, produced with merge_report.R output script. To produce a figure with a reduced size, merge only the scenarios you want to have in the plot, e.g. using the filter command when doing the runselection, and filtering for FSEC[ab] for the scenarios in table 1.}
+\item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
 
 \item{regionSel}{Region that should be plotted}
+
+\item{tableType}{options: 1 (FSECa,FSECc), 2 (FSECb,FSECc,FSECd)}
 
 \item{file}{file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL}
 }

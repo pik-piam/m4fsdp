@@ -4,12 +4,14 @@
 \alias{convertReportFSDP}
 \title{convertReportFSDP}
 \usage{
-convertReportFSDP(rep, subset = FALSE, varlist = NULL)
+convertReportFSDP(rep, scengroup = NULL, subset = FALSE, varlist = NULL)
 }
 \arguments{
 \item{rep}{reporting .rds file (produced by FDSP_collect.R output script)}
 
-\item{subset}{TRUE returns "BAU 2020","BAU 2050","SDP 2050". FALSE returns all scenarios}
+\item{scengroup}{options: FSECa, FSECb, FSECc, FSECd}
+
+\item{subset}{TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios}
 
 \item{varlist}{file name for plain text variable list (e.g. "var_names.csv")}
 }
