@@ -21,7 +21,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   if (tableType == 1) {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECc"), subset = FALSE, varlist = "magpie_vars.csv")
   } else if (tableType == 2) {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc", "FSECd"), subset = FALSE,
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc", "FSECd","FSECe"), subset = FALSE,
                              varlist = "magpie_vars.csv")
   } else {
     stop("Table type does not exist")
@@ -32,9 +32,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Biodiversity|BII",
            "Biodiversity|Shannon croparea diversity index",
            "SDG|SDG06|Nitrogen surplus on cropland",
-           "SDG|SDG06|Agricultural water use",
+           "Water|Environmental flow violation volume",
            "Emissions|CO2|Land|Cumulative|+|Land-use Change",
-           "Prices|Food Expenditure Index corrected for ghg costs",
+           "Household Expenditure|Food|Expenditure",
            "Agricultural employment",
            "Hourly labor costs relative to 2020",
            "Costs Without Incentives")
@@ -44,9 +44,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Environment|Biodiversity Intactness (Index)",
                   "Environment|Shannon croparea diversity index (Index)",
                   "Environment|Nitrogen surplus on cropland (Mt N/yr)",
-                  "Environment|Agricultural water use (km3/yr)",
+                  "Environment|Water environmental flow violations (km3/yr)",
                   "Environment|Cumulative CO2 emissions (GtCO2 since 1995)",
-                  "Inclusion|Relative Poverty (Index 2020=100)",
+                  "Inclusion|Expenditure for agric. products (USD/person)",
                   "Inclusion|Agricultural employment (million people)",
                   "Inclusion|Agricultural wages (index)",
                   "Costs|Agriculture (billion US$05/yr)")
