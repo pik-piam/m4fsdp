@@ -74,12 +74,36 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 2000)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
+  title <- "Inclusion: Share of working age population employed in agriculture (Cartogram - size reflects population)"
+  b <- repReg[, .(value = value[variable == "Share of working age population employed in agriculture"]),
+              by = .(model, scenario, region, period)]
+  all <- merge(reg2iso, b)
+  all <- merge(pop, all)
+  p2 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
+                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
+    scale_fill_gradientn("Share", colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 30)) +
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+
+  title <- "Inclusion: Hourly labor costs in agriculture (Cartogram - size reflects population)"
+  b <- repReg[, .(value = value[variable == "Hourly labor costs"]), by = .(model, scenario, region, period)]
+  all <- merge(reg2iso, b)
+  all <- merge(pop, all)
+  p3 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
+                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
+    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 30)) +
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+
+
   ## Country level data
   title <- "Health: Spatial distribution of population underweight (Cartogram - size reflects population)"
   b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
-  p2 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  p4 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
@@ -90,7 +114,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
-  p3 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  p5 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
@@ -118,7 +142,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   b <- droplevels(repGrid[variable == "BII (index)", ])
   bb <- asRaster(b, countries2)
 
-  p4 <- ggplot(bb) +
+  p6 <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
     scale_fill_gradient2(unit, low = "darkred", high = "darkgreen", mid = "yellow",
@@ -130,18 +154,18 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   b <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
   bb <- asRaster(b, countries2)
 
-  p5 <- ggplot(bb) +
+  p7 <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 400)) + myTheme +
     labs(title = title, caption = "Projection: Mollweide")
 
-  combined <- p1 + p2 + p3 + p4 + p5
+  combined <- p1 + p2 + p3 + p4 + p5 + p6 + p7
   combined <- combined + plot_layout(guides = "keep", ncol = 1)
 
   if (is.null(file)) {
     return(combined)
   } else {
-    ggsave(filename = file, combined, width = 8, height = 10, scale = 1.5, bg = "white")
+    ggsave(filename = file, combined, width = 8, height = 14, scale = 1.5, bg = "white")
   }
 }
