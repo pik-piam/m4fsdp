@@ -21,7 +21,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   if (tableType == 1) {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECc"), subset = FALSE, varlist = "magpie_vars.csv")
   } else if (tableType == 2) {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc", "FSECd","FSECe"), subset = FALSE,
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE,
                              varlist = "magpie_vars.csv")
   } else {
     stop("Table type does not exist")
@@ -71,12 +71,13 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                     "Agricultural wages (index)",
                     "Agricultural employment (million people)"
                     ), valuefill := -valuefill]
+  b$valuefill=log(b$valuefill) #making smaller changes more visible
   b[valuefill > 0, valuefill := rescale(valuefill, to = c(0, 1)), by = .(variable)]
   b[valuefill < 0, valuefill := rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
   # greying out nutrition scenarios
-  b[!scenario %in% c("BAU", "ssp1", "ssp2", "ssp3", "ssp4", "ssp5", "FSDP",
-                     "NoOverweight", "NoUnderweight",
+  b[!scenario %in% c("BAU", "SSP1", "SSP2", "SSP3", "SSP4", "SSP5", "FSDP",
+                     "NoOverweight", "NoUnderweight", "AllHealth", "DietRotations",
                      "Population", "ExternalPressures", "AllInclusion",
                      "SocioEconDevelop", "DietHealth") &
       variable %in% c("Prevalence of underweight (million people)",
@@ -84,7 +85,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     valuefill := NA]
 
   # greying out inclusion scenarios
-  b[!scenario %in% c("BAU", "ssp1", "ssp2", "ssp3", "ssp4", "ssp5", "FSDP",
+  b[!scenario %in% c("BAU", "SSP1", "SSP2", "SSP3", "SSP4", "SSP5", "FSDP",
                      "ExternalPressures", "AllInclusion", "SocioEconDevelop") &
       variable %in% c("Agricultural wages (index)"),
     valuefill := NA]
