@@ -71,7 +71,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 2000)) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "Blues")[-1], na.value = "grey90", limits = c(0, 2000)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
   title <- "Inclusion: Share of working age population employed in agriculture (Cartogram - size reflects population)"
@@ -83,7 +83,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("Share", colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 30)) +
+    scale_fill_gradientn("Share", colors = brewer.pal(9, "Purples")[-1], na.value = "grey90", limits = c(0, 30)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
   title <- "Inclusion: Hourly labor costs in agriculture (Cartogram - size reflects population)"
@@ -94,7 +94,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 30)) +
+    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-1,-3,-4,-6], na.value = "grey90", limits = c(0, 30)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
 
@@ -107,7 +107,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("Share", colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 0.4)) +
+    scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
   title <- "Health: Spatial distribution of population obese (Cartogram - size reflects population)"
@@ -118,7 +118,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("Share", colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 0.4)) +
+    scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
   ## Grid cell data
@@ -160,7 +160,16 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 400)) + myTheme +
     labs(title = title, caption = "Projection: Mollweide")
 
-  combined <- p1 + p2 + p3 + p4 + p5 + p6 + p7
+  trytoplot = function(tryplot){
+    if (inherits(try(ggplot_build(tryplot)), "try-error")){
+      warning("One of the map plot scripts failed")
+      return(NULL)
+    } else {
+      return(tryplot)
+    }
+  }
+
+  combined <- trytoplot(p1) + trytoplot(p2) + trytoplot(p3) + trytoplot(p4) + trytoplot(p5) + trytoplot(p6) + trytoplot(p7)
   combined <- combined + plot_layout(guides = "keep", ncol = 1)
 
   if (is.null(file)) {

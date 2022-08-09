@@ -71,7 +71,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                     "Agricultural wages (index)",
                     "Agricultural employment (million people)"
                     ), valuefill := -valuefill]
-  b$valuefill=log(b$valuefill) #making smaller changes more visible
   b[valuefill > 0, valuefill := rescale(valuefill, to = c(0, 1)), by = .(variable)]
   b[valuefill < 0, valuefill := rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
