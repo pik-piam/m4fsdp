@@ -99,16 +99,25 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b[scenario == "BAU", scenario := paste("SSP2", period)]
   b <- droplevels(b)
-  scenFirst <- c("SSP2 2020", "SSP2 2050", "population", "gdp_educ_inequ", "energy", "bioeconomy")
+  scenFirst <- c("SSP2 2020", "SSP2 2050", "Population", "SocioEconDevelop", "EnergyTrans", "Bioeconomy")
   scenLast <- c("SDP")
-  scenSSPs <- c("SSP1","SSP3","SSP4","SSP5")
-  scenDiet <- c()
-  scenProtect <- c()
-  scenClimate <- c()
-  scenEff <- c()
+  scenSSPs <- c("SSP1", "SSP3", "SSP4", "SSP5", "ExternalPressures")
+  scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
+  scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics", "DietLegumes","DietFish","DietEmptyCals")
+  scenProtect <- c("WaterSparing", "LandSparing", "PeatlandSparing", "LandUseDiversity")
+  scenClimate <- c("SoilCarbon","REDD","REDDaff")
+  scenEff <- c("NitrogenUptakeEfficiency","LivestockMngmt","AnimalWasteMngmt","AirPollution","CropRotations")
+  scenInclusion <- c("TimberCities","FairTrade")
+  scenCombinations <- c("WaterSoil","DietRotations","SoilRotations","SoilMonogastric","REDDaffDietRuminants","FullBiodiv")
+  scenArchetypes <- c("Sufficiency","Efficiency","Protection","AllHealth","AllEnvironment","AllClimate","AllInclusion")
+
 
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-  scenOrder <- c(rev(scenLast), scenOrder[!scenOrder %in% c(scenFirst, scenLast)], rev(scenFirst))
+  scenMiddle <- c(scenSSPs,scenDiet,scenDiet2,scenProtect,
+  scenClimate,scenEff,scenInclusion,scenCombinations,
+  scenArchetypes)
+  scenOrder <- c(rev(scenLast), rev(scenMiddle), scenOrder[!scenOrder %in% c(
+    scenFirst,scenMiddle,scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
   b <- droplevels(b)
 
