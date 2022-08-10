@@ -99,6 +99,12 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b <- droplevels(b)
   scenFirst <- c("SSP2 2020", "SSP2 2050", "population", "gdp_educ_inequ", "energy", "bioeconomy")
   scenLast <- c("SDP")
+  scenSSPs <- c("SSP1","SSP3","SSP4","SSP5")
+  scenDiet <- c()
+  scenProtect <- c()
+  scenClimate <- c()
+  scenEff <- c()
+
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
   scenOrder <- c(rev(scenLast), scenOrder[!scenOrder %in% c(scenFirst, scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
