@@ -67,7 +67,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
                     value[variable == "Population"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all)
-  p1 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  p_costs <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
@@ -79,7 +79,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
               by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all)
-  p2 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  p_employment_share <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
@@ -90,7 +90,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   b <- repReg[, .(value = value[variable == "Hourly labor costs"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all)
-  p3 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  p_wage <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
@@ -103,7 +103,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
-  p4 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  p_underweight <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
@@ -114,12 +114,24 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
-  p5 <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  p_obese <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+
+  title <- "Inclusion: Expenditure for agr. products per capita (Cartogram - size reflects population)"
+  b <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"] /
+                    value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  all <- merge(pop, b)
+  p_expenditure <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
+                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
+    scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+
 
   ## Grid cell data
   countries2 <- st_transform(countries, crs = st_crs("+proj=moll"))
@@ -137,24 +149,24 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     return(z)
   }
 
-  title <- "Biodiversity Intactness Index"
+  title <- "Environment: Biodiversity Intactness Index"
   unit <- "index"
   b <- droplevels(repGrid[variable == "BII (index)", ])
   bb <- asRaster(b, countries2)
 
-  p6 <- ggplot(bb) +
+  p_bii <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
     scale_fill_gradient2(unit, low = "darkred", high = "darkgreen", mid = "yellow",
                          midpoint = 0.76, na.value = "grey90") + myTheme +
     labs(title = title, caption = "Projection: Mollweide")
 
-  title <- "Nutrient Surplus"
+  title <- "Environment: Nutrient Surplus"
   unit <- "kg N per ha"
   b <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
   bb <- asRaster(b, countries2)
 
-  p7 <- ggplot(bb) +
+  p_nitrogen <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 400)) + myTheme +
@@ -169,7 +181,14 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     }
   }
 
-  combined <- trytoplot(p1) + trytoplot(p2) + trytoplot(p3) + trytoplot(p4) + trytoplot(p5) + trytoplot(p6) + trytoplot(p7)
+  combined <- (trytoplot(p_costs)
+               + trytoplot(p_employment_share)
+               + trytoplot(p_wage)
+               + trytoplot(p_underweight)
+               + trytoplot(p_obese)
+               + trytoplot(p_bii)
+               + trytoplot(p_nitrogen)
+               + trytoplot(p_expenditure))
   combined <- combined + plot_layout(guides = "keep", ncol = 1)
 
   if (is.null(file)) {

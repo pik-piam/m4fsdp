@@ -99,15 +99,15 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b[scenario == "BAU", scenario := paste("SSP2", period)]
   b <- droplevels(b)
-  scenFirst <- c("SSP2 2020", "SSP2 2050", "Population", "SocioEconDevelop", "EnergyTrans", "Bioeconomy")
+  scenFirst <- c("SSP2 2020", "SSP2 2050", "Population", "SocioEconDevelop", "EnergyTrans", "TimberCities", "Bioeconomy")
   scenLast <- c("FSDP")
   scenSSPs <- c("SSP1", "SSP3", "SSP4", "SSP5", "ExternalPressures")
   scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics", "DietLegumes", "DietFish", "DietEmptyCals")
-  scenProtect <- c("WaterSparing", "LandSparing", "PeatlandSparing", "LandUseDiversity")
-  scenClimate <- c("SoilCarbon", "REDD", "REDDaff")
+  scenProtect <- c("WaterSparing", "LandSparing", "LandUseDiversity", "PeatlandSparing")
+  scenClimate <- c("REDD", "REDDaff","SoilCarbon")
   scenMngmt <- c("CropRotations", "NitrogenUptakeEff", "LivestockMngmt", "AnimalWasteMngmt", "AirPollution")
-  scenInclusion <- c("TimberCities", "FairTrade")
+  scenInclusion <- c("FairTrade")
   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric", "REDDaffDietRuminants", "FullBiodiv")
   scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment", "AllClimate", "AllInclusion")
 
