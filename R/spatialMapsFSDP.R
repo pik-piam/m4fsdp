@@ -94,7 +94,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1,3,4,6)], na.value = "grey90", limits = c(0, 30)) +
+    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1,3,4,6)], na.value = "grey90", 
+                         limits = c(0, 30), trans = "log1p", breaks=c(0, 1.5, 5, 13, 30)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
 
@@ -194,6 +195,6 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   if (is.null(file)) {
     return(combined)
   } else {
-    ggsave(filename = file, combined, width = 8, height = 14, scale = 1.5, bg = "white")
+    ggsave(filename = file, combined, width = 8, height = 16, scale = 1.5, bg = "white")
   }
 }
