@@ -94,7 +94,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1,3,4,6)], na.value = "grey90", 
+    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1,3,4,6)], na.value = "grey90",
                          limits = c(0, 30), trans = "log1p", breaks=c(0, 1.5, 5, 13, 30)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
 
@@ -139,7 +139,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   xlimMoll <- c(-11007870, 16007870)
   asRaster <- function(x, countries2) {
     z <- rast()
-    for (i in levels(b$scenario)) {
+    for (i in levels(x$scenario)) {
       y <- rast(droplevels(x[scenario == i, ])[, c("x", "y", ".value")], crs = "+proj=latlon")
       names(y) <- i
       z <- c(z, y, warn = FALSE)

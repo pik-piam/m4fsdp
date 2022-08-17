@@ -12,8 +12,9 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
 #' @author Florian Humpenoeder
-#' @import ggplot2 ggiraph forcats data.table scales htmlwidgets
+#' @import ggplot2 ggiraph forcats data.table scales htmlwidgets tidyr
 #' @importFrom utils write.csv
+#' @importFrom stats reorder
 
 heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
@@ -40,18 +41,18 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Hourly labor costs relative to 2020",
            "Costs Without Incentives")
 
-  names(var) <- c("Health|Prevalence of underweight (million people)",
-                  "Health|Prevalence of obesity (million people)",
-                  "Environment|Biodiversity Intactness (Index)",
-                  "Environment|Shannon croparea diversity index (Index)",
-                  "Environment|Nitrogen surplus on cropland (Mt N/yr)",
-                  "Environment|Water environmental flow violations (km3/yr)",
-                  "Environment|Cumulative CO2 emissions (GtCO2 since 1995)",
-                  "Environment|Global Surface Temperature (deg C)",
-                  "Inclusion|Expenditure for agric. products (USD/person)",
-                  "Inclusion|Agricultural employment (million people)",
-                  "Inclusion|Agricultural wages (index)",
-                  "Costs|Agriculture (billion US$05/yr)")
+  names(var) <- c("Health|Prevalence of underweight (million people)|1",
+                  "Health|Prevalence of obesity (million people)|2",
+                  "Environment|Biodiversity Intactness (Index)|1",
+                  "Environment|Shannon croparea diversity index (Index)|2",
+                  "Environment|Nitrogen surplus on cropland (Mt N/yr)|3",
+                  "Environment|Water environmental flow violations (km3/yr)|4",
+                  "Environment|Cumulative CO2 emissions (GtCO2 since 1995)|5",
+                  "Environment|Global Surface Temperature (deg C)|6",
+                  "Inclusion|Expenditure for agric. products (USD/person)|1",
+                  "Inclusion|Agricultural employment (million people)|2",
+                  "Inclusion|Agricultural wages (Index)|3",
+                  "Costs|Agriculture (billion US$05/yr)|1")
 
   rep[region == "World", region := "GLO"]
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]
@@ -62,19 +63,20 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b <- rbind(bb, b)
 
   b$variable <- factor(b$variable, levels = var, labels = names(var))
-  b[, c("vargroup", "variable") := tstrsplit(variable, "|", fixed = TRUE)]
+  b[, c("vargroup", "variable", "order") := tstrsplit(variable, "|", fixed = TRUE)]
+  b$order <- as.numeric(b$order)
 
   vargroupOrder <- c("Health", "Environment", "Inclusion", "Costs")
   b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
 
+  b$variable <- reorder(b$variable, b$order)
+
   b[, valuefill := value - value[scenario == "BAU" & period == "2050"], by = .(variable)]
   b[variable %in% c("Biodiversity Intactness (Index)",
                     "Shannon croparea diversity index (Index)",
-                    "Agricultural wages (index)",
+                    "Agricultural wages (Index)",
                     "Agricultural employment (million people)"
                     ), valuefill := -valuefill]
-  b[valuefill > 0, valuefill := rescale(valuefill, to = c(0, 1)), by = .(variable)]
-  b[valuefill < 0, valuefill := rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
   # greying out nutrition scenarios
   b[!scenario %in% c("BAU", "SSP1", "SSP2", "SSP3", "SSP4", "SSP5", "FSDP",
@@ -88,8 +90,11 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   # greying out inclusion scenarios
   b[!scenario %in% c("BAU", "SSP1", "SSP2", "SSP3", "SSP4", "SSP5", "FSDP",
                      "ExternalPressures", "AllInclusion", "SocioEconDevelop") &
-      variable %in% c("Agricultural wages (index)"),
+      variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
+
+  b[valuefill > 1e-36, valuefill := scales::rescale(valuefill, to = c(1e-36, 1)), by = .(variable)]
+  b[valuefill < -1e-36, valuefill := scales::rescale(valuefill, to = c(-1, -1e-36)), by = .(variable)]
 
   b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
