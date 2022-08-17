@@ -93,8 +93,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
       variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
 
-  b[valuefill > 1e-36, valuefill := scales::rescale(valuefill, to = c(1e-36, 1)), by = .(variable)]
-  b[valuefill < -1e-36, valuefill := scales::rescale(valuefill, to = c(-1, -1e-36)), by = .(variable)]
+  b[valuefill >= 0, valuefill := scales::rescale(valuefill, to = c(0, 1)), by = .(variable)]
+  b[valuefill <= 0, valuefill := scales::rescale(valuefill, to = c(-1, 0)), by = .(variable)]
 
   b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
