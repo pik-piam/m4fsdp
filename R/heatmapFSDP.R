@@ -94,9 +94,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
       variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
 
-  b[, valuefill := valuefill / max(abs(valuefill),na.rm = TRUE), by = .(variable)]
-  # b[valuefill >= 0, valuefill := scales::rescale(valuefill, to = c(0, 1)), by = .(variable)]
-  # b[valuefill <= 0, valuefill := scales::rescale(valuefill, to = c(-1, 0)), by = .(variable)]
+  b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
   b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
@@ -106,22 +104,27 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b[scenario == "BAU", scenario := paste("SSP2", period)]
   b$period <- factor(b$period)
-  b[scenario %in% c("SSP2 2020","SSP2 2050"), period := "Ref"]
-  b[!scenario %in% c("SSP2 2020","SSP2 2050"), period := "Scenario outcomes for 2050"]
+  b[scenario %in% c("SSP2 2020", "SSP2 2050"), period := "Ref"]
+  b[!scenario %in% c("SSP2 2020", "SSP2 2050"), period := "Scenario outcomes for 2050"]
   b$period <- factor(b$period)
   b <- droplevels(b)
 
-  scenFirst <- c("SSP2 2020", "SSP2 2050", "Population", "SocioEconDevelop", "EnergyTrans", "TimberCities", "Bioeconomy")
+  scenFirst <- c("SSP2 2020", "SSP2 2050", "Population", "SocioEconDevelop",
+                 "EnergyTrans", "TimberCities", "Bioeconomy")
   scenLast <- c("FSDP")
   scenSSPs <- c("SSP1", "SSP3", "SSP4", "SSP5", "ExternalPressures")
   scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
-  scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics", "DietLegumes", "DietFish", "DietEmptyCals")
+  scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
+                 "DietLegumes", "DietFish", "DietEmptyCals")
   scenProtect <- c("WaterSparing", "LandSparing", "LandUseDiversity", "PeatlandSparing")
-  scenClimate <- c("REDD", "REDDaff","SoilCarbon")
-  scenMngmt <- c("CropRotations", "NitrogenUptakeEff", "LivestockMngmt", "AnimalWasteMngmt", "AirPollution")
+  scenClimate <- c("REDD", "REDDaff", "SoilCarbon")
+  scenMngmt <- c("CropRotations", "NitrogenUptakeEff", "LivestockMngmt", "AnimalWasteMngmt",
+                 "AirPollution")
   scenInclusion <- c("FairTrade")
-  scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric", "REDDaffDietRuminants", "FullBiodiv")
-  scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment", "AllClimate", "AllInclusion")
+  scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
+                        "REDDaffDietRuminants", "FullBiodiv")
+  scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment",
+                      "AllClimate", "AllInclusion")
 
 
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
@@ -133,7 +136,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b$scenario <- factor(b$scenario, levels = scenOrder)
   b <- droplevels(b)
 
-  makeExp <- function(x,y){
+  makeExp <- function(x, y) {
     exp <- vector(length = 0, mode = "expression")
     for (i in seq_along(x)) {
       if (x[i] %in% y) exp[[i]] <- bquote(bold(.(x[i])))
@@ -147,13 +150,14 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     geom_tile_interactive(aes(fill = valuefill,
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), colour = "white") +
-    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "#ffffbf",
-                                     na.value = "grey90", high = "#fc8d59", breaks = c(-1, 0, 1),
+    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "white",
+                                     na.value = "grey95", high = "#fc8d59", breaks = c(-1, 0, 1),
                                      labels = c("positive", "zero", "negative")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), size = 3, color = "grey50") +
     theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-    labs(y = NULL, x = "Indicator", fill = bquote(atop(atop(textstyle('Impact'),textstyle('relative to')),textstyle(bold('SSP2 2050'))))) +
+    labs(y = NULL, x = "Indicator",
+         fill = bquote(atop(atop(textstyle("Impact"), textstyle("relative to")), textstyle(bold("SSP2 2050"))))) +
     theme(legend.position = "right") +
     guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)),
                                              reverse = FALSE, title.hjust = 0, title.vjust = 2,
@@ -163,8 +167,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
           axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
           panel.grid.minor = element_blank()) +
     scale_y_discrete(labels = function(x) makeExp(x, "SSP2 2050"))
-    # scale_y_discrete(labels= function(x) highlight(x, "SSP2 2050", "red")) +
-    # theme(axis.text.y=element_markdown())
 
   m <- m + facet_grid(vars(period), vars(vargroup), scales = "free", space = "free") +
     scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
