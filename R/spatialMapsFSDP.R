@@ -72,9 +72,10 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "Blues")[-1], na.value = "grey90", limits = c(0, 2000)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
 
-  title <- "Inclusion: Share of working age population employed in agriculture (Cartogram - size reflects population)"
+
+  title <- "Inclusion: Share of working age population employed in agriculture"
   b <- repReg[, .(value = value[variable == "Share of working age population employed in agriculture"]),
               by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
@@ -84,9 +85,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "Purples")[-1], na.value = "grey90", limits = c(0, 30)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
 
-  title <- "Inclusion: Hourly labor costs in agriculture (Cartogram - size reflects population)"
+  title <- "Inclusion: Hourly labor costs in agriculture"
   b <- repReg[, .(value = value[variable == "Hourly labor costs"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all)
@@ -96,11 +97,11 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1,3,4,6)], na.value = "grey90",
                          limits = c(0, 30), trans = "log1p", breaks=c(0, 1.5, 5, 13, 30)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
 
 
   ## Country level data
-  title <- "Health: Spatial distribution of population underweight (Cartogram - size reflects population)"
+  title <- "Health: Spatial distribution of population underweight"
   b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
@@ -108,10 +109,11 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+    scale_fill_gradientn("Share", colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4)) +
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
 
-  title <- "Health: Spatial distribution of population obese (Cartogram - size reflects population)"
+
+  title <- "Health: Spatial distribution of population obese"
   b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
@@ -119,10 +121,10 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+    scale_fill_gradientn("Share", colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4)) +
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
 
-  title <- "Inclusion: Expenditure for agr. products per capita (Cartogram - size reflects population)"
+  title <- "Inclusion: Expenditure for agr. products per capita"
   b <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
@@ -131,7 +133,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
 
 
   ## Grid cell data
@@ -185,16 +187,17 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   combined <- (trytoplot(p_costs)
                + trytoplot(p_employment_share)
                + trytoplot(p_wage)
+               + trytoplot(p_expenditure)
                + trytoplot(p_underweight)
                + trytoplot(p_obese)
                + trytoplot(p_bii)
                + trytoplot(p_nitrogen)
-               + trytoplot(p_expenditure))
-  combined <- combined + plot_layout(guides = "keep", ncol = 1)
+               )
+  combined <- combined + plot_layout(guides = "keep", ncol = 2,byrow = FALSE)
 
   if (is.null(file)) {
     return(combined)
   } else {
-    ggsave(filename = file, combined, width = 8, height = 16, scale = 1.5, bg = "white")
+    ggsave(filename = file, combined, width = 12, height = 7, scale = 1.5, bg = "white")
   }
 }
