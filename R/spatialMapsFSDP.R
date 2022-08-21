@@ -33,23 +33,32 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   countries <- subset(countries, iso_a3 %in% levels(repIso$iso_a3))
   countries <- countries[-grep("Antarctica", countries$name), ]
 
-  ### calc pop polygon for cartogram maps
-  pop <- repIso[variable == "Population", ]
-  pop$unit <- NULL
-  names(pop)[names(pop) == "value"] <- "pop"
-  pop <- merge(countries, pop)
-  calcPolygon <- function(pop) {
+  # function to calc polygons for cartogram
+  calcPolygon <- function(pop, name) {
     z <- NULL
     for (i in levels(pop$scenario)) {
       x <- subset(pop, scenario == i)
       x <- st_transform(x, crs = 3857)
-      x <- cartogram_cont(x, "pop", itermax = 7)
+      x <- cartogram_cont(x, name, itermax = 7)
       z <- rbind(z, x)
     }
     z$variable <- NULL
     return(z)
   }
-  pop <- calcPolygon(pop)
+
+  ### calc pop polygon for cartogram maps
+  pop <- repIso[variable == "Population", ]
+  pop$unit <- NULL
+  names(pop)[names(pop) == "value"] <- "pop"
+  pop <- merge(countries[, c("iso_a3", "geometry")], pop)
+  pop <- calcPolygon(pop, "pop")
+
+  # calc ag. empl. polygon for cartogram maps
+  agEmpl <- repIso[variable == "Agricultural employment", ]
+  agEmpl$unit <- NULL
+  names(agEmpl)[names(agEmpl) == "value"] <- "agEmpl"
+  agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
+  agEmpl <- calcPolygon(agEmpl, "agEmpl")
 
   # theme for maps
   myTheme <- theme_minimal() + theme(plot.margin = grid::unit(c(5, 0, 0, 0), "mm")) +
@@ -90,14 +99,14 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   title <- "Inclusion: Hourly labor costs in agriculture"
   b <- repReg[, .(value = value[variable == "Hourly labor costs"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
-  all <- merge(pop, all)
+  all <- merge(agEmpl, all)
   p_wage <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1,3,4,6)], na.value = "grey90",
                          limits = c(0, 30), trans = "log1p", breaks=c(0, 1.5, 5, 13, 30)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on ag. employment. Country size indicates the number of people potentially affected.")
 
 
   ## Country level data
