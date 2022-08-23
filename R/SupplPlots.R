@@ -1,4 +1,4 @@
-globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "percentage", "positive"))
+globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive"))
 
 #' @title SupplPlotsFSDP
 #' @description creates supplementary plots for FSDP MAgPIE runs
@@ -19,7 +19,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 
 SupplPlotsFSDP <- function(repReg, scenarioType = "all", save = TRUE, outputdir = "/p/projects/magpie/users/beier/FSECmodeling2/output/SupplPlots") {
 
-#  repReg <- "C:/PIK/SDPplot/v15_FSDP_reg.rds"
+#  repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
 
 if (scenarioType == "all") {
   rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = "magpie_vars.csv")
@@ -35,7 +35,7 @@ if (scenarioType == "all") {
 } else if (scenarioType == "e") {
   rep <- convertReportFSDP(repReg, scengroup = c("FSECe"), subset = FALSE, varlist = "magpie_vars.csv")
 } else {
-  stop("Table type does not exist")
+  stop("Scenario type does not exist")
 }
 
 plots <- list()
@@ -48,7 +48,7 @@ scens <- rep %>%
 mutate(RegionG =  case_when( # add region groupings
          region %in% LIR ~ "Low-Income Regions",
          region %in% HIR ~ "High-Income Regions",
-         region %in% ROW ~ "Rest of GLO",
+         region %in% ROW ~ "Rest of World",
          region == "GLO" ~ "World"),
        RegionG = factor(RegionG,
                         levels = c("High-Income Regions",
@@ -313,7 +313,8 @@ plots <- list(plots, emissPlotREG)
 landVar <- c("Resources|Land Cover|+|Cropland", "Resources|Land Cover|Cropland|+|Bioenergy crops",
              "Resources|Land Cover|+|Pastures and Rangelands", "Resources|Land Cover|Forest|Managed Forest|+|Plantations",
              "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC", "Resources|Land Cover|Forest|Managed Forest|+|Afforestation",
-             "Resources|Land Cover|Forest|Natural Forest|+|Secondary Forest", "Resources|Land Cover|Forest|Natural Forest|+|Primary Forest", "Resources|Land Cover|+|Other Land", "Resources|Land Cover|+|Urban Area")
+             "Resources|Land Cover|Forest|Natural Forest|+|Secondary Forest", "Resources|Land Cover|Forest|Natural Forest|+|Primary Forest", "Resources|Land Cover|+|Other Land",
+             "Resources|Land Cover|+|Urban Area")
 names(landVar) <- c("Cropland", "Bioenergy", "Pasture", "Timber", "Aff NDC", "Aff CO2-Price", "Secondary Forest", "Primary Forest", "Other Natural", "Urban")
 
 land_df <- filter(scens,
@@ -394,30 +395,32 @@ cropVar <- c(scens[grep("Cropland\\|Crops\\|Cereals\\|\\+", scens$variable), ]$v
              scens[grep("Cropland\\|Crops\\|Oil crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              scens[grep("Cropland\\|Crops\\|Sugar crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              scens[grep("Cropland\\|Crops\\|Other crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector())
+             scens[grep("Cropland\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             "Resources|Land Cover|Cropland|+|Fallow Cropland")
 
 cereals <- cropVar[grep("Cereals", cropVar)]
 legumes <- cropVar[grep("Soy|Pulse|Groundnut", cropVar)]
 plantations <- cropVar[grep("Bioenergy|cane|Oilpalm", cropVar)]
 fruits <- cropVar[grep("Fruits", cropVar)]
 other <- cropVar[grep("beet|Sunflower|rapeseed|Potato|Cotton|roots", cropVar)]
+fallow <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
 
 crop_df <- filter(scens,
                   period <= 2050,
                   period > 2015,
                   variable %in% cropVar) %>%
   droplevels() %>%
-  mutate(CropGroup = case_when( # recategorize products
+  mutate(CropGroup = case_when(           # recategorize products
     variable %in% cereals ~ "Cereals",
     variable %in% legumes ~ "Legumes",
     variable %in% plantations ~ "Plantations (Bioenergy, Oilpalm, Sugar cane)",
     variable %in% fruits ~ "Fruits, Vegetables, and Nuts",
-    variable %in% other ~ "Other Crops"),
+    variable %in% other ~ "Other Crops",
+    variable %in% fallow ~ "Fallow Cropland"),
     CropGroup = factor(CropGroup,
                        levels = c("Cereals", "Legumes",
                                   "Plantations (Bioenergy, Oilpalm, Sugar cane)", "Fruits, Vegetables, and Nuts",
-                                  "Other Crops"))) %>%
-
+                                  "Other Crops", "Fallow Cropland" ))) %>%
   group_by(model, scenario, region, RegionG, period, CropGroup) %>%
   summarise(value = sum(value)) %>%
   group_by(model, scenario, region, CropGroup) %>%
