@@ -8,7 +8,7 @@ SupplPlotsFSDP(
   repReg,
   scenarioType = "all",
   save = TRUE,
-  outputdir = "/p/projects/magpie/users/beier/FSECmodeling2/output/SupplPlots"
+  outputdir = "/p/projects/magpie/users/beier/FSECmodeling/output"
 )
 }
 \arguments{

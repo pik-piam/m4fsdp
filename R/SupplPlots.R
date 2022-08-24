@@ -17,9 +17,13 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select
 #' @importFrom magrittr %>%
 
-SupplPlotsFSDP <- function(repReg, scenarioType = "all", save = TRUE, outputdir = "/p/projects/magpie/users/beier/FSECmodeling2/output/SupplPlots") {
+SupplPlotsFSDP <- function(repReg, scenarioType = "all", save = TRUE, outputdir = "/p/projects/magpie/users/beier/FSECmodeling/output") {
 
-#  repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
+  if(!dir.exists(file.path(outputdir, "SupplPlots"))){
+    dir.create(file.path(outputdir, "SupplPlots"))
+  }
+  savedir <- file.path(outputdir, "SupplPlots")
+  #repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
 
 if (scenarioType == "all") {
   rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = "magpie_vars.csv")
@@ -144,7 +148,7 @@ width = filter(food_df[order(food_df$FoodGroup), ],
                     guide = guide_legend(reverse = TRUE))
 
 if (save) {
-ggsave(filename = "FigS1_CalSupply.pdf", calSupply, width = 25, height = 10, scale = 1)
+ggsave(filename = file.path(savedir,"FigS1_CalSupply.pdf"), calSupply, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, calSupply)
 }
@@ -199,7 +203,7 @@ agDemPlot <- ggplot() +
                     guide = guide_legend(reverse = TRUE))
 
 if (save) {
-  ggsave(filename = "FigS2_CropProductDemand.pdf", agDemPlot, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir, "FigS2_CropProductDemand.pdf"), agDemPlot, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, calSupply)
 }
@@ -250,7 +254,7 @@ emissPlotGLO <- ggplot(filter(emiss_glo, scenario %in% c("BAU", "FSDP")), aes(x 
 
 
 if (save) {
-  ggsave(filename = "FigS3a_EmissionsGLO.pdf", emissPlotGLO, width = 20, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS3a_EmissionsGLO.pdf"), emissPlotGLO, width = 20, height = 10, scale = 1)
 } else {
 plots <- list(plots, emissPlotGLO)
 }
@@ -293,7 +297,7 @@ emissPlotREG <- ggplot(emiss_reg, aes(y = scenario)) +
 
 
 if (save) {
-  ggsave(filename = "FigS3b_EmissionsREG.pdf", emissPlotREG, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS3b_EmissionsREG.pdf"), emissPlotREG, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, emissPlotREG)
 }
@@ -348,7 +352,7 @@ landGloP <- ggplot(filter(landGlo, scenario %in% c("BAU", "FSDP")), aes(x = peri
   theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
 
 if (save) {
-  ggsave(filename = "FigS4a_LandGLO.pdf", landGloP, width = 20, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS4a_LandGLO.pdf"), landGloP, width = 20, height = 10, scale = 1)
 } else {
 plots <- list(plots, landGloP)
 }
@@ -374,7 +378,7 @@ landRegP <- ggplot(landReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 if (save) {
-  ggsave(filename = "FigS4b_LandREG.pdf", landRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS4b_LandREG.pdf"), landRegP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, landRegP)
 }
@@ -448,7 +452,7 @@ cropGloP <- ggplot(filter(cropGlo, scenario %in% c("BAU", "FSDP")), aes(x = peri
 
 
 if (save) {
-  ggsave(filename = "FigS5a_cropGLO.pdf", cropGloP, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS5a_cropGLO.pdf"), cropGloP, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, cropGloP)
 }
@@ -474,7 +478,7 @@ cropRegP <- ggplot(cropReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 if (save) {
-  ggsave(filename = "FigS5b_CropREG.pdf", cropRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS5b_CropREG.pdf"), cropRegP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, cropRegP)
 }
@@ -526,7 +530,7 @@ nitrGloP <- ggplot(filter(nitrGlo, scenario %in% c("BAU", "FSDP")), aes(x = peri
   theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
 
 if (save) {
-  ggsave(filename = "FigS6a_NitrGLO.pdf", nitrGloP, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS6a_NitrGLO.pdf"), nitrGloP, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, nitrGloP)
 }
@@ -552,7 +556,7 @@ nitrRegP <- ggplot(nitrReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 if (save) {
-  ggsave(filename = "FigS6b_NitrREG.pdf", nitrRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS6b_NitrREG.pdf"), nitrRegP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, nitrRegP)
 }
@@ -588,7 +592,7 @@ waterGloP <- ggplot(filter(waterGlo, scenario %in% c("BAU", "FSDP", "WaterSoil",
   theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
 
 if (save) {
-  ggsave(filename = "FigS7a_WaterGLO.pdf", waterGloP, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS7a_WaterGLO.pdf"), waterGloP, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, waterGloP)
 }
@@ -615,7 +619,7 @@ waterRegP <- ggplot(waterReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 if (save) {
-  ggsave(filename = "FigS7b_waterREG.pdf", waterRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS7b_waterREG.pdf"), waterRegP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, waterRegP)
 }
@@ -652,7 +656,7 @@ healthGloP <- ggplot(filter(healthGlo, scenario %in% c("BAU", "FSDP", "populatio
 # healthGloP
 
 if (save) {
-  ggsave(filename = "FigS8a_HealthGLO.pdf", healthGloP, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS8a_HealthGLO.pdf"), healthGloP, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, healthGloP)
 }
@@ -675,7 +679,7 @@ healthRegP <- ggplot(healthReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 if (save) {
-  ggsave(filename = "FigS8b_HealthREG.pdf", healthRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS8b_HealthREG.pdf"), healthRegP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, healthRegP)
 }
@@ -707,7 +711,7 @@ empGloP <- ggplot(filter(empGlo, scenario %in% c("BAU", "FSDP", "fairTrade", "gd
   scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
 
 if (save) {
-  ggsave(filename = "FigS9a_EmployGLO.pdf", empGloP, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS9a_EmployGLO.pdf"), empGloP, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, empGloP)
 }
@@ -732,7 +736,7 @@ empRegP <- ggplot(empReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 if (save) {
-  ggsave(filename = "FigS9b_EmployREG.pdf", empRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS9b_EmployREG.pdf"), empRegP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, empRegP)
 }
@@ -763,7 +767,7 @@ labGloP <- ggplot(filter(labGlo, scenario %in% c("BAU", "FSDP")), aes(x = period
   scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
 
 if (save) {
-  ggsave(filename = "FigS10a_LaborGLO.pdf", labGloP, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS10a_LaborGLO.pdf"), labGloP, width = 25, height = 10, scale = 1)
 } else {
 plots <- list(plots, empGloP)
 }
@@ -784,16 +788,70 @@ labRegP <- ggplot(labReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 if (save) {
-  ggsave(filename = "FigS10b_labREG.pdf", labRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS10b_labREG.pdf"), labRegP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, labRegP)
 }
 
 
-# bjoern plots
+# inequality indicators
 
-if (save == FALSE) {
-  return(plots)
+ineqVar <-  c(scens[grep("Gini", scens$variable), ]$variable %>%  unique()%>% as.vector(),
+           scens[grep("Average Income", scens$variable), ]$variable %>%  unique()%>% as.vector(),
+           scens[grep("Median Income", scens$variable), ]$variable %>%  unique()%>% as.vector(),
+           scens[grep("People Below", scens$variable), ]$variable %>%  unique()%>% as.vector())
+
+names(ineqVar) <- ineqVar
+
+ineq_df <- filter(scens,
+                   period <= 2050,
+                   period > 2015,
+                   variable %in% ineqVar) %>%
+  droplevels() %>%
+  group_by(model, scenario, region, period) %>%
+  mutate(variable = factor(variable, levels = rev(ineqVar),
+                           labels = names(rev(ineqVar)))) %>%
+  group_by(model, scenario, region, variable)
+
+ineqGlo <- filter(ineq_df, region == "GLO")
+giniGloP <- ggplot(filter(ineqGlo, variable == "Gini Coefficient",
+                          scenario %in% c("BAU", "SSP1", "SSP3", "SSP4", "FairTrade",
+                                          "SocioEconDevelop", "Efficiency", "FSDP")),
+                    aes(x = period)) +
+  themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
+  ylab("Gini Coefficient") +
+  geom_line(aes(y = value, color = scenario), lwd = 1.1) +
+  theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
+
+ # scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
+
+if (save) {
+  ggsave(filename = file.path(savedir,"FigS11a_GiniGLO.pdf"), giniGloP, width = 25, height = 10, scale = 1)
+} else {
+  plots <- list(plots, giniGloP)
 }
+
+ineqReg <- filter(ineq_df, region != "GLO") %>%
+  group_by(model, scenario, variable, period, RegionG) %>%
+  mutate(scenario = factor(scenario, levels = rev(levels(scenario)))) %>%
+  group_by(model, scenario, RegionG, variable) %>%
+  filter(period == 2050)
+
+giniRegP <- ggplot(filter(ineqReg, variable == "Gini Coefficient"), aes(y = scenario)) +
+  facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
+  themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
+  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#A455CF") +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend("Indicator", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+  xlab("Gini Coefficient") +
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+
+if (save) {
+  ggsave(filename = file.path(savedir, "FigS11b_giniREG.pdf"), giniRegP, width = 30, height = 15, scale = 1)
+} else {
+  plots <- list(plots, giniRegP)
+}
+
+
 
 }
