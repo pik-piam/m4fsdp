@@ -4,10 +4,10 @@
 \alias{integrateHealthImpacts}
 \title{integrateHealthImpacts}
 \usage{
-integrateHealthImpacts(healthImpacts_filePath, scenario, dir = ".")
+integrateHealthImpacts(healthImpacts_path, scenario, dir = ".")
 }
 \arguments{
-\item{healthImpacts_filePath}{full pathname of the health impacts dataset}
+\item{healthImpacts_path}{full pathname of the health impacts dataset}
 
 \item{scenario}{name of the scenario}
 
@@ -15,7 +15,7 @@ integrateHealthImpacts(healthImpacts_filePath, scenario, dir = ".")
 }
 \description{
 Reads in the results from Marco Springmann's health impacts model, filters them down to the
-FSEC-relevant results, and saves them to each scenarios' respective report.mif.
+FSEC-relevant variables, and saves them to the selected scenarios' report.mif.
 }
 \author{
 Michael Crawford
