@@ -1,8 +1,8 @@
 Package: m4fsdp
 Type: Package
 Title: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project
-Version: 0.10.4
-Date: 2022-08-24
+Version: 0.11.0
+Date: 2022-08-25
 Authors@R: c(person("Benjamin Leon", "Bodirsky", email = "bodirsky@pik-potsdam.de", role = c("aut","cre")),
 		person("Jan Philipp", "Dietrich", email = "dietrich@pik-potsdam.de", role = "aut"),
 		person("Florian", "Humpenoeder", email = "humpenoeder@pik-potsdam.de", role = "aut"))
@@ -29,7 +29,9 @@ Imports:
 	stats,
 	magrittr,
 	magpiesets,
-	magpie4
+	magpie4,
+	madrat,
+	rlang
 URL: https://github.com/pik-piam/m4fsdp, https://doi.org/?
 BugReports: https://github.com/pik-piam/m4fsdp/issues
 Encoding: UTF-8
