@@ -30,6 +30,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
+           "Health|Deaths avoided|Risk|Diet and anthropometrics",
+           "Health|Year lives lost avoided|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
            "Biodiversity|Shannon croparea diversity index",
            "SDG|SDG06|Nitrogen surplus on cropland",
@@ -43,6 +45,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   names(var) <- c("Health|Prevalence of underweight (million people)|1",
                   "Health|Prevalence of obesity (million people)|2",
+                  "Health|Deaths avoided (million people)|3",
+                  "Health|Year lives lost avoided (million years)|4",
                   "Environment|Biodiversity Intactness (Index)|1",
                   "Environment|Shannon croparea diversity index (Index)|2",
                   "Environment|Nitrogen surplus on cropland (Mt N/yr)|3",
