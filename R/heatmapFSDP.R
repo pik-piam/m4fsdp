@@ -37,7 +37,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "SDG|SDG06|Nitrogen surplus on cropland",
            "Water|Environmental flow violation volume",
            "Emissions|CO2|Land|Cumulative|+|Land-use Change",
-           "GlobalSurfaceTemperature",
+           "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
            "Agricultural employment",
            "Hourly labor costs relative to 2020",
