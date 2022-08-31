@@ -2,9 +2,9 @@
 
 export(SupplPlotsCropShr)
 export(SupplPlotsFSDP)
+export(appendReportHealthImpacts)
 export(convertReportFSDP)
 export(heatmapFSDP)
-export(integrateHealthImpacts)
 export(spatialMapsFSDP)
 import(RColorBrewer)
 import(cartogram)

@@ -1,4 +1,4 @@
-#' @title integrateHealthImpacts
+#' @title appendReportHealthImpacts
 #' @description Reads in the results from Marco Springmann's health impacts model, filters them down to the
 #' FSEC-relevant variables, and saves them to the selected scenarios' report.mif.
 #'
@@ -19,7 +19,7 @@
 #' @importFrom madrat toolGetMapping toolAggregate
 #' @importFrom rlang .data
 
-integrateHealthImpacts <- function(healthImpacts_path, scenario, dir = ".") {
+appendReportHealthImpacts <- function(healthImpacts_path, scenario, dir = ".") {
     
     # -----------------------------------------------------------------------------------------------------------------
     # Format Marco's health impacts dataset
