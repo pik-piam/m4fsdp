@@ -3,6 +3,7 @@
 export(SupplPlotsCropShr)
 export(SupplPlotsFSDP)
 export(appendReportHealthImpacts)
+export(appendReportNutrientSurplus)
 export(convertReportFSDP)
 export(heatmapFSDP)
 export(spatialMapsFSDP)
