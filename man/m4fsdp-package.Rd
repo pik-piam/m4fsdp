@@ -12,7 +12,7 @@ Output routines for extracting results from the MAgPIE framework (versions 4.x) 
 Useful links:
 \itemize{
   \item \url{https://github.com/pik-piam/m4fsdp}
-  \item \doi{?}
+  \item \url{https://doi.org/?}
   \item Report bugs at \url{https://github.com/pik-piam/m4fsdp/issues}
 }
 

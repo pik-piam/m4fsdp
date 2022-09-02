@@ -23,21 +23,21 @@ SupplPlotsFSDP <- function(repReg, scenarioType = "all", save = TRUE, outputdir 
     dir.create(file.path(outputdir, "SupplPlots"))
   }
   savedir <- file.path(outputdir, "SupplPlots")
-  #repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
+ # repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
 
 if (scenarioType == "all") {
-  rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = "magpie_vars.csv")
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = NULL)
 } else if (scenarioType == "a") {
-  rep <- convertReportFSDP(repReg, scengroup = c("FSECa"), subset = FALSE, varlist = "magpie_vars.csv")
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECa"), subset = FALSE, varlist = NULL)
 } else if (scenarioType == "b") {
   rep <- convertReportFSDP(repReg, scengroup = c("FSECb"), subset = FALSE,
-                           varlist = "magpie_vars.csv")
+                           varlist = NULL)
 } else if (scenarioType == "c") {
-  rep <- convertReportFSDP(repReg, scengroup = c("FSECc"), subset = FALSE, varlist = "magpie_vars.csv")
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECc"), subset = FALSE, varlist = NULL)
 } else if (scenarioType == "d") {
-  rep <- convertReportFSDP(repReg, scengroup = c("FSECd"), subset = FALSE, varlist = "magpie_vars.csv")
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECd"), subset = FALSE, varlist = NULL)
 } else if (scenarioType == "e") {
-  rep <- convertReportFSDP(repReg, scengroup = c("FSECe"), subset = FALSE, varlist = "magpie_vars.csv")
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECe"), subset = FALSE, varlist = NULL)
 } else {
   stop("Scenario type does not exist")
 }
@@ -629,7 +629,7 @@ plots <- list(plots, waterRegP)
 #### Health
 
 healthVar <-  scens[grep("Nutrition\\|Anthropometrics\\|People", scens$variable), ]$variable %>%  unique()
-names(healthVar) <- c("Normal Weight", "Obese", "Overweight", "Underweight")
+names(healthVar) <- c("Underweight", "Normal Weight", "Overweight", "Obese")
 
 
 health_df <- filter(scens,
@@ -640,7 +640,7 @@ health_df <- filter(scens,
   group_by(model, scenario, region, period) %>%
   mutate(variable = factor(variable, levels = rev(healthVar),
                            labels = names(rev(healthVar))),
-         variable = factor(variable, levels = rev(c("Normal Weight", "Underweight",
+         variable = factor(variable, levels = rev(c("Underweight", "Normal Weight",
                                                     "Overweight", "Obese"))))
 
 
@@ -851,6 +851,40 @@ if (save) {
 } else {
   plots <- list(plots, giniRegP)
 }
+
+belowPovMglo <- ggplot(filter(ineqGlo, variable == "Number of People Below 3.20$/Day",
+                          scenario %in% c("BAU", "SSP1", "SSP3", "SSP4", "FairTrade",
+                                          "SocioEconDevelop", "Efficiency", "FSDP")),
+                   aes(x = period)) +
+  themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
+  ylab("Million People below 3.20$/Day Poverty Line") +
+  geom_line(aes(y = value, color = scenario), lwd = 1.1) +
+  theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
+
+
+if (save) {
+  ggsave(filename = file.path(savedir, "FigS12a_PovLineGLO.pdf"), belowPovMglo, width = 25, height = 10, scale = 1)
+} else {
+  plots <- list(plots, belowPovMglo)
+}
+
+
+belowPovMreg <- ggplot(filter(ineqReg, variable == "Number of People Below 3.20$/Day"), aes(y = scenario)) +
+  facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
+  themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
+  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#A455CF") +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend("Indicator", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+  xlab("Million People below 3.20$/Day Poverty Line") +
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+
+
+if (save) {
+  ggsave(filename = file.path(savedir, "FigS12b_PovLineGLO.pdf"), belowPovMreg, width = 30, height = 15, scale = 1)
+} else {
+  plots <- list(plots, belowPovMreg)
+}
+
 
 
 
