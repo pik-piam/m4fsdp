@@ -39,6 +39,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Emissions|CO2|Land|Cumulative|+|Land-use Change",
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
+           "Number of People Below 3.20$/Day",
            "Agricultural employment",
            "Hourly labor costs relative to 2020",
            "Costs Without Incentives")
@@ -54,8 +55,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Environment|Cumulative CO2 emissions (GtCO2 since 1995)|5",
                   "Environment|Global Surface Temperature (deg C)|6",
                   "Inclusion|Expenditure for agric. products (USD/person)|1",
-                  "Inclusion|Agricultural employment (million people)|2",
-                  "Inclusion|Agricultural wages (Index)|3",
+                  "Inclusion|Number of People Below 3.20$/Day (million people)|2",
+                  "Inclusion|Agricultural employment (million people)|3",
+                  "Inclusion|Agricultural wages (Index)|4",
                   "Costs|Agriculture (billion US$05/yr)|1")
 
   rep[region == "World", region := "GLO"]
@@ -70,7 +72,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[, c("vargroup", "variable", "order") := tstrsplit(variable, "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
 
-  vargroupOrder <- c("Health", "Environment", "Inclusion", "Costs")
+  vargroupOrder <- c("Health", "Environment", "Inclusion", "Costs", "Income")
   b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
 
   b$variable <- reorder(b$variable, b$order)
