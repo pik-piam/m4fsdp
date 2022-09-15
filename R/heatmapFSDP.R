@@ -79,7 +79,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b[, valuefill := value - value[scenario == "BAU" & period == "2050"], by = .(variable)]
 
-  b[variable %in% c("Biodiversity Intactness (Index)",
+  b[variable %in% c("Deaths avoided (million people)",
+                    "Years of life lost avoided (million years)",
+                    "Biodiversity Intactness (Index)",
                     "Shannon croparea diversity index (Index)",
                     "Agricultural wages (Index)",
                     "Agricultural employment (million people)"

@@ -4,10 +4,10 @@
 \alias{appendReportHealthImpacts}
 \title{appendReportHealthImpacts}
 \usage{
-appendReportHealthImpacts(healthImpacts_path, scenario, dir = ".")
+appendReportHealthImpacts(healthImpacts_gdx, scenario, dir = ".")
 }
 \arguments{
-\item{healthImpacts_path}{full pathname of the health impacts dataset}
+\item{healthImpacts_gdx}{full pathname of the health impacts dataset}
 
 \item{scenario}{name of the scenario}
 

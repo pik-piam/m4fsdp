@@ -62,6 +62,7 @@ appendReportNutrientSurplus <- function(scenario, dir = ".") {
 
         if (any(NSregWorld_rds$variable %in% report_rds$variable)) {
             message("Nutrient surplus appears to already be included in the .mif file. Let me remove those for you.")
+            report_rds <- report_rds %>% filter(!.data$variable %in% NSregWorld_rds$variable)
         }
 
         report_rds <- rbind(report_rds, NSregWorld_rds)

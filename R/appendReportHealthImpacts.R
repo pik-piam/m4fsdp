@@ -4,7 +4,7 @@
 #'
 #' @export
 #'
-#' @param healthImpacts_path full pathname of the health impacts dataset
+#' @param healthImpacts_gdx full pathname of the health impacts dataset
 #' @param scenario name of the scenario
 #' @param dir scenario output directory
 #'
@@ -19,12 +19,12 @@
 #' @importFrom madrat toolGetMapping toolAggregate
 #' @importFrom rlang .data
 
-appendReportHealthImpacts <- function(healthImpacts_path, scenario, dir = ".") {
+appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
 
     # -----------------------------------------------------------------------------------------------------------------
     # Format Marco's health impacts dataset
 
-    gdx <- suppressWarnings(readGDX(healthImpacts_path))[[2]]
+    gdx <- suppressWarnings(readGDX(healthImpacts_gdx, "report_health_s"))
     getSets(gdx) <- c("region", "year", "scenario", "unit",
                       "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
 
@@ -65,7 +65,7 @@ appendReportHealthImpacts <- function(healthImpacts_path, scenario, dir = ".") {
                                 "Male"       = "MLE",
                                 "Female"     = "FML"),
                unit = fct_recode(.data$unit,
-                                 "Deaths avoided"          = "deaths_avd",
+                                 "Deaths avoided"             = "deaths_avd",
                                  "Years of life lost avoided" = "YLL_avd"),
                riskFactor = fct_recode(.data$riskFactor,
                                        "All risk factors" = "all-rf",
