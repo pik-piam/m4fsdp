@@ -687,65 +687,101 @@ plots <- list(plots, healthRegP)
 
 ######## EMPLOYMENT ##########
 
-empVar <-  scens[grep("Agricultural employment", scens$variable), ]$variable %>%  unique()
-names(empVar) <- "Agricultural employment"
+## Global: Absolute change in employment - global areaplot
+
+empVar <-  setdiff(scens[grep("Agricultural employment\\|", scens$variable), ]$variable %>%  unique(),
+                        "Agricultural employment|Crop and livestock products")
 
 emp_df <- filter(scens,
-                 period <= 2050,
-                 period > 2015,
-                 variable %in% empVar) %>%
+                  period <= 2050,
+                  period > 2015,
+                  variable %in% empVar) %>%
   droplevels() %>%
-  group_by(model, scenario, region, period) %>%
-  mutate(variable = factor(variable, levels = rev(empVar),
-                           labels = names(rev(empVar)))) %>%
-  inner_join(pop) %>%
-  group_by(model, scenario, region, variable) %>%
-  mutate(percentage = 100 * value / pop) # get diff wrt to 2020, based on above grouping
+  mutate(Products = case_when(           # recategorize products
+    variable == "Agricultural employment|+|Crop products" ~ "Crop products",
+    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products"),
+    Products = factor(Products,
+                       levels = c("Crop products", "Livestock products"))) %>%
+  group_by(model, scenario, region, RegionG, period, Products) %>%
+  filter(region == "GLO")
 
-empGlo <- filter(emp_df, region == "GLO")
-empGloP <- ggplot(filter(empGlo, scenario %in% c("BAU", "FSDP", "fairTrade", "gdp_educ_inequ", "population")), aes(x = period)) +
-  themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
-  ylab("Proportion of Population Employed in Agriculture") +
-  geom_line(aes(y = percentage, color = scenario), lwd = 1.1) +
-  theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL) +
-  scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
+empGloP <- ggplot(filter(emp_df, scenario %in% c("BAU", "FSDP")), aes(x = period)) +
+  facet_wrap(~scenario, nrow = 1) +
+  m4fsdp:::themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
+  ylab("Number of People Employed in Agriculture (millions)") +
+  # geom_hline(yintercept = 0, linetype = "dotted") +
+  geom_area(aes(y = value, fill = Products), position = "stack") +
+  scale_fill_manual("Production", values = rev(c("#ffd256", "#489448"))) +
+  theme(legend.position = "bottom") + guides(fill = guide_legend("Production", ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
 
 if (save) {
-  ggsave(filename = file.path(savedir,"FigS9a_EmployGLO.pdf"), empGloP, width = 25, height = 10, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS9a_EmployGLO.pdf"), empGloP, width = 30, height = 15, scale = 1)
 } else {
 plots <- list(plots, empGloP)
 }
 
-empReg <- filter(emp_df, region != "GLO") %>%
-  group_by(model, scenario, variable, period, RegionG) %>%
-  summarise(percentage = weighted.mean(percentage, w = pop)) %>%
-  mutate(scenario = factor(scenario, levels = rev(levels(scenario)))) %>%
-  group_by(model, scenario, RegionG, variable) %>%
-  mutate(value = cumsum(c(0, diff(percentage)))) %>% # get diff wrt to 2020, based on above grouping
-  filter(period == 2050)
+## Regional: abolute change 2020 to 2050 - barplot
 
-# write.csv(b,file="Fig2_LandCoverChange.csv",row.names = FALSE)
+empVar <-  setdiff(scens[grep("Agricultural employment\\|", scens$variable), ]$variable %>%  unique(),
+                        "Agricultural employment|Crop and livestock products")
+
+emp_df <- filter(scens,
+                  period <= 2050,
+                  period > 2015,
+                  variable %in% empVar) %>%
+  droplevels() %>%
+  mutate(Products = case_when(           # recategorize products
+    variable == "Agricultural employment|+|Crop products" ~ "Crop products",
+    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products"),
+    Products = factor(Products,
+                       levels = c("Crop products", "Livestock products"))) %>%
+  group_by(model, scenario, region, RegionG, period, Products) %>%
+  summarise(value = sum(value)) %>%
+  group_by(model, scenario, region, Products) %>%
+  mutate(value = cumsum(c(0, diff(value)))) # get diff wrt to 2020, based on above grouping
+
+emp_df$positive <- ifelse(emp_df$value >= 0, emp_df$value, 0)
+emp_df$negative <- ifelse(emp_df$value < 0, emp_df$value, -1e-36)
+
+facet_bounds <- data.frame("RegionG" = rep(c("High-Income Regions", "Rest of World", "Low-Income Regions"), 2),
+                           "value" = c(-70, NA, NA, 7, NA, NA), "scenario" = "BAU")
+
+empReg <- filter(emp_df, region != "GLO", period == 2050) %>%
+  group_by(model, scenario, Products, period, RegionG) %>%
+  summarise(value = sum(value), positive = sum(positive), negative = sum(negative)) %>%
+  mutate(scenario = factor(scenario, levels = rev(levels(scenario))))
+
+empReg$RegionG_f <- factor(empReg$RegionG, levels = c("High-Income Regions", "Rest of World", "Low-Income Regions"))
 
 empRegP <- ggplot(empReg, aes(y = scenario)) +
-  facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
+  facet_grid(vars(period), vars(RegionG_f), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
-  geom_bar(aes(x = value, color = variable), stat = "identity", width = 0.75, fill = "#A455CF") +
-  theme(legend.position = "bottom") +
-  guides(fill = guide_legend("Indicator", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
-  xlab("Change in Percentage of Population Employed in Agriculture since 2020") +
+  geom_bar(aes(x = positive, fill = Products), position = "stack", stat = "identity", width = 0.75) +
+  geom_bar(aes(x = negative, fill = Products, ), position = "stack", stat = "identity", width = 0.75) +
+  geom_vline(xintercept = 0, linetype = "dotted") +
+  stat_summary(fun = "sum", colour = "black", size = 1, geom = "point", mapping = aes(group = scenario, x = value)) +
+  scale_fill_manual("Production", values = rev(c("#ffd256", "#489448"))) +
+  theme(legend.position = "bottom") + guides(fill = guide_legend("Production", ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+  xlab("Change in agricultural employment compared to 2020 (mio. people)") +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+
+empRegP <- empRegP + geom_blank(data = facet_bounds, aes(x = value, y = scenario))
 
 if (save) {
   ggsave(filename = file.path(savedir,"FigS9b_EmployREG.pdf"), empRegP, width = 30, height = 15, scale = 1)
 } else {
-plots <- list(plots, empRegP)
+  plots <- list(plots, empRegP)
 }
 
+##### Hourly Labour Costs ####
 
-##### Hourly Labour Costs rel. to 2020 ####
+laborVar <-  "Hourly labor costs"
+names(laborVar) <- "Hourly Labor Costs"
 
-laborVar <-  scens[grep("Hourly labor costs relative to 2020", scens$variable), ]$variable %>%  unique()
-names(laborVar) <- "Hourly Labor Costs rel. to 2020"
+# extract total hours worked to use as a separate column
+hoursWorked <- filter(scens, variable == "Total Hours Worked|Crop and livestock products") %>%
+  rename("hours" = value) %>%
+  select(model, scenario, region, RegionG, period, hours)
 
 labor_df <- filter(scens,
                  period <= 2050,
@@ -755,46 +791,31 @@ labor_df <- filter(scens,
   group_by(model, scenario, region, period) %>%
   mutate(variable = factor(variable, levels = rev(laborVar),
                            labels = names(rev(laborVar)))) %>%
-  inner_join(pop) %>%
+  inner_join(hoursWorked) %>%
   group_by(model, scenario, region, variable)
-
-labGlo <- filter(labor_df, region == "GLO")
-labGloP <- ggplot(filter(labGlo, scenario %in% c("BAU", "FSDP")), aes(x = period)) +
-  themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
-  ylab("Hourly Labor Costs rel. to 2020") +
-  geom_line(aes(y = value, color = scenario), lwd = 1.1) +
-  theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL) +
-  scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
-
-if (save) {
-  ggsave(filename = file.path(savedir,"FigS10a_LaborGLO.pdf"), labGloP, width = 25, height = 10, scale = 1)
-} else {
-plots <- list(plots, empGloP)
-}
 
 labReg <- filter(labor_df, region != "GLO") %>%
   group_by(model, scenario, variable, period, RegionG) %>%
+  summarise(value = weighted.mean(value, w = hours)) %>% 
   mutate(scenario = factor(scenario, levels = rev(levels(scenario)))) %>%
-  group_by(model, scenario, RegionG, variable) %>%
-  filter(period == 2050)
-
-labRegP <- ggplot(labReg, aes(y = scenario)) +
-  facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
-  themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
-  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#A455CF") +
-  theme(legend.position = "bottom") +
-  guides(fill = guide_legend("Indicator", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
-  xlab("Hourly Labour Costs rel. to 2020") +
-  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
-
+  group_by(model, scenario, RegionG, variable)
+  
+labRegP <- ggplot(filter(labReg, scenario %in% c("BAU", "FSDP")), aes(x = period)) +
+  facet_grid(cols = vars(RegionG), scales = "free") +
+  themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
+  ylab("Hourly Labor Costs (USD05/h)") +
+  geom_line(aes(y = value, color = scenario), lwd = 1.1) +
+  theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL) +
+  scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
+ 
 if (save) {
-  ggsave(filename = file.path(savedir,"FigS10b_labREG.pdf"), labRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS10b_LabREG.pdf"), labRegP, width = 30, height = 15, scale = 1)
 } else {
-plots <- list(plots, labRegP)
+  plots <- list(plots, labRegP)
 }
 
 
-# inequality indicators
+######## INEQUALITY INDICATORS ##########
 
 ineqVar <-  c(scens[grep("Gini", scens$variable), ]$variable %>%  unique()%>% as.vector(),
            scens[grep("Average Income", scens$variable), ]$variable %>%  unique()%>% as.vector(),

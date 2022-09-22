@@ -54,7 +54,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   pop <- calcPolygon(pop, "pop")
 
   # calc ag. empl. polygon for cartogram maps
-  agEmpl <- repIso[variable == "Agricultural employment", ]
+  agEmpl <- repIso[variable == "Agricultural employment|Crop and livestock products", ]
   agEmpl$unit <- NULL
   names(agEmpl)[names(agEmpl) == "value"] <- "agEmpl"
   agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
@@ -85,7 +85,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
 
 
   title <- "Inclusion: Share of working age population employed in agriculture"
-  b <- repReg[, .(value = value[variable == "Share of working age population employed in agriculture"]),
+  b <- repReg[, .(value = value[variable == "Share of working age population employed in agriculture|Crop and livestock products"]),
               by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all)
