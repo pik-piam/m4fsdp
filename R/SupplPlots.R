@@ -1,4 +1,5 @@
-globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive"))
+globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive",
+                  "hours", "Products", "RegionG_f"))
 
 #' @title SupplPlotsFSDP
 #' @description creates supplementary plots for FSDP MAgPIE runs
@@ -707,7 +708,7 @@ emp_df <- filter(scens,
 
 empGloP <- ggplot(filter(emp_df, scenario %in% c("BAU", "FSDP")), aes(x = period)) +
   facet_wrap(~scenario, nrow = 1) +
-  m4fsdp:::themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
+  themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
   ylab("Number of People Employed in Agriculture (millions)") +
   # geom_hline(yintercept = 0, linetype = "dotted") +
   geom_area(aes(y = value, fill = Products), position = "stack") +
@@ -809,7 +810,7 @@ labRegP <- ggplot(filter(labReg, scenario %in% c("BAU", "FSDP")), aes(x = period
   scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
  
 if (save) {
-  ggsave(filename = file.path(savedir,"FigS10b_LabREG.pdf"), labRegP, width = 30, height = 15, scale = 1)
+  ggsave(filename = file.path(savedir,"FigS10a_LabREG.pdf"), labRegP, width = 30, height = 15, scale = 1)
 } else {
   plots <- list(plots, labRegP)
 }
