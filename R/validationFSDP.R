@@ -1,4 +1,3 @@
-globalVariables(c("value", "V2"))
 #' @title validationFSDP
 #' @description Validation for FSDP MAgPIE runs
 #'
@@ -109,13 +108,16 @@ validationFSDP <- function(repReg, valfile, folder = "output") {
       }
       b <- cbind(b, w1$value)
       h <- cbind(h, w2$value)
-      b <- b[, .(value = weighted.mean(value, V2)),
+      b <- b[, list(value = weighted.mean(get("value"), get("V2"))),
              by = c("region_class", "model", "scenario", "variable", "unit", "period")]
-      h <- h[, .(value = weighted.mean(value, V2)),
+      h <- h[, list(value = weighted.mean(get("value"), get("V2"))),
              by = c("region_class", "model", "scenario", "variable", "unit", "period")]
     } else {
-      b <- b[, list(value = sum(value)), by = c("region_class", "model", "scenario", "variable", "unit", "period")]
-      h <- h[, list(value = sum(value)), by = c("region_class", "model", "scenario", "variable", "unit", "period")]
+      saveRDS(b, "b.rds")
+      b <- b[, list(value = sum(get("value"))),
+             by = c("region_class", "model", "scenario", "variable", "unit", "period")]
+      h <- h[, list(value = sum(get("value"))),
+             by = c("region_class", "model", "scenario", "variable", "unit", "period")]
     }
 
     p <- ggplot(b, aes_string(x = "period", y = "value"))
