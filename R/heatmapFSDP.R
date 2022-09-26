@@ -30,8 +30,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
-           "Health|Deaths avoided|Risk|Diet and anthropometrics",
-           "Health|Years of life lost avoided|Risk|Diet and anthropometrics",
+           "Health|Attributable deaths|Risk|Diet and anthropometrics",
+           "Health|Years of life lost|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
            "Biodiversity|Shannon croparea diversity index",
            "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
@@ -46,8 +46,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   names(var) <- c("Health|Prevalence of underweight (million people)|1",
                   "Health|Prevalence of obesity (million people)|2",
-                  "Health|Deaths avoided (million people)|3",
-                  "Health|Years of life lost avoided (million years)|4",
+                  "Health|Attributable deaths (million people)|3",
+                  "Health|Years of life lost (million years)|4",
                   "Environment|Biodiversity Intactness (Index)|1",
                   "Environment|Shannon croparea diversity index (Index)|2",
                   "Environment|Nitrogen surplus (Mt N/yr)|3",
@@ -79,9 +79,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b[, valuefill := value - value[scenario == "BAU" & period == "2050"], by = .(variable)]
 
-  b[variable %in% c("Deaths avoided (million people)",
-                    "Years of life lost avoided (million years)",
-                    "Biodiversity Intactness (Index)",
+  b[variable %in% c("Biodiversity Intactness (Index)",
                     "Shannon croparea diversity index (Index)",
                     "Agricultural wages (Index)",
                     "Agricultural employment (million people)"

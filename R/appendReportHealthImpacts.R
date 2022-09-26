@@ -28,6 +28,10 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     getSets(gdx) <- c("region", "year", "scenario", "unit",
                       "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
 
+    # IMPORTANT NOTE: The variables are misnamed within Marco's datasets. Rather than "deaths avoided" (deaths_avd),
+    # or "years of life lost avoided" (YLL_avd), they are actually "attributable deaths" and "years of life lost".
+    # Ergo, the direction is opposite. Fewer = better. I rename the variables appropriately for now.
+
     # This script is run on a per-scenario basis, and so therefore we filter here (also keeping only the mean value).
 
     tryCatch(expr = {
@@ -65,8 +69,8 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
                                 "Male"       = "MLE",
                                 "Female"     = "FML"),
                unit = fct_recode(.data$unit,
-                                 "Deaths avoided"             = "deaths_avd",
-                                 "Years of life lost avoided" = "YLL_avd"),
+                                 "Attributable deaths" = "deaths_avd",
+                                 "Years of life lost"  = "YLL_avd"),
                riskFactor = fct_recode(.data$riskFactor,
                                        "All risk factors" = "all-rf",
                                        Diet               = "diet",
@@ -101,7 +105,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
         select(.data$model, .data$scenario, .data$region, .data$unit, .data$year, .data$variable, .data$value) %>%
         arrange(.data$model, .data$scenario, .data$region, .data$year, .data$variable)
 
-    # Convert to millions people
+    # Convert to millions people, millions years
     healthImpacts <- healthImpacts %>%
         mutate(value = .data$value / 1E6)
 
