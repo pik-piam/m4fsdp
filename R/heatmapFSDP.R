@@ -36,7 +36,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Biodiversity|Shannon croparea diversity index",
            "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
            "Water|Environmental flow violation volume",
-           "Emissions|GWP100AR6|Land|Cumulative Gt CO2e/yr",
+           "Emissions|GWP100AR6|Land|Cumulative",
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
            "Number of People Below 3.20$/Day",
