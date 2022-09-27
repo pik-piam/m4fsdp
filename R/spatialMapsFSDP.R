@@ -23,10 +23,12 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   # https://semba-blog.netlify.app/01/26/2020/world-map-and-map-projections/
 
   #### read in data files
-  repReg <- convertReportFSDP(repReg, subset = TRUE)
-  repIso <- convertReportFSDP(repIso, subset = TRUE)
+  repReg  <- convertReportFSDP(repReg, subset = TRUE)
+  repIso  <- convertReportFSDP(repIso, subset = TRUE)
   repGrid <- convertReportFSDP(repGrid, subset = TRUE)
-  if (!is.data.frame(reg2iso)) reg2iso <- read.csv(reg2iso, header = TRUE, row.names = 1)
+  if (!is.data.frame(reg2iso)) {
+    reg2iso <- read.csv(reg2iso, header = TRUE, row.names = 1)
+  }
 
   # get country layer
   countries <- ne_countries(returnclass = "sf", scale = "small")
@@ -71,95 +73,102 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
 
   ## regional data
   title <- "Costs: Production cost agriculture per capita"
-  unit <- "USD/cap/yr"
-  b <- repReg[, .(value = value[variable == "Costs"] /
+  unit  <- "USD/cap/yr"
+  b     <- repReg[, .(value = value[variable == "Costs"] /
                     value[variable == "Population"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all)
-  p_costs <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  plotCOSTS <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "Blues")[-1], na.value = "grey90", limits = c(0, 2000)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
+                                             Country size indicates the number of people potentially affected.")
 
 
   title <- "Inclusion: Share of working age population employed in agriculture"
-  b <- repReg[, .(value = value[variable == "Share of working age population employed in agriculture|Crop and livestock products"]),
+  b     <- repReg[, .(value = value[variable == "Share of working age population employed in agriculture|Crop and livestock products"]),
               by = .(model, scenario, region, period)]
-  all <- merge(reg2iso, b)
-  all <- merge(pop, all)
-  p_employment_share <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  all   <- merge(reg2iso, b)
+  all   <- merge(pop, all)
+  plotEMPLOYMENT <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "Purples")[-1], na.value = "grey90", limits = c(0, 30)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
+                                             Country size indicates the number of people potentially affected.")
 
   title <- "Inclusion: Hourly labor costs in agriculture"
-  b <- repReg[, .(value = value[variable == "Hourly labor costs"]), by = .(model, scenario, region, period)]
-  all <- merge(reg2iso, b)
-  all <- merge(agEmpl, all)
-  p_wage <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  b     <- repReg[, .(value = value[variable == "Hourly labor costs"]), by = .(model, scenario, region, period)]
+  all   <- merge(reg2iso, b)
+  all   <- merge(agEmpl, all)
+  plotWAGE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1,3,4,6)], na.value = "grey90",
-                         limits = c(0, 30), trans = "log1p", breaks=c(0, 1.5, 5, 13, 30)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on ag. employment. Country size indicates the number of people potentially affected.")
+    scale_fill_gradientn("USD/h", colors = brewer.pal(9, "Purples")[-c(1, 3, 4, 6)], na.value = "grey90",
+                         limits = c(0, 30), trans = "log1p", breaks = c(0, 1.5, 5, 13, 30)) +
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on ag. employment.
+                                             Country size indicates the number of people potentially affected.")
 
 
   ## Country level data
   title <- "Health: Spatial distribution of population underweight"
-  b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
+  b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
-  all <- merge(pop, b)
-  p_underweight <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  all   <- merge(pop, b)
+  plotUNDERWEIGHT <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
+                                             Country size indicates the number of people potentially affected.")
 
 
   title <- "Health: Spatial distribution of population obese"
-  b <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
+  b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
-  all <- merge(pop, b)
-  p_obese <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  all     <- merge(pop, b)
+  plotOBESE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
+                                             Country size indicates the number of people potentially affected.")
 
   title <- "Inclusion: Expenditure for agr. products per capita"
-  b <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"] /
+  b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
-  p_expenditure <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  plotEXPENDITURE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
+                                             Country size indicates the number of people potentially affected.")
 
   title <- "Inclusion: Share of Population with Incomes less than 3.20$/Day"
-  b <- repIso[, .(value = value[variable == "Income|Number of People Below 3.20$/Day"] /
+  b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3.20$/Day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
-  p_poverty <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+  plotPOVERTY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
-    myTheme + labs(title = title, caption = "Projection: Cartogram based on population. Country size indicates the number of people potentially affected.")
+    myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
+                                             Country size indicates the number of people potentially affected.")
 
 
   ## Grid cell data
   countries2 <- st_transform(countries, crs = st_crs("+proj=moll"))
-  xlimMoll <- c(-11007870, 16007870)
-  asRaster <- function(x, countries2) {
+  xlimMoll   <- c(-11007870, 16007870)
+  asRaster   <- function(x, countries2) {
     z <- rast()
     for (i in levels(x$scenario)) {
       y <- rast(droplevels(x[scenario == i, ])[, c("x", "y", ".value")], crs = "+proj=latlon")
@@ -173,11 +182,11 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   }
 
   title <- "Environment: Biodiversity Intactness Index"
-  unit <- "index"
-  b <- droplevels(repGrid[variable == "BII (index)", ])
-  bb <- asRaster(b, countries2)
+  unit  <- "index"
+  b     <- droplevels(repGrid[variable == "BII (index)", ])
+  bb    <- asRaster(b, countries2)
 
-  p_bii <- ggplot(bb) +
+  plotBII <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
     scale_fill_gradient2(unit, low = "darkred", high = "darkgreen", mid = "yellow",
@@ -185,18 +194,34 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     labs(title = title, caption = "Projection: Mollweide")
 
   title <- "Environment: Nutrient Surplus"
-  unit <- "kg N per ha"
-  b <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
-  bb <- asRaster(b, countries2)
+  unit  <- "kg N per ha"
+  b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
+  bb    <- asRaster(b, countries2)
 
-  p_nitrogen <- ggplot(bb) +
+  plotNITROGEN <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 400)) + myTheme +
     labs(title = title, caption = "Projection: Mollweide")
 
-  trytoplot = function(tryplot){
-    if (inherits(try(ggplot_build(tryplot)), "try-error")){
+  title <- "Environment: Water Withdrawal to Availability Ratio"
+  unit  <- "ratio"
+  b     <- droplevels(repGrid[variable == "water stress and violations", ])
+  bb    <- asRaster(b, countries2)
+
+  plotWATER <- ggplot(bb) +
+    geom_raster(aes(x = x, y = y, fill = cut(value,
+                                             breaks = c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 100)))) +
+    facet_wrap(~scenario) +
+    geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) +
+    coord_sf(xlim = xlimMoll) +
+    scale_fill_manual(unit,
+                      values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
+                      label = c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1", "EFR violation")) +
+    myTheme + labs(title = title, caption = "Projection: Mollweide")
+
+  trytoplot <- function(tryplot) {
+    if (inherits(try(ggplot_build(tryplot)), "try-error")) {
       warning("One of the map plot scripts failed")
       return(NULL)
     } else {
@@ -204,16 +229,18 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     }
   }
 
-  combined <- (trytoplot(p_costs)
-               + trytoplot(p_employment_share)
-               + trytoplot(p_wage)
-               + trytoplot(p_expenditure)
-               + trytoplot(p_underweight)
-               + trytoplot(p_obese)
-               + trytoplot(p_bii)
-               + trytoplot(p_nitrogen)
+  combined <- (trytoplot(plotCOSTS)
+               + trytoplot(plotEMPLOYMENT)
+               + trytoplot(plotWAGE)
+               + trytoplot(plotEXPENDITURE)
+               + trytoplot(plotPOVERTY)
+               + trytoplot(plotUNDERWEIGHT)
+               + trytoplot(plotOBESE)
+               + trytoplot(plotBII)
+               + trytoplot(plotWATER)
+               + trytoplot(plotNITROGEN)
                )
-  combined <- combined + plot_layout(guides = "keep", ncol = 2,byrow = FALSE)
+  combined <- combined + plot_layout(guides = "keep", ncol = 2, byrow = FALSE)
 
   if (is.null(file)) {
     return(combined)
