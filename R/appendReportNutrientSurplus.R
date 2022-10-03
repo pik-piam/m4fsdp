@@ -60,8 +60,8 @@ appendReportNutrientSurplus <- function(scenario, dir = ".") {
 
         report_rds <- readRDS(rds_file)
 
+        # If the variables are already included within the report, remove these older variables for replacement
         if (any(NSregWorld_rds$variable %in% report_rds$variable)) {
-            message("Nutrient surplus appears to already be included in the .mif file. Let me remove those for you.")
             report_rds <- report_rds %>% filter(!.data$variable %in% NSregWorld_rds$variable)
         }
 
@@ -70,7 +70,7 @@ appendReportNutrientSurplus <- function(scenario, dir = ".") {
         saveRDS(toSaveAsRDS, file = file.path(dir, "report.rds"), version = 2)
 
     } else {
-        stop("report.rds wasn't found. Have your `scenario` and `dir` variables been properly parameterized?")
+        stop("report.rds wasn't found for scenario: ", scenario)
     }
 
 
@@ -90,13 +90,14 @@ appendReportNutrientSurplus <- function(scenario, dir = ".") {
         originalReportItems <- getItems(originalReport, dim = 3.3)
         newReportItems <- getItems(NSregWorld_mif, dim = 3.3)
 
+        # If the variables are already included within the report, remove these older variables for replacement
         # This is currently unnecessarily complex, given that there is only one reporting variable (Nutrient surplus
         # incl natural vegetation), but will be helpful if further reporting names are added.
-        alreadyPresentItems <- Map(newReportItems, f = function(.x) grepl(pattern = .x, x = originalReportItems, fixed = TRUE))
+        alreadyPresentItems <- Map(newReportItems,
+                                   f = function(.x) grepl(pattern = .x, x = originalReportItems, fixed = TRUE))
         alreadyPresentItems <- Reduce(alreadyPresentItems, f = `|`)
 
         if (any(alreadyPresentItems)) {
-            message("Nutrient surplus appears to already be included in the .mif file. Let me remove those for you.")
             originalReport <- originalReport[, , !alreadyPresentItems]
         }
 
@@ -104,7 +105,7 @@ appendReportNutrientSurplus <- function(scenario, dir = ".") {
         write.report(x = NSregWorld_mif, file = mif_file, append = TRUE)
 
     } else {
-        stop("report.mif wasn't found. Have your `scenario` and `dir` variables been properly parameterized?")
+        stop("report.mif wasn't found for scenario: ", scenario)
     }
 
 }

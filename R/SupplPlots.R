@@ -15,8 +15,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @author David M Chen
 #' @import ggplot2 data.table scales magpiesets
 #' @importFrom stats weighted.mean
-#' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select
-#' @importFrom magrittr %>%
+#' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>%
 
 SupplPlotsFSDP <- function(repReg, scenarioType = "all", save = TRUE, outputdir = "/p/projects/magpie/users/beier/FSECmodeling/output") {
 
@@ -797,10 +796,10 @@ labor_df <- filter(scens,
 
 labReg <- filter(labor_df, region != "GLO") %>%
   group_by(model, scenario, variable, period, RegionG) %>%
-  summarise(value = weighted.mean(value, w = hours)) %>% 
+  summarise(value = weighted.mean(value, w = hours)) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario)))) %>%
   group_by(model, scenario, RegionG, variable)
-  
+
 labRegP <- ggplot(filter(labReg, scenario %in% c("BAU", "FSDP")), aes(x = period)) +
   facet_grid(cols = vars(RegionG), scales = "free") +
   themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
@@ -808,7 +807,7 @@ labRegP <- ggplot(filter(labReg, scenario %in% c("BAU", "FSDP")), aes(x = period
   geom_line(aes(y = value, color = scenario), lwd = 1.1) +
   theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL) +
   scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
- 
+
 if (save) {
   ggsave(filename = file.path(savedir,"FigS10a_LabREG.pdf"), labRegP, width = 30, height = 15, scale = 1)
 } else {

@@ -12,8 +12,7 @@ globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "Crop
 #' @author Patrick v. Jeetze
 #' @import ggplot2 data.table scales magpiesets magpie4
 #' @importFrom stats weighted.mean
-#' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select
-#' @importFrom magrittr %>%
+#' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select %>%
 
 SupplPlotsCropShr <- function(gdx, png=NULL) {
 

@@ -1,6 +1,7 @@
 #' @title appendReportHealthImpacts
 #' @description Reads in the results from Marco Springmann's health impacts model, filters them down to the
 #' FSEC-relevant variables, and saves them to the selected scenarios' report.mif.
+#' @author Michael Crawford
 #'
 #' @export
 #'
@@ -9,11 +10,11 @@
 #' @param dir scenario output directory
 #'
 #' @return NULL
-#' @author Michael Crawford
 #'
 #' @importFrom gdx readGDX
 #' @importFrom magclass getSets read.report write.report getItems
 #' @importFrom dplyr %>% mutate select pull filter arrange rename
+#' @importFrom stringr str_extract str_replace str_remove
 #' @importFrom forcats fct_recode
 #' @importFrom quitte as.quitte
 #' @importFrom madrat toolGetMapping toolAggregate
@@ -30,22 +31,38 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
 
     # IMPORTANT NOTE: The variables are misnamed within Marco's datasets. Rather than "deaths avoided" (deaths_avd),
     # or "years of life lost avoided" (YLL_avd), they are actually "attributable deaths" and "years of life lost".
-    # Ergo, the direction is opposite. Fewer = better. I rename the variables appropriately for now.
+    # Ergo, the direction is opposite. Fewer = better. The variables are simply renamed for now.
+
+    # Check to see if the scenario version number is the same as those held within the .gdx. If called
+    # on divergent scenario IDs, the healthImpacts are nevertheless appended to the scenario reports.
+    desiredVersionID <- str_extract(string = scenario,                    pattern = "^(.*?)(?=_)")
+    gdxVersionID     <- str_extract(string = getItems(gdx, dim = 3.1)[1], pattern = "^(.*?)(?=_)")
+    gdxScenario      <- NULL
+
+    if (desiredVersionID != gdxVersionID) {
+        gdxScenario <- str_replace(string = scenario, pattern = "^(.*?)(?=_)", replacement = gdxVersionID)
+
+        if (!(gdxScenario %in% getItems(gdx, dim = 3.1))) {
+            baseScenarioName <- str_remove(string = scenario, pattern = "^(.*?)_")
+            stop("healthImpacts .gdx does not contain the scenario: ", baseScenarioName)
+        }
+
+        message("In appendReportHealthImpacts.R: Inconsistent version IDs. You are likely using
+                 an older version of the health impacts data than the current runs.")
+    } else {
+        gdxScenario <- scenario
+    }
 
     # This script is run on a per-scenario basis, and so therefore we filter here (also keeping only the mean value).
-
-    tryCatch(expr = {
-        healthImpacts <- gdx[, , list(scenario, "mean", c("deaths_avd", "YLL_avd"))] %>%
-            as.data.frame()
-    }, error = function(error) {
-        stop("This scenario's ID wasn't found in the healthImpacts dataset")
-    })
+    healthImpacts <- gdx[, , list(gdxScenario, "mean", c("deaths_avd", "YLL_avd"))] %>%
+        as.data.frame()
 
     colnames(healthImpacts) <- c("cell", "region", "year", "scenario", "unit",
                                  "TMREL", "riskFactor", "causeOfDeath", "sex", "stat", "value")
 
     healthImpacts <- healthImpacts %>%
         mutate(model        = "MAgPIE",
+               scenario     = scenario, # Always use the desired scenario ID
                riskFactor   = as.factor(.data$riskFactor),
                causeOfDeath = as.factor(.data$causeOfDeath),
                sex          = as.factor(.data$sex)) %>%
@@ -119,15 +136,8 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     if (file.exists(rds_file)) {
         report_iso_rds <- readRDS(rds_file)
 
-        originalReport_scenarioVersion <- strsplit(x = as.character(report_iso_rds$scenario[[1]]), split = "_")[[1]][1]
-        newReport_scenarioVersion      <- strsplit(x = as.character(healthImpacts_country$scenario[[1]]), split = "_")[[1]][1]
-
-        if (originalReport_scenarioVersion != newReport_scenarioVersion) {
-            message("Warning: Inconsistent version IDs. You are likely using an older version of the health impacts than the current runs.")
-        }
-
+        # If the variables are already included within the report, remove these older variables for replacement
         if (any(healthImpacts$variable %in% report_iso_rds$variable)) {
-            message("Health impacts appear to already be included in the country-level .rds file. Let me remove those for you.")
             report_iso_rds <- report_iso_rds %>%
                 filter(!(.data$variable %in% healthImpacts$variable))
         }
@@ -136,7 +146,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
         toSaveAsRDS <- as.quitte(report_iso_rds)
         saveRDS(toSaveAsRDS, file = file.path(dir, "report_iso.rds"), version = 2)
     } else {
-        message("Country-level report_iso.rds wasn't found in the scenario folder. Does the rds_report_iso.R output script need to be run?")
+        message("Country-level report_iso.rds wasn't found for scenario: ", scenario)
     }
 
 
@@ -171,15 +181,8 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     if (file.exists(rds_file)) {
         report_rds <- readRDS(rds_file)
 
-        originalReport_scenarioVersion <- strsplit(x = as.character(report_rds$scenario[[1]]), split = "_")[[1]][1]
-        newReport_scenarioVersion      <- strsplit(x = as.character(healthImpacts_regional$scenario[[1]]), split = "_")[[1]][1]
-
-        if (originalReport_scenarioVersion != newReport_scenarioVersion) {
-            message("Warning: Inconsistent version IDs. You are likely using an older version of the health impacts than the current runs.")
-        }
-
+        # If the variables are already included within the report, remove these older variables for replacement
         if (any(healthImpacts$variable %in% report_rds$variable)) {
-            message("Health impacts appear to already be included in the regional .rds file. Let me remove those for you.")
             report_rds <- report_rds %>%
                 filter(!.data$variable %in% healthImpacts$variable)
         }
@@ -188,7 +191,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
         report_rds <- as.quitte(report_rds)
         saveRDS(report_rds, file = file.path(dir, "report.rds"))
     } else {
-        stop("report.rds wasn't found. Have your `scenario` and `dir` variables been properly parameterized?")
+        stop("report.rds wasn't found for scenario: ", scenario)
     }
 
     ## Append to regional report.mif
@@ -205,25 +208,19 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
         originalReportItems <- getItems(originalReport, dim = 3.3)
         newReportItems <- getItems(healthImpacts_regional, dim = 3.3)
 
-        originalReport_scenarioVersion <- strsplit(x = getItems(originalReport, dim = 3.1), split = "_")[[1]][1]
-        newReport_scenarioVersion      <- strsplit(x = getItems(healthImpacts_regional, dim = 3.1), split = "_")[[1]][1]
-
-        if (originalReport_scenarioVersion != newReport_scenarioVersion) {
-            message("Warning: Inconsistent version IDs. You are likely using an older version of the health impacts than the current runs.")
-        }
-
-        alreadyPresentItems <- Map(newReportItems, f = function(.x) grepl(pattern = .x, x = originalReportItems, fixed = TRUE))
+        # If the variables are already included within the report, remove these older variables for replacement
+        alreadyPresentItems <- Map(newReportItems,
+                                   f = function(.x) grepl(pattern = .x, x = originalReportItems, fixed = TRUE))
         alreadyPresentItems <- Reduce(alreadyPresentItems, f = `|`)
 
         if (any(alreadyPresentItems)) {
-            message("Health impacts appear to already be included in the .mif file. Let me remove those for you.")
             originalReport <- originalReport[, , !alreadyPresentItems]
         }
 
         write.report(x = originalReport, file = mif_file)
         write.report(x = healthImpacts_regional, file = mif_file, append = TRUE)
     } else {
-        stop("report.mif wasn't found. Have your `scenario` and `dir` variables been properly parameterized?")
+        stop("report.mif wasn't found for scenario: ", scenario)
     }
 
 }
