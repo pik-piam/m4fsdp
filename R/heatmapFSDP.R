@@ -42,6 +42,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
            "Hourly labor costs relative to 2020",
+           "Value|Bioeconomy Demand",
            "Costs Without Incentives")
 
   names(var) <- c("Health|Prevalence of underweight (million people)|1",
@@ -58,6 +59,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Inclusion|Number of People Below 3.20$/Day (million people)|2",
                   "Inclusion|Agricultural employment (million people)|3",
                   "Inclusion|Agricultural wages (Index)|4",
+                  "Value|Bioeconomy Demand (billion US$05/yr)|1",
                   "Costs|Agriculture (billion US$05/yr)|1")
 
   rep[region == "World", region := "GLO"]
@@ -103,6 +105,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
   b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
+  b[variable %in% c("Bioeconomy Demand (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
 
   b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
