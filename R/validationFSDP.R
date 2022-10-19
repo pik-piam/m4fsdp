@@ -181,4 +181,10 @@ validationFSDP <- function(repReg, valfile, folder = "output") {
   ggsave(filename = file.path(folder, paste(rev, "valYield.png", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
 
+
+  # BII
+  p1 <- plotVal(var = "Biodiversity|BII", varName = "Biodiversity Intactness Index", hist = "Phillips et al")
+
+  ggsave(filename = file.path(folder, paste(rev, "valBII.png", sep = "_")), p1,
+         width = 10, height = 10, scale = 1.3)
 }
