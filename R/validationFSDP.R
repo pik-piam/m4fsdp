@@ -187,4 +187,11 @@ validationFSDP <- function(repReg, valfile, folder = "output") {
 
   ggsave(filename = file.path(folder, paste(rev, "valBII.png", sep = "_")), p1,
          width = 10, height = 10, scale = 1.3)
+
+
+  # Global Surface Temeprature
+  p1 <- plotVal(var = "Global Surface Temperature", varName = "Global Surface Temperature", hist = "GISTEMP")
+
+  ggsave(filename = file.path(folder, paste(rev, "valGlobalSurfaceTemperature.png", sep = "_")), p1,
+         width = 10, height = 10, scale = 1.3)
 }
