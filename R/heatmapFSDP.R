@@ -84,21 +84,24 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[variable %in% c("Biodiversity Intactness (Index)",
                     "Shannon croparea diversity index (Index)",
                     "Agricultural wages (Index)",
-                    "Agricultural employment (million people)"
+                    "Agricultural employment (million people)",
+                    "Value|Bioeconomy Demand (billion US$05/yr)"
                     ), valuefill := -valuefill]
 
   # greying out non-nutrition scenarios
-  b[!scenario %in% c("BAU", "SSP1", "SSP2", "SSP3", "SSP4", "SSP5", "FSDP",
+  b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
+                     "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","FSDP",
                      "NoOverweight", "NoUnderweight", "AllHealth", "DietRotations",
-                     "Population", "ExternalPressures", "AllInclusion",
+                     "Population", "ExternalPressures", "AllInclusion","Sufficiency",
                      "SocioEconDevelop", "DietHealth") &
       variable %in% c("Prevalence of underweight (million people)",
                       "Prevalence of obesity (million people)"),
     valuefill := NA]
 
   # greying out non-inclusion scenarios
-  b[!scenario %in% c("BAU", "SSP1", "SSP2", "SSP3", "SSP4", "SSP5", "FSDP",
-                     "ExternalPressures", "AllInclusion", "SocioEconDevelop") &
+  b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
+                     "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
+                     "ExternalPressures", "AllInclusion", "EconDevelop","MinWage") &
       variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
 
