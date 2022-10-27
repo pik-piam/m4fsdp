@@ -13,6 +13,8 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @return if file is NULL a ggplot2 object will be return
 #' @author Florian Humpenoeder
 #' @import ggplot2 ggiraph forcats data.table scales htmlwidgets tidyr
+#' @importFrom rlang .data
+#' @importFrom dplyr %>% filter pull select mutate
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 
@@ -90,9 +92,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   # greying out non-nutrition scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
-                     "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","FSDP",
+                     "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
                      "NoOverweight", "NoUnderweight", "AllHealth", "DietRotations",
-                     "Population", "ExternalPressures", "AllInclusion","Sufficiency",
+                     "Population", "ExternalPressures", "AllInclusion", "Sufficiency",
                      "SocioEconDevelop", "DietHealth") &
       variable %in% c("Prevalence of underweight (million people)",
                       "Prevalence of obesity (million people)"),
@@ -101,9 +103,33 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   # greying out non-inclusion scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
-                     "ExternalPressures", "AllInclusion", "EconDevelop","MinWage") &
+                     "ExternalPressures", "AllInclusion", "EconDevelop", "MinWage") &
       variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
+
+  # Adding and greying-out the attributable deaths and years of life lost for non-dietary scenarios
+  tb <- as.data.frame(b)
+
+  nonDietaryScenarios <- tb %>%
+    filter(!.data$scenario %in% c("BAU", "NoUnderweight", "NoOverweight", "LessFoodWaste",
+                            "DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
+                            "DietLegumes", "DietFish", "DietEmptyCals")) %>%
+    pull(.data$scenario) %>%
+    unique() %>%
+    as.character()
+
+  tb <- tb %>%
+    filter(.data$scenario == "BAU",
+           .data$period == "2050",
+           .data$variable %in% c("Attributable deaths (million people)",
+                                 "Years of life lost (million years)")) %>%
+    select(-.data$scenario)
+
+  tb <- tidyr::expand_grid(tb, scenario = nonDietaryScenarios) %>%
+    mutate(valuefill = NA)
+
+  b <- rbind(b, as.data.table(tb))
+  # end greying-out attributable deaths and YLL for non-dietary scenarios
 
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
