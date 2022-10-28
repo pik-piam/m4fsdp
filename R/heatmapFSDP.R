@@ -151,13 +151,15 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[variable %in% c("Bioeconomy Supply (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
 
-  b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
-                       formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
+  #b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
+  #                     formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
+  b[, label := formatC(value, if (max(value) > 100) 0 else 2, format = "f"),
+    by = .(region, model, scenario, variable, unit, period)]
 
   scenFirst <- c("SSP2 2020", "SSP2 2050")
   scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
   scenLast <- c("FSDP")
-  scenSSPs <- c("SSP1bau", "SSP3bau", "SSP4bau", "SSP5bau")
+  scenSSPs <- c("SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau","SSP1PLUSbau")
   scenFSTs <- c("SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","SSP1PLUSfsdp")
   scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
@@ -176,15 +178,16 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b$period <- factor(b$period)
   b[scenario %in% scenFirst, period := "Ref"]
   b[scenario %in% scenExt, period := "Ext. Transf."]
-  b[scenario %in% scenFSTs, period := "FST"]
+  b[scenario %in% scenSSPs, period := "SSPs"]
+  b[scenario %in% scenFSTs, period := "FSTs"]
   b[scenario %in% c(scenCombinations, scenArchetypes), period := "Food System Measure Bundles"]
 
-  b[!scenario %in% c(scenFirst,scenExt), period := "Food System Measures"]
+  b[!scenario %in% c(scenFirst,scenExt,scenSSPs,scenFSTs,scenCombinations,scenArchetypes), period := "Food System Measures"]
   b$period <- factor(b$period)
   b <- droplevels(b)
 
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-  scenMiddle <- c(scenSSPs, scenDiet, scenDiet2, scenProtect, scenMngmt,
+  scenMiddle <- c(scenSSPs, scenFSTs, scenDiet, scenDiet2, scenProtect, scenMngmt,
   scenClimate, scenInclusion, scenCombinations, scenArchetypes)
   scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
