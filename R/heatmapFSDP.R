@@ -62,7 +62,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Inclusion|Agricultural employment (million people)|3",
                   "Inclusion|Agricultural wages (Index)|4",
                   "Value|Bioeconomy Supply (billion US$05/yr)|1",
-                  "Costs|Agriculture (billion US$05/yr)|1")
+                  "Value|Costs (billion US$05/yr)|1")
 
   rep[region == "World", region := "GLO"]
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]
@@ -87,7 +87,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                     "Shannon croparea diversity index (Index)",
                     "Agricultural wages (Index)",
                     "Agricultural employment (million people)",
-                    "Value|Bioeconomy Supply (billion US$05/yr)"
+                    "Bioeconomy Supply (billion US$05/yr)"
                     ), valuefill := -valuefill]
 
   # greying out non-nutrition scenarios
@@ -141,7 +141,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
-  b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
+  b[variable %in% c("Costs (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Bioeconomy Supply (billion US$05/yr)"), value := value / 1000]
   b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
 
@@ -157,7 +157,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                  "DietLegumes", "DietFish", "DietEmptyCals")
   scenProtect <- c("WaterSparing", "LandSparing", "LandUseDiversity", "PeatlandSparing")
   scenClimate <- c("REDD", "REDDaff", "SoilCarbon")
-  scenMngmt <- c("CropRotations", "NitrogenEff", "CropeffTax", "LivestockMngmt", "ManureMngmt",
+  scenMngmt <- c("CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
                  "AirPollution")
   scenInclusion <- c("FairTrade","MinWage")
   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
