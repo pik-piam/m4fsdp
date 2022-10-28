@@ -42,7 +42,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
            "Hourly labor costs relative to 2020",
-           "Value|Bioeconomy Demand",
+           "Value|Bioeconomy Production",
            "Costs Without Incentives")
 
   names(var) <- c("Health|Prevalence of underweight (million people)|1",
@@ -93,7 +93,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","FSDP",
                      "NoOverweight", "NoUnderweight", "AllHealth", "DietRotations",
                      "Population", "ExternalPressures", "AllInclusion","Sufficiency",
-                     "SocioEconDevelop", "DietHealth") &
+                     "EconDevelop", "DietHealth") &
       variable %in% c("Prevalence of underweight (million people)",
                       "Prevalence of obesity (million people)"),
     valuefill := NA]
@@ -105,6 +105,14 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
       variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
 
+  # greying out scenarios without remind
+  b[!scenario %in% c("SSP3bau", "SSP4bau",
+                     "SSP3fsdp", "SSP4fsdp",
+                     "Population", "EconDevelop", "TimberCities", "Bioplastics",
+                     "ExternalPressures") &
+      variable %in% c("Global Surface Temperature (deg C)"),
+    valuefill := NA]
+
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
   b[variable %in% c("Agriculture (billion US$05/yr)"), value := value / 1000]
@@ -114,15 +122,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
                        formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
 
-  b[scenario == "BAU", scenario := paste("SSP2", period)]
-  b$period <- factor(b$period)
-  b[scenario %in% c("SSP2 2020", "SSP2 2050"), period := "Ref"]
-  b[!scenario %in% c("SSP2 2020", "SSP2 2050"), period := "Scenario outcomes for 2050"]
-  b$period <- factor(b$period)
-  b <- droplevels(b)
-
-  scenFirst <- c("SSP2 2020", "SSP2 2050", "Population", "SocioEconDevelop",
-                 "EnergyTrans", "TimberCities", "Bioeconomy")
+  scenFirst <- c("SSP2 2020", "SSP2 2050")
+  scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
   scenLast <- c("FSDP")
   scenSSPs <- c("SSP1", "SSP3", "SSP4", "SSP5", "ExternalPressures")
   scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
@@ -130,21 +131,28 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                  "DietLegumes", "DietFish", "DietEmptyCals")
   scenProtect <- c("WaterSparing", "LandSparing", "LandUseDiversity", "PeatlandSparing")
   scenClimate <- c("REDD", "REDDaff", "SoilCarbon")
-  scenMngmt <- c("CropRotations", "NitrogenUptakeEff", "LivestockMngmt", "AnimalWasteMngmt",
+  scenMngmt <- c("CropRotations", "NitrogenEff", "CropeffTax", "LivestockMngmt", "ManureMngmt",
                  "AirPollution")
-  scenInclusion <- c("FairTrade")
+  scenInclusion <- c("FairTrade","MinWage")
   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
                         "REDDaffDietRuminants", "FullBiodiv")
   scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment",
                       "AllClimate", "AllInclusion")
 
+  b[scenario == "BAU", scenario := paste("SSP2", period)]
+  b$period <- factor(b$period)
+  b[scenario %in% scenFirst, period := "Ref"]
+  b[!scenario %in% c(scenFirst,scenExt), period := "Food System Measures"]
+  b[scenario %in% scenExt, period := "Ext. Transf."]
+  b$period <- factor(b$period)
+  b <- droplevels(b)
 
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
   scenMiddle <- c(scenSSPs, scenDiet, scenDiet2, scenProtect, scenMngmt,
   scenClimate, scenInclusion, scenCombinations,
   scenArchetypes)
-  scenOrder <- c(rev(scenLast), rev(scenMiddle), scenOrder[!scenOrder %in% c(
-    scenFirst, scenMiddle, scenLast)], rev(scenFirst))
+  scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
+    scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
   b <- droplevels(b)
 
