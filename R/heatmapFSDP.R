@@ -26,6 +26,12 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   } else if (tableType == 2) {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE,
                              varlist = "magpie_vars.csv")
+  } else if (tableType == "2a") {
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc"), subset = FALSE,
+                             varlist = "magpie_vars.csv")
+  } else if (tableType == 3) {
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd", "FSECe"), subset = FALSE,
+                             varlist = "magpie_vars.csv")
   } else {
     stop("Table type does not exist")
   }
@@ -61,8 +67,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Inclusion|Number of People Below 3.20$/Day (million people)|2",
                   "Inclusion|Agricultural employment (million people)|3",
                   "Inclusion|Agricultural wages (Index)|4",
-                  "Value|Bioeconomy Supply (billion US$05/yr)|1",
-                  "Value|Costs (billion US$05/yr)|1")
+                  "Economy|Bioeconomy Supply (billion US$05/yr)|1",
+                  "Economy|Costs (billion US$05/yr)|1")
 
   rep[region == "World", region := "GLO"]
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]
@@ -76,7 +82,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[, c("vargroup", "variable", "order") := tstrsplit(variable, "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
 
-  vargroupOrder <- c("Health", "Environment", "Inclusion", "Costs", "Income")
+  vargroupOrder <- c("Health", "Environment", "Inclusion", "Economy")
   b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
 
   b$variable <- reorder(b$variable, b$order)
@@ -151,7 +157,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   scenFirst <- c("SSP2 2020", "SSP2 2050")
   scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
   scenLast <- c("FSDP")
-  scenSSPs <- c("SSP1", "SSP3", "SSP4", "SSP5", "ExternalPressures")
+  scenSSPs <- c("SSP1bau", "SSP3bau", "SSP4bau", "SSP5bau")
+  scenFSTs <- c("SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","SSP1PLUSfsdp")
   scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
                  "DietLegumes", "DietFish", "DietEmptyCals")
@@ -168,15 +175,17 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[scenario == "BAU", scenario := paste("SSP2", period)]
   b$period <- factor(b$period)
   b[scenario %in% scenFirst, period := "Ref"]
-  b[!scenario %in% c(scenFirst,scenExt), period := "Food System Measures"]
   b[scenario %in% scenExt, period := "Ext. Transf."]
+  b[scenario %in% scenFSTs, period := "FST"]
+  b[scenario %in% c(scenCombinations, scenArchetypes), period := "Food System Measure Bundles"]
+
+  b[!scenario %in% c(scenFirst,scenExt), period := "Food System Measures"]
   b$period <- factor(b$period)
   b <- droplevels(b)
 
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
   scenMiddle <- c(scenSSPs, scenDiet, scenDiet2, scenProtect, scenMngmt,
-  scenClimate, scenInclusion, scenCombinations,
-  scenArchetypes)
+  scenClimate, scenInclusion, scenCombinations, scenArchetypes)
   scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
