@@ -1,6 +1,6 @@
 globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
                   "varunit", "valuefill", "value", "label", "vargroup", ".", ".label"))
-#' @title heatmapFSDP
+#' @title heatmapFsdpIndia
 #' @description creates a heatmap for FSDP MAgPIE runs
 #'
 #' @export
@@ -16,7 +16,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 
-heatmapFSDP <- function(repReg, regionSel = "IND", tableType = 2, file = NULL) {
+heatmapFsdpIndia <- function(repReg, regionSel = "IND", tableType = 2, file = NULL) {
 
   #### read in data files
   if (tableType == 1) {
