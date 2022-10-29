@@ -153,7 +153,12 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   #b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
   #                     formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
-  b[, label := formatC(value, if (max(value) > 100) 0 else 2, format = "f"),
+#  b[, label := formatC(value, if (max(value) > 100) 0 else 2, format = "f"),
+#    by = .(region, model, scenario, variable, unit, period)]
+  b[, label := if (max(value) > 100)
+    formatC(value, 0, format = "f")
+    else
+      formatC(value, 2, format = "f"),
     by = .(region, model, scenario, variable, unit, period)]
 
   scenFirst <- c("SSP2 2020", "SSP2 2050")
