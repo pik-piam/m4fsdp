@@ -17,7 +17,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>%
 
-SupplPlotsFSDP <- function(repReg, scenarioType = "all", save = TRUE, outputdir = "/p/projects/magpie/users/beier/FSECmodeling/output") {
+SupplPlotsFSDPIndia <- function(repReg, scenarioType = "all", save = TRUE, outputdir = "/p/projects/magpie/users/beier/FSECmodeling/output") {
 
   if(!dir.exists(file.path(outputdir, "SupplPlots"))){
     dir.create(file.path(outputdir, "SupplPlots"))
