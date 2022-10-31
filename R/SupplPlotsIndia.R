@@ -1,7 +1,7 @@
 globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive",
                   "hours", "Products", "RegionG_f"))
 
-#' @title SupplPlotsFSDP
+#' @title SupplPlotsFSDPIndia
 #' @description creates supplementary plots for FSDP MAgPIE runs for India case study
 #'
 #' @export
