@@ -2,6 +2,7 @@
 
 export(SupplPlotsCropShr)
 export(SupplPlotsFSDP)
+export(SupplPlotsFSDPIndia)
 export(appendReportHealthImpacts)
 export(appendReportNutrientSurplus)
 export(convertReportFSDP)
