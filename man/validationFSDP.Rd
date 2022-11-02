@@ -4,12 +4,12 @@
 \alias{validationFSDP}
 \title{validationFSDP}
 \usage{
-validationFSDP(repReg, valfile, folder = "output")
+validationFSDP(repReg, val, folder = "output")
 }
 \arguments{
 \item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
 
-\item{valfile}{validation file}
+\item{val}{rds file or data.frame with validation data}
 
 \item{folder}{output folder}
 }

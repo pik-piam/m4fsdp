@@ -4,7 +4,7 @@
 #' @export
 #'
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
-#' @param valfile validation file
+#' @param val rds file or data.frame with validation data
 #' @param folder output folder
 #' @details creates validation for FSDP MAgPIE runs
 #' @return NULL
@@ -13,7 +13,7 @@
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 
-validationFSDP <- function(repReg, valfile, folder = "output") {
+validationFSDP <- function(repReg, val, folder = "output") {
 
   #### get version
   rev <- unlist(strsplit(repReg, "_"))[1]
@@ -21,7 +21,7 @@ validationFSDP <- function(repReg, valfile, folder = "output") {
   #### read in data files
   rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECe"), subset = FALSE)
   rep$scenset <- NULL
-  val <- readRDS(valfile)
+  if (!is.data.frame(val)) val <- readRDS(val)
   val[region == "World", region := "GLO"]
 
   themeMy <- function(baseSize = 11, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
@@ -164,17 +164,23 @@ validationFSDP <- function(repReg, valfile, folder = "output") {
          width = 10, height = 10, scale = 1.3)
 
   # Validation Yields and TC
-  p1 <- plotVal(var = "Productivity|Landuse Intensity Indicator Tau", varName = "Landuse Intensity Indicator Tau")
+  p1 <- plotVal(var = "Productivity|Landuse Intensity Indicator Tau",
+                varName = "Landuse Intensity Indicator Tau",
+                weight = "Resources|Land Cover|+|Cropland")
   p2 <- plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer",
                 varName = "Sythetic nitrogen fertilizer", hist = "Bodirsky")
   p3 <- plotVal(var = "Productivity|Yield|Crops|+|Cereals",
-                varName = "Cereal crop yields")
+                varName = "Cereal crop yields",
+                weight = "Resources|Land Cover|+|Cropland")
   p4 <- plotVal(var = "Productivity|Yield|Crops|+|Sugar crops",
-                varName = "Sugar crop yields")
+                varName = "Sugar crop yields",
+                weight = "Resources|Land Cover|+|Cropland")
   p5 <- plotVal(var = "Productivity|Yield|Crops|+|Oil crops",
-                varName = "Oil crop yields")
+                varName = "Oil crop yields",
+                weight = "Resources|Land Cover|+|Cropland")
   p6 <- plotVal(var = "Productivity|Yield|+|Pasture",
-                varName = "Pasture yields")
+                varName = "Pasture yields",
+                weight = "Resources|Land Cover|+|Pastures and Rangelands")
 
   combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
@@ -183,7 +189,10 @@ validationFSDP <- function(repReg, valfile, folder = "output") {
 
 
   # BII
-  p1 <- plotVal(var = "Biodiversity|BII", varName = "Biodiversity Intactness Index", hist = "Phillips et al")
+  p1 <- plotVal(var = "Biodiversity|BII",
+                varName = "Biodiversity Intactness Index",
+                hist = "Phillips et al",
+                weight = "Resources|Land Cover")
 
   ggsave(filename = file.path(folder, paste(rev, "valBII.png", sep = "_")), p1,
          width = 10, height = 10, scale = 1.3)
