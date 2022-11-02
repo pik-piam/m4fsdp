@@ -198,6 +198,15 @@ validationFSDP <- function(repReg, val, folder = "output") {
          width = 10, height = 10, scale = 1.3)
 
 
+  # Nutrient surplus
+  p1 <- plotVal(var = "Resources|Nitrogen|Nutrient Surplus",
+                varName = "Nutrient Surplus incl. natural vegetation",
+                hist = "combined")
+
+  ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.png", sep = "_")), p1,
+         width = 10, height = 10, scale = 1.3)
+
+
   # Global Surface Temeprature
   p1 <- plotVal(var = "Global Surface Temperature", varName = "Global Surface Temperature", hist = "GISTEMP")
 
