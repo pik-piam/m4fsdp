@@ -41,7 +41,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Health|Attributable deaths|Risk|Diet and anthropometrics",
            "Health|Years of life lost|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
-           "Biodiversity|Shannon croparea diversity index",
+           "Biodiversity|Shannon crop area diversity index",
            "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
            "Water|Environmental flow violation volume",
            "Emissions|GWP100AR6|Land|Cumulative",
@@ -58,7 +58,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Health|Attributable deaths (million people)|3",
                   "Health|Years of life lost (million years)|4",
                   "Environment|Biodiversity Intactness (Index)|1",
-                  "Environment|Shannon croparea diversity index (Index)|2",
+                  "Environment|Shannon crop area diversity index (Index)|2",
                   "Environment|Nitrogen surplus (Mt N/yr)|3",
                   "Environment|Water environmental flow violations (km3/yr)|4",
                   "Environment|Cumulative CO2 emissions (GtCO2eq since 1995)|5",
@@ -90,7 +90,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b[, valuefill := value - value[scenario == "BAU" & period == "2050"], by = .(variable)]
 
   b[variable %in% c("Biodiversity Intactness (Index)",
-                    "Shannon croparea diversity index (Index)",
+                    "Shannon crop area diversity index (Index)",
                     "Agricultural wages (Index)",
                     "Agricultural employment (million people)",
                     "Bioeconomy Supply (billion US$05/yr)"
