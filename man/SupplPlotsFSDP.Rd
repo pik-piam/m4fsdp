@@ -4,21 +4,14 @@
 \alias{SupplPlotsFSDP}
 \title{SupplPlotsFSDP}
 \usage{
-SupplPlotsFSDP(
-  repReg,
-  scenarioType = "all",
-  save = TRUE,
-  outputdir = "/p/projects/magpie/users/beier/FSECmodeling/output"
-)
+SupplPlotsFSDP(repReg, scenarioType = "all", file = NULL)
 }
 \arguments{
 \item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
 
 \item{scenarioType}{options: all, or one of the a-e groupings}
 
-\item{save}{binary to save files to output director}
-
-\item{outputdir}{outputdirectory path}
+\item{file}{file name to save to}
 }
 \value{
 if file is NULL a ggplot2 object will be return
