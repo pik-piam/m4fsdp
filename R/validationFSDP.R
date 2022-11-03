@@ -199,9 +199,9 @@ validationFSDP <- function(repReg, val, folder = "output") {
 
 
   # Nutrient surplus
-  p1 <- plotVal(var = "Resources|Nitrogen|Nutrient Surplus",
-                varName = "Nutrient Surplus incl. natural vegetation",
-                hist = "combined")
+  p1 <- plotVal(var = "Resources|Nitrogen|Nutrient surplus from land and manure management",
+                varName = "Nutrient surplus from land and manure management",
+                hist = "MADRaT")
 
   ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.png", sep = "_")), p1,
          width = 10, height = 10, scale = 1.3)
