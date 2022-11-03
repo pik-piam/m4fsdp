@@ -138,7 +138,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   # end greying-out attributable deaths and YLL for non-dietary scenarios
 
   # greying out scenarios without remind
-  b[!scenario %in% c("SSP3bau", "SSP4bau",
+  b[scenario %in% c("SSP3bau", "SSP4bau",
                      "SSP3fsdp", "SSP4fsdp",
                      "Population", "EconDevelop", "TimberCities", "Bioplastics",
                      "ExternalPressures") &
