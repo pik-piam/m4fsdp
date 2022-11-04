@@ -4,12 +4,12 @@
 \alias{SupplPlotsCropShr}
 \title{SupplPlotsCropShr}
 \usage{
-SupplPlotsCropShr(gdx, png = NULL)
+SupplPlotsCropShr(gdx, file = NULL)
 }
 \arguments{
 \item{gdx}{gdx File}
 
-\item{png}{Name of png file output in the form *.png}
+\item{file}{Name of file output}
 }
 \value{
 Crop share on the y-axis and cropland area in each cluster on the x-axis.

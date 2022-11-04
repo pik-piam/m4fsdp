@@ -6,7 +6,7 @@ globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "Crop
 #' @export
 #'
 #' @param gdx gdx File
-#' @param png Name of png file output in the form *.png
+#' @param file Name of file output
 #' @details blub
 #' @return Crop share on the y-axis and cropland area in each cluster on the x-axis.
 #' @author Patrick v. Jeetze
@@ -14,7 +14,7 @@ globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "Crop
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select %>%
 
-SupplPlotsCropShr <- function(gdx, png=NULL) {
+SupplPlotsCropShr <- function(gdx, file = NULL) {
 
 
   # Years of interest
@@ -144,13 +144,6 @@ SupplPlotsCropShr <- function(gdx, png=NULL) {
     theme(legend.position = c(1, 0), legend.justification = c(1, 0)) +
     guides(fill = guide_legend(ncol = 2))
 
-  if (!is.null(png)){
-  ggsave(filename = paste0("REG_",png), CropShrReg, width = 9, height = 9, scale = 1)
-  } else {
-    CropShrReg
-  }
-
-
   ### Global plot
 
   CropShrGlo <-
@@ -169,10 +162,15 @@ SupplPlotsCropShr <- function(gdx, png=NULL) {
     xlab("Cropland area (Mha)") +
     ylab("Crop share") +
     facet_wrap(~Region, ncol = 3)
-  if (!is.null(png)){
-    ggsave(filename = paste0("GLO_",png), CropShrGlo, width = 12, height = 6, scale = 1)
+
+  combined <- CropShrReg +
+              CropShrGlo +
+              plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+  if (!is.null(file)){
+    ggsave(filename = file, combined, width = 12, height = 6, scale = 1, bg = "white")
   } else {
-    CropShrGlo
+    return(combined)
   }
 
 }

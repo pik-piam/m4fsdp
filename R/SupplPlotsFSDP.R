@@ -1,7 +1,7 @@
 globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive",
                   "hours", "Products", "RegionG_f"))
 
-#' @title SupplPlotsFSDP
+#' @title supplPlotsFSDP
 #' @description creates supplementary plots for FSDP MAgPIE runs
 #'
 #' @export
@@ -16,7 +16,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>%
 
-SupplPlotsFSDP <- function(repReg, scenarioType = "all", file = NULL) {
+supplPlotsFSDP <- function(repReg, scenarioType = "all", file = NULL) {
 
 
  # repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
