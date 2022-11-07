@@ -4,7 +4,13 @@
 \alias{SupplPlotsFSDP}
 \title{SupplPlotsFSDP}
 \usage{
-SupplPlotsFSDP(repReg, scenarioType = "all", file = NULL)
+SupplPlotsFSDP(
+  repReg,
+  scenarioType = "all",
+  file = NULL,
+  caseRegion = TRUE,
+  region = "IND"
+)
 }
 \arguments{
 \item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
@@ -12,6 +18,10 @@ SupplPlotsFSDP(repReg, scenarioType = "all", file = NULL)
 \item{scenarioType}{options: all, or one of the a-e groupings}
 
 \item{file}{file name to save to}
+
+\item{caseRegion}{set TRUE if plots are being used for country case studies (India, Brazil, China)}
+
+\item{region}{Code of the region for which plots are being created, works only if caseRegion is TRUE}
 }
 \value{
 if file is NULL a ggplot2 object will be return
@@ -23,5 +33,5 @@ creates supplementary plots for FSDP MAgPIE runs
 blub
 }
 \author{
-David M Chen
+David M Chen, Vartika Singh
 }

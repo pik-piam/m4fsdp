@@ -6,12 +6,12 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @export
 #'
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
-#' @param regionSel Region that should be plotted
+#' @param regionSel Region that should be plotted. select "IND" for India plots
 #' @param tableType options: 1 (FSECa,FSECc), 2 (FSECb,FSECc,FSECd)
 #' @param file file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
-#' @author Florian Humpenoeder
+#' @author Florian Humpenoeder, Vartika Singh
 #' @import ggplot2 ggiraph forcats data.table scales htmlwidgets tidyr
 #' @importFrom rlang .data
 #' @importFrom dplyr %>% filter pull select mutate
@@ -70,7 +70,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Economy|Bioeconomy Supply (billion US$05/yr)|1",
                   "Economy|Costs (billion US$05/yr)|1")
 
+  if (regionSel == "GLO") {
   rep[region == "World", region := "GLO"]
+  }
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]
   b <- droplevels(b)
 
@@ -162,6 +164,60 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     by = .(region, model, scenario, variable, unit, period)]
   #b[, label := formatC(value, 1, format = "f"), by = .(region, model, scenario, variable, unit, period)]
 
+
+if (regionSel == "IND") {
+
+  ##Dropping scenarios not relevant for India
+  b <- b[scenario != "SSP1",]
+  b <- b[scenario != "SSP3",]
+  b <- b[scenario != "SSP4",]
+  b <- b[scenario != "SSP5",]
+  b <- b[scenario != "ExternalPressures",]
+  b <- b[scenario != "NoUnderweight",]
+  b <- b[scenario != "NoOverweight",]
+  b <- b[scenario != "LessFoodWaste",]
+  b <- b[scenario != "DietVegFruitsNutsSeeds",]
+  b <- b[scenario != "DietRuminants",]
+  b <- b[scenario != "DietMonogastrics",]
+  b <- b[scenario != "DietLegumes",]
+  b <- b[scenario != "DietFish",]
+  b <- b[scenario != "DietEmptyCals",]
+  b <- b[scenario != "WaterSparing",]
+  b <- b[scenario != "LandSparing",]
+  b <- b[scenario != "LandUseDiversity",]
+  b <- b[scenario != "PeatlandSparing",]
+  b <- b[scenario != "REDD",]
+  b <- b[scenario != "REDDaff",]
+  b <- b[scenario != "SoilCarbon",]
+  b <- b[scenario != "CropRotations",]
+  b <- b[scenario != "NitrogenUptakeEff",]
+  b <- b[scenario != "LivestockMngmt",]
+  b <- b[scenario != "AnimalWasteMngmt",]
+  b <- b[scenario != "AirPollution",]
+  b <- b[scenario != "FairTrade",]
+  b <- b[scenario != "DietRotations",]
+  b <- b[scenario != "FullBiodiv",]
+  b <- b[scenario != "Protection",]
+  b <- b[scenario != "REDDaffDietRuminants",]
+  b <- b[scenario != "SoilMonogastric",]
+  b <- b[scenario != "SoilRotations",]
+  b <- b[scenario != "Sufficiency",]
+
+
+  scenFirst <- c("SSP2 2020", "SSP2 2050")
+  scenLast <- c("FSDP")
+
+  scenCombinations <- c("WaterSoil", "Efficiency")
+  scenArchetypes <- c("AllHealth", "AllEnvironment",
+                      "AllClimate", "AllInclusion")
+  scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
+  scenMiddle <- c(scenCombinations,scenArchetypes)
+  scenOrder <- c(rev(scenLast), rev(scenMiddle), scenOrder[!scenOrder %in% c(scenFirst, scenMiddle, scenLast)], rev(scenFirst))
+  b$scenario <- factor(b$scenario, levels = scenOrder)
+  b <- droplevels(b)
+
+} else {
+
   scenFirst <- c("SSP2 2020", "SSP2 2050")
   scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
   scenLast <- c("FSDP")
@@ -199,6 +255,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
   b <- droplevels(b)
+
+}
+
 
   makeExp <- function(x, y) {
     exp <- vector(length = 0, mode = "expression")

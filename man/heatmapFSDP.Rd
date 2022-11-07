@@ -9,7 +9,7 @@ heatmapFSDP(repReg, regionSel = "GLO", tableType = 1, file = NULL)
 \arguments{
 \item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
 
-\item{regionSel}{Region that should be plotted}
+\item{regionSel}{Region that should be plotted. select "IND" for India plots}
 
 \item{tableType}{options: 1 (FSECa,FSECc), 2 (FSECb,FSECc,FSECd)}
 
@@ -25,5 +25,5 @@ creates a heatmap for FSDP MAgPIE runs
 blub
 }
 \author{
-Florian Humpenoeder
+Florian Humpenoeder, Vartika Singh
 }
