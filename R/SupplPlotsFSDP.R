@@ -20,7 +20,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 
 SupplPlotsFSDP <- function(repReg, scenarioType = "all", file = NULL, caseRegion = TRUE, region = "IND") {
 
-#repReg <- "C:/Users/IIMA/Dropbox (IFPRI)/PhD/FSEC/Data/v16_FSDP_reg.rds"
+#repReg <- "C:/Users/IIMA/Dropbox (IFPRI)/PhD/FSEC/Data/v26_FSDP_reg.rds"
  # repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
 
 if (scenarioType == "all") {
@@ -278,7 +278,7 @@ plotEmissGlo <- ggplot(filter(emiss_glo, scenario %in% c("BAU", "FSDP")), aes(x 
 
 
 # emis reg CUMULATIVE
-emiss_reg <- filter(scens, region != "World",
+emissReg <- filter(scens, region != "World",
                     variable %in% varEmiss,
                     period > 2020) %>%
   droplevels() %>%
@@ -292,8 +292,8 @@ emiss_reg <- filter(scens, region != "World",
   mutate(value = cumsum(value / 1000) * 5) %>%   # Gt and cumulative, multiply by the 5 year time steps
   filter(period == 2050) # subset to 2050 value
 
-emiss_reg$positive <- ifelse(emiss_reg$value >= 0, emiss_reg$value, 0)
-emiss_reg$negative <- ifelse(emiss_reg$value < 0, emiss_reg$value, -1e-36)
+emissReg$positive <- ifelse(emissReg$value >= 0, emissReg$value, 0)
+emissReg$negative <- ifelse(emissReg$value < 0, emissReg$value, -1e-36)
 
 # emiss_reg <- emiss_reg[-which(emiss_reg$period == 2020 & emiss_reg$scenario!= "BAU"),] #remove nonBAU 2010 values
 unit <- expression(bold("Gt CO"[2] ~ "since 2020")) # "Gt CO2eq since 2020"
@@ -302,7 +302,7 @@ if (caseRegion) {
   emissReg <- emissReg %>% filter(RegionG == selRegion)
 }
 
-plotEmissReg <- ggplot(emiss_reg, aes(y = scenario)) +
+plotEmissReg <- ggplot(emissReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
   geom_bar(aes(x = positive, fill = variable), position = "stack", stat = "identity", width = 0.75) +
@@ -805,9 +805,9 @@ plotGiniReg <- ggplot(filter(ineqReg, variable == "Gini Coefficient"), aes(y = s
 
 
 plotBelowPovGlo <- ggplot(filter(ineqGlo, variable == "Number of People Below 3.20$/Day",
-                          scenario %in% c("BAU", "SSP1", "SSP3", "SSP4", "FairTrade",
-                                          "SocioEconDevelop", "Efficiency", "FSDP")),
-                   aes(x = period)) +
+     #                     scenario %in% c("BAU", "SSP1", "SSP3", "SSP4", "FairTrade",
+      #                                    "SocioEconDevelop", "Efficiency", "FSDP")),
+                   aes(x = period))) +
   themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
   ylab("Million People below 3.20$/Day Poverty Line") +
   geom_line(aes(y = value, color = scenario), lwd = 1.1) +
@@ -850,8 +850,8 @@ combined <- (trytoplot(plotCalSupply)
              + trytoplot(plotEmpReg)
              + trytoplot(plotLabReg)
              + trytoplot(plotGiniGlo)
-             + trytoplot(plotGiniReg)
-             + trytoplot(plotBelowPovGlo)
+            + trytoplot(plotGiniReg)
+            + trytoplot(plotBelowPovGlo)
              + trytoplot(plotBelowPovReg)
     )
 
