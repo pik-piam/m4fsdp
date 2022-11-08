@@ -8,6 +8,7 @@ SupplPlotsFSDP(
   repReg,
   scenarioType = "all",
   file = NULL,
+  calorieSupply = TRUE,
   caseRegion = TRUE,
   region = "IND"
 )
@@ -18,6 +19,8 @@ SupplPlotsFSDP(
 \item{scenarioType}{options: all, or one of the a-e groupings}
 
 \item{file}{file name to save to}
+
+\item{calorieSupply}{parameter to set if calorie figures needed for calories supply or calorie intake, set FALSE for Intake}
 
 \item{caseRegion}{set TRUE if plots are being used for country case studies (India, Brazil, China)}
 

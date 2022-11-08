@@ -9,6 +9,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
 #' @param scenarioType options: all, or one of the a-e groupings
 #' @param file  file name to save to
+#' @param calorieSupply parameter to set if calorie figures needed for calories supply or calorie intake, set FALSE for Intake
 #' @param caseRegion set TRUE if plots are being used for country case studies (India, Brazil, China)
 #' @param region Code of the region for which plots are being created, works only if caseRegion is TRUE
 #' @details blub
@@ -18,7 +19,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>%
 
-SupplPlotsFSDP <- function(repReg, scenarioType = "all", file = NULL, caseRegion = TRUE, region = "IND") {
+SupplPlotsFSDP <- function(repReg, scenarioType = "all", file = NULL, calorieSupply = TRUE, caseRegion = TRUE, region = "IND") {
 
 #repReg <- "C:/Users/IIMA/Dropbox (IFPRI)/PhD/FSEC/Data/v26_FSDP_reg.rds"
  # repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
@@ -82,6 +83,8 @@ kcr <- findset("kcr")
 kfo <- findset("kfo")
 ksd <- findset("ksd")
 
+if (calorieSupply) {
+
 cropDem <- "Nutrition|Calorie Supply|Crops|"
 procDem <- "Nutrition|Calorie Supply|Secondary products|+|"
 livDem <- "Nutrition|Calorie Supply|Livestock products|+|"
@@ -95,8 +98,22 @@ processed <- paste0(procDem, reportingnames(c("alcohol",
                                               "sugar", "oils",  "scp",  "molasses", "brans")))
 animal <- paste0(livDem, reportingnames(kli))
 fish <- "Nutrition|Calorie Supply|+|Fish"
+} else {
 
+cropInt <- "Nutrition|Calorie Intake|Crops|"
+procInt <- "Nutrition|Calorie Intake|Secondary products|+|"
+livInt <- "Nutrition|Calorie Intake|Livestock products|+|"
 
+cereals <- paste0(cropInt, "Cereals|+|", reportingnames(c("maiz", "rice_pro", "tece", "trce")))
+oilCrops <- paste0(cropInt, "Oil crops|+|", reportingnames(c("soybean", "rapeseed",  "sunflower", "groundnut")))
+otherCrops <- paste0(cropInt, "Other Crops|+|", reportingnames(c("others", "potato", "cassav_sp",
+                                                                 "puls_pro")))
+sugarCrops <-  paste0(cropInt, "Sugar Crops|+|", reportingnames(c("sugr_beet", "sugr_cane")))
+processed <- paste0(procInt, reportingnames(c("alcohol",
+                                              "sugar", "oils",  "scp",  "molasses", "brans")))
+animal <- paste0(livInt, reportingnames(kli))
+fish <- "Nutrition|Calorie Intake|+|Fish"
+}
 
 # groupings
 staples <- c(cereals, otherCrops[-grep("Fruit", otherCrops)],
@@ -129,17 +146,21 @@ food_df$pop_barwidth <- rescale(food_df$pop, c(0.05, 0.45))   # scale pop for ba
 
 if (caseRegion) {
   food_df <- food_df %>% filter(RegionG == selRegion)
-  plotcalSupply <- ggplot() +
+  plotCalSupply <- ggplot() +
     facet_grid(cols = vars(period), scales = "free_x", space = "free_x",   switch = "x") +
     geom_col(data = food_df[order(food_df$FoodGroup), ],
              aes(x = scenario, y = CalorieSupply, group = scenario, fill = FoodGroup),
              position = "stack",
              width = filter(food_df[order(food_df$FoodGroup), ], RegionG == selRegion)$pop_barwidth) +
     themeSupplFood(base_size = 25) +
-    labs(title = "Calorie Supply") +
-    ylab("Kcal/capita/day") +
+       ylab("Kcal/capita/day") +
     scale_fill_manual(values = c("#fcba03", "#a11523", "#66407a", "#40945a"),
-                      guide = guide_legend(reverse = TRUE))
+                      guide = guide_legend(reverse = TRUE)) +
+    if (calorieSupply) {
+      labs(title = "Calorie Supply")
+    } else {
+      labs(title = "Calorie Intake")
+    }
 
 } else {
 
@@ -164,10 +185,14 @@ width = filter(food_df[order(food_df$FoodGroup), ],
                           RegionG == "Low-Income Regions")$pop_barwidth
   ) +
   themeSupplFood(base_size = 25) +
-  labs(title = "Calorie Supply") +
   ylab("Kcal/capita/day") +
   scale_fill_manual(values = c("#fcba03", "#a11523", "#66407a", "#40945a"),
-                    guide = guide_legend(reverse = TRUE))
+                    guide = guide_legend(reverse = TRUE)) +
+  if (calorieSupply) {
+    labs(title = "Calorie Supply")
+  } else {
+    labs(title = "Calorie Intake")
+  }
 
 }
 
@@ -196,7 +221,7 @@ agDem <- agDem[-which(agDem$period == 2020 & agDem$scenario != "BAU"), ] # remov
 agDem$pop_barwidth <- rescale(agDem$pop, c(0.2, 0.8))   # scale pop for barwidths
 
 if (caseRegion) {
-  plotAagDem <- ggplot() +
+  plotAgDem <- ggplot() +
     geom_col(data = agDem,
              aes(x = scenario, y = value, group = scenario, fill = variable),
              position = "stack",
@@ -580,7 +605,7 @@ plotWaterReg <- ggplot(waterReg, aes(y = scenario)) +
 ### Health
 
 healthVar <-  scens[grep("Nutrition\\|Anthropometrics\\|People", scens$variable), ]$variable %>%  unique()
-names(healthVar) <- c("Underweight", "Normal Weight", "Overweight", "Obese")
+names(healthVar) <- c("Normal weight", "Obese", "Overweight", "Underweight")
 
 
 health_df <- filter(scens,
@@ -591,8 +616,7 @@ health_df <- filter(scens,
   group_by(model, scenario, region, period) %>%
   mutate(variable = factor(variable, levels = rev(healthVar),
                            labels = names(rev(healthVar))),
-         variable = factor(variable, levels = rev(c("Underweight", "Normal Weight",
-                                                    "Overweight", "Obese"))))
+         variable = factor(variable, levels = rev(c("Normal weight", "Obese", "Overweight", "Underweight"))))
 
 
 healthGlo <- filter(health_df, region == "GLO")
@@ -850,8 +874,8 @@ combined <- (trytoplot(plotCalSupply)
              + trytoplot(plotEmpReg)
              + trytoplot(plotLabReg)
              + trytoplot(plotGiniGlo)
-            + trytoplot(plotGiniReg)
-            + trytoplot(plotBelowPovGlo)
+             + trytoplot(plotGiniReg)
+             + trytoplot(plotBelowPovGlo)
              + trytoplot(plotBelowPovReg)
     )
 
