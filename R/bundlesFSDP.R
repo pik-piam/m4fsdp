@@ -53,12 +53,12 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                   "Economy|Bioeconomy Supply\nbillion US$05/yr|1|increase|0",
                   "Economy|Costs\nbillion US$05/yr|1|decrease|0")
 
-  rep[get("region") == "World", "region" := "GLO"]
+  levels(rep$region)[levels(rep$region)=="World"] <- "GLO"
   b <- rep[get("variable") %in% var & get("region") == regionSel & get("period") == 2050, ]
   b <- droplevels(b)
 
   b$variable <- factor(b$variable, levels = var, labels = names(var))
-  b[, c("vargroup", "variable", "order", "improvment", "rounding") := tstrsplit(variable, "|", fixed = TRUE)]
+  b[, c("vargroup", "variable", "order", "improvment", "rounding") := tstrsplit(get("variable"), "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
   b$rounding <- as.numeric(b$rounding)
 
@@ -141,7 +141,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                              max(abs(get("bundlesum")), na.rm = TRUE),
                                       na.rm = TRUE)), by = list(get("variable"))]
 
-  bSum <- b[, list("label" = if (max(abs(get("valuefill")) > 0.2, na.rm = TRUE))
+  bSum <- b[, list("label" = if (max(abs(get("valuefill")) > 0.5, na.rm = TRUE))
     round(sum(get("value")), get("rounding"))
     else NULL, valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
              by = c("region", "model", "variable", "unit", "vargroup", "period",
@@ -159,21 +159,29 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                         by_layer_x = TRUE)) +
       geom_vline(xintercept = 0) +
       geom_bar_interactive(aes(fill = get("scenCol"),
-                               tooltip = paste0("Scenario: ", get("scenario"), "\nIndicator: ", get("variable")),
+                               tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ", round(get("value"), get("rounding"))),
                                data_id = get("variable")), position = "stack", stat = "identity") +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
+                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+                                                round(get("value"), get("rounding"))), data_id = get("variable")),
                            position = "stack", stat = "identity", fill = "#26AD4C", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value < 0, ],
+                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+                                                round(get("value"), get("rounding"))), data_id = get("variable")),
                            position = "stack", stat = "identity", fill = "#AD1515", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value > 0, ],
+                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+                                                round(get("value"), get("rounding"))), data_id = get("variable")),
                            position = "stack", stat = "identity", fill = "#AD1515", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value < 0, ],
+                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+                                                round(get("value"), get("rounding"))), data_id = get("variable")),
                            position = "stack", stat = "identity", fill = "#26AD4C", size = 0) +
       geom_text(data = bSum[get("scenset") %in% c("FSECa", "FSECb"), ], aes(label = get("label")),
                 size = 2.5, colour = "white", angle = 0) +
       scale_fill_manual_interactive("Scenario", values = colors) +
       guides(fill = guide_legend(order = 1)) +
-      labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1, 1)) +
+      labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
       theme(legend.position = "none") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
       theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
             axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
@@ -190,7 +198,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   if (is.null(file)) {
     return(m)
   } else {
-    ggsave(file, m, scale = 1, height = 11, width = 13, bg = "white")
+    ggsave(file, m, scale = 1, width = 11, height = 13, bg = "white")
     p <- girafe(
       ggobj = m,
       options = list(
