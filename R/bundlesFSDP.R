@@ -53,7 +53,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                   "Economy|Bioeconomy Supply\nbillion US$05/yr|1|increase|0",
                   "Economy|Costs\nbillion US$05/yr|1|decrease|0")
 
-  levels(rep$region)[levels(rep$region)=="World"] <- "GLO"
+  levels(rep$region)[levels(rep$region) == "World"] <- "GLO"
   b <- rep[get("variable") %in% var & get("region") == regionSel & get("period") == 2050, ]
   b <- droplevels(b)
 
@@ -151,7 +151,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   plotBundle2 <- function(plotData) {
     set.seed(42)
-    plotData <- droplevels(plotData[scenset %in% c("FSECa", "FSECb"), ])
+    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb"), ])
     p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
       facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free", space = "free", switch = "y",
@@ -159,7 +159,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                         by_layer_x = TRUE)) +
       geom_vline(xintercept = 0) +
       geom_bar_interactive(aes(fill = get("scenCol"),
-                               tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ", round(get("value"), get("rounding"))),
+                               tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+                                                round(get("value"), get("rounding"))),
                                data_id = get("variable")), position = "stack", stat = "identity") +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
@@ -193,7 +194,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     return(p)
   }
   m <- plotBundle2(b)
-  #ggsave("SingleBundle2.png", m, width = 11, height = 13, scale = 1)
+  # ggsave("SingleBundle2.png", m, width = 11, height = 13, scale = 1)
 
   if (is.null(file)) {
     return(m)
