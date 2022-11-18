@@ -200,6 +200,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     return(m)
   } else {
     ggsave(file, m, scale = 1, width = 11, height = 13, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 13, bg = "white")
     p <- girafe(
       ggobj = m,
       options = list(

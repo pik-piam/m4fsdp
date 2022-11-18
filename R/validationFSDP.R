@@ -144,6 +144,8 @@ validationFSDP <- function(repReg, val, folder = "output") {
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
   ggsave(filename = file.path(folder, paste(rev, "valAssumptions.png", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valAssumptions.pdf", sep = "_")), combined,
+         width = 10, height = 10, scale = 1.3)
 
   # Validation land
   p1 <- plotVal(var = "Resources|Land Cover|+|Cropland", varName = "Land Cover|Cropland", hist = "FAO_crop_past")
@@ -161,6 +163,8 @@ validationFSDP <- function(repReg, val, folder = "output") {
   combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
   ggsave(filename = file.path(folder, paste(rev, "valLand.png", sep = "_")), combined,
+         width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valLand.pdf", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
 
   # Validation Yields and TC
@@ -186,6 +190,8 @@ validationFSDP <- function(repReg, val, folder = "output") {
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
   ggsave(filename = file.path(folder, paste(rev, "valYield.png", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valYield.pdf", sep = "_")), combined,
+         width = 10, height = 10, scale = 1.3)
 
 
   # BII
@@ -196,6 +202,8 @@ validationFSDP <- function(repReg, val, folder = "output") {
 
   ggsave(filename = file.path(folder, paste(rev, "valBII.png", sep = "_")), p1,
          width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valBII.pdf", sep = "_")), p1,
+         width = 10, height = 10, scale = 1.3)
 
 
   # Nutrient surplus
@@ -205,11 +213,15 @@ validationFSDP <- function(repReg, val, folder = "output") {
 
   ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.png", sep = "_")), p1,
          width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.pdf", sep = "_")), p1,
+         width = 10, height = 10, scale = 1.3)
 
 
   # Global Surface Temeprature
   p1 <- plotVal(var = "Global Surface Temperature", varName = "Global Surface Temperature", hist = "GISTEMP")
 
   ggsave(filename = file.path(folder, paste(rev, "valGlobalSurfaceTemperature.png", sep = "_")), p1,
+         width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valGlobalSurfaceTemperature.pdf", sep = "_")), p1,
          width = 10, height = 10, scale = 1.3)
 }

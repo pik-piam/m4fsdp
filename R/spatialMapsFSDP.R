@@ -246,5 +246,6 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     return(combined)
   } else {
     ggsave(filename = file, combined, width = 12, height = 7, scale = 1.5, bg = "white")
+    ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = 12, height = 7, scale = 1.5, bg = "white")
   }
 }

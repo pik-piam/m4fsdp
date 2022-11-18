@@ -298,6 +298,7 @@ if (regionSel == "IND") {
     return(m)
   } else {
     ggsave(file, m, scale = 1.2, height = 8, width = 7, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 8, width = 7, bg = "white")
     p <- girafe(
       ggobj = m,
       options = list(
