@@ -161,22 +161,22 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       geom_bar_interactive(aes(fill = get("scenCol"),
                                tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))),
-                               data_id = get("variable")), position = "stack", stat = "identity") +
+                               data_id = get("bundleOrder")), position = "stack", stat = "identity") +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("variable")),
+                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", fill = "#26AD4C", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value < 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("variable")),
+                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", fill = "#AD1515", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value > 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("variable")),
+                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", fill = "#AD1515", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value < 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("variable")),
+                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", fill = "#26AD4C", size = 0) +
       geom_text(data = bSum[get("scenset") %in% c("FSECa", "FSECb"), ], aes(label = get("label")),
                 size = 2.5, colour = "white", angle = 0) +
@@ -196,25 +196,36 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   m <- plotBundle2(b)
   # ggsave("SingleBundle2.png", m, width = 11, height = 13, scale = 1)
 
+  p <- girafe(
+    ggobj = m,
+    options = list(
+      opts_sizing(rescale = TRUE, width = .95),
+      opts_hover(css = "fill:NULL;cursor:pointer;"),
+      opts_hover_inv(css = "opacity:0.1;"),
+      opts_selection(girafe_css(css = "fill:NULL;stroke:grey"),
+                     only_shiny = FALSE, type = "multiple", selected = NULL),
+      opts_tooltip(css = "background-color:white;padding:5px;
+                     border-radius:2px;border: black 1px solid;color:black;")
+    ),
+    width_svg = 11,
+    height_svg = 13
+  )
+
   if (is.null(file)) {
-    return(m)
+    x <- NULL
+    x[["plot"]] <- p
+    b[ ,"value" := round(get("value"),get("rounding"))]
+    b$unit <- NULL
+    b$bundle <- NULL
+    b[, c("variable", "unit") := tstrsplit(get("variable"), "\n", fixed = TRUE)]
+    setnames(b,"bundleOrder","bundle")
+    b <- b[,c("bundle","scenset","scenario","region","period","vargroup","variable","unit","value")]
+    b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
+    x[["data"]] <- b
+    return(x)
   } else {
     ggsave(file, m, scale = 1, width = 11, height = 13, bg = "white")
     ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 13, bg = "white")
-    p <- girafe(
-      ggobj = m,
-      options = list(
-        opts_sizing(rescale = TRUE, width = .95),
-        opts_hover(css = "fill:NULL;cursor:pointer;"),
-        opts_hover_inv(css = "opacity:0.1;"),
-        opts_selection(girafe_css(css = "fill:NULL;stroke:grey"),
-                       only_shiny = FALSE, type = "multiple", selected = NULL),
-        opts_tooltip(css = "background-color:white;padding:5px;
-                     border-radius:2px;border: black 1px solid;color:black;")
-      ),
-      width_svg = 11,
-      height_svg = 13
-    )
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }

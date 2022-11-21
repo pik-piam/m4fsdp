@@ -1,0 +1,79 @@
+---
+title: "FSDP"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: false
+    orientation: columns
+    self_contained: true
+    social: menu    
+    source_code: embed
+    vertical_layout: scroll
+---
+
+```{r include=FALSE}
+opts_chunk$set(message=FALSE)
+
+```
+
+Landing
+=======================================================================
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Introduction {data-height=750}
+
+**Title of the Paper**
+
+Authors
+
+Abstract
+
+**This digital tool provides interactive versions of the figures shown in the paper.**
+
+[Link to paper]
+
+### Further information {data-height=250}
+Contact for interactive figures: Florian Humpenöder (humpenoeder@pik-potsdam.de)
+
+Interactive figures are realized with the R packages [ggplot2](https://ggplot2.tidyverse.org), [patchwork](https://patchwork.data-imaginist.com/index.html) and [ggiraph](https://davidgohel.github.io/ggiraph/index.html).
+
+The website is generated from an Rmd file using the R [flexdashboard](https://pkgs.rstudio.com/flexdashboard/) package.
+
+
+Column {data-width=300}
+-----------------------------------------------------------------------
+
+### Information on the FSEC project
+
+blub blub blub
+
+Bundles
+=======================================================================
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### Figure X
+
+```{r echo=FALSE, fig.width = 11, fig.height = 13}
+x <- bundlesFSDP(repReg = repReg, regionSel = regionSel)
+x[["plot"]]
+```
+
+
+Column {data-width=300 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Information
+
+Bundles vs. Single measures
+
+### Data
+
+**Data**
+
+```{r echo=FALSE, fig.height = 13}
+datatable(x[["data"]], options = list(pageLength = 1000))
+```
+
