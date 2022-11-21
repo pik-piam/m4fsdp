@@ -4,14 +4,30 @@
 \alias{dashboardFSDP}
 \title{dashboardFSDP}
 \usage{
-dashboardFSDP(repReg, regionSel = "GLO", outputDir = "")
+dashboardFSDP(
+  repReg,
+  repIso,
+  repGrid,
+  regionSel = "GLO",
+  outputDir = "",
+  file = "dashboardFSDP.html"
+)
 }
 \arguments{
-\item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
+\item{repReg}{rds file or data.frame with regional data from all MAgPIE runs,
+produced with FSDP_collect.R output script.}
+
+\item{repIso}{rds file or data.frame with country-level data from all MAgPIE runs,
+produced with FSDP_collect.R output script.}
+
+\item{repGrid}{rds file or data.frame with gridded data from all MAgPIE runs,
+produced with FSDP_collect.R output script.}
 
 \item{regionSel}{Region that should be plotted}
 
 \item{outputDir}{output directory}
+
+\item{file}{file name}
 }
 \value{
 html file
