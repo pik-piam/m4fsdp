@@ -38,7 +38,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
-           "Health|Attributable deaths|Risk|Diet and anthropometrics",
            "Health|Years of life lost|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
            "Biodiversity|Shannon crop area diversity index",
@@ -55,8 +54,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   names(var) <- c("Health|Prevalence of underweight (million people)|1",
                   "Health|Prevalence of obesity (million people)|2",
-                  "Health|Attributable deaths (million people)|3",
-                  "Health|Years of life lost (million years)|4",
+                  "Health|Years of life lost (million years)|3",
                   "Environment|Biodiversity Intactness (Index)|1",
                   "Environment|Shannon crop area diversity index (Index)|2",
                   "Environment|Nitrogen surplus (Mt N/yr)|3",
@@ -115,22 +113,26 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
       variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
 
-  # Adding and greying-out the attributable deaths and years of life lost for non-dietary scenarios
+  # Adding and greying-out years of life lost for non-dietary scenarios
   tb <- as.data.frame(b)
 
-  nonDietaryScenarios <- tb %>%
-    filter(!.data$scenario %in% c("BAU", "NoUnderweight", "NoOverweight", "LessFoodWaste",
-                            "DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
-                            "DietLegumes", "DietFish", "DietEmptyCals")) %>%
+  allScenarios <- tb %>%
     pull(.data$scenario) %>%
     unique() %>%
     as.character()
 
+  haveYLLScenarios <- tb %>%
+    filter(.data$variable == "Years of life lost (million years)") %>%
+    pull(.data$scenario) %>%
+    unique() %>%
+    as.character()
+
+  nonDietaryScenarios <- setdiff(allScenarios, haveYLLScenarios)
+
   tb <- tb %>%
     filter(.data$scenario == "BAU",
            .data$period == "2050",
-           .data$variable %in% c("Attributable deaths (million people)",
-                                 "Years of life lost (million years)")) %>%
+           .data$variable %in% "Years of life lost (million years)") %>%
     select(-.data$scenario)
 
   tb <- tidyr::expand_grid(tb, scenario = nonDietaryScenarios) %>%
