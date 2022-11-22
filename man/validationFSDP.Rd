@@ -4,12 +4,14 @@
 \alias{validationFSDP}
 \title{validationFSDP}
 \usage{
-validationFSDP(repReg, val, folder = "output")
+validationFSDP(repReg, val, regionSel = "aggregate", folder = "output")
 }
 \arguments{
 \item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
 
 \item{val}{rds file or data.frame with validation data}
+
+\item{regionSel}{Region that should be plotted (e.g. c("IND","EUR","GLO")). Aggregate will return LIR, MIR and HIR.}
 
 \item{folder}{output folder}
 }

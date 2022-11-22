@@ -5,16 +5,16 @@
 #'
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
 #' @param val rds file or data.frame with validation data
+#' @param regionSel Region that should be plotted (e.g. c("IND","EUR","GLO")). Aggregate will return LIR, MIR and HIR.
 #' @param folder output folder
 #' @details creates validation for FSDP MAgPIE runs
 #' @return NULL
 #' @author Florian Humpenoeder
-#' @import ggplot2 data.table patchwork
+#' @import ggplot2 data.table patchwork withr
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 
-validationFSDP <- function(repReg, val, folder = "output") {
-
+validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "output") {
   #### get version
   rev <- unlist(strsplit(repReg, "_"))[1]
 
@@ -55,53 +55,69 @@ validationFSDP <- function(repReg, val, folder = "output") {
       ) + theme(legend.position = "bottom", legend.box = "horizontal", legend.title.align = 0)
   }
 
-  #### mapping for regional aggregation
-  map <- data.frame(matrix(nrow = 15, ncol = 2))
-  names(map) <- c("region", "region_class")
-  map[1, ] <- c("ANZ", "HIR")
-  map[2, ] <- c("BRA", "MIR")
-  map[3, ] <- c("CAN", "HIR")
-  map[4, ] <- c("CHA", "MIR")
-  map[5, ] <- c("EUR", "HIR")
-  map[6, ] <- c("IND", "LIR")
-  map[7, ] <- c("JKO", "HIR")
-  map[8, ] <- c("LAM", "MIR")
-  map[9, ] <- c("MEA", "MIR")
-  map[10, ] <- c("NEA", "MIR")
-  map[11, ] <- c("NEU", "MIR")
-  map[12, ] <- c("OAS", "MIR")
-  map[13, ] <- c("SSA", "LIR")
-  map[14, ] <- c("USA", "HIR")
-  map[15, ] <- c("GLO", "GLO")
-  rep <- merge(rep, map)
-  val <- merge(val, map)
+  if (all(length(regionSel) == 1 & regionSel == "aggregate")) {
+    #### mapping for regional aggregation
+    map <- data.frame(matrix(nrow = 15, ncol = 2))
+    names(map) <- c("region", "region_class")
+    map[1, ] <- c("ANZ", "HIR")
+    map[2, ] <- c("BRA", "MIR")
+    map[3, ] <- c("CAN", "HIR")
+    map[4, ] <- c("CHA", "MIR")
+    map[5, ] <- c("EUR", "HIR")
+    map[6, ] <- c("IND", "LIR")
+    map[7, ] <- c("JKO", "HIR")
+    map[8, ] <- c("LAM", "MIR")
+    map[9, ] <- c("MEA", "MIR")
+    map[10, ] <- c("NEA", "MIR")
+    map[11, ] <- c("NEU", "MIR")
+    map[12, ] <- c("OAS", "MIR")
+    map[13, ] <- c("SSA", "LIR")
+    map[14, ] <- c("USA", "HIR")
+    map[15, ] <- c("GLO", "GLO")
+    rep <- merge(rep, map)
+    val <- merge(val, map)
 
-  regSubOrder <- c("LIR", "MIR", "HIR", "GLO")
-  rep$region_class <- factor(rep$region_class, levels = regSubOrder)
-  val$region_class <- factor(val$region_class, levels = regSubOrder)
+    regSubOrder <- c("LIR", "MIR", "HIR", "GLO")
+    rep$region_class <- factor(rep$region_class, levels = regSubOrder)
+    val$region_class <- factor(val$region_class, levels = regSubOrder)
+
+    rep <- rep[rep$region_class != "GLO", ]
+    val <- val[val$region_class != "GLO", ]
+
+  } else {
+
+    rep$region_class <- rep$region
+    val$region_class <- val$region
+    rep <- rep[rep$region_class %in% regionSel, ]
+    val <- val[val$region_class %in% regionSel, ]
+
+  }
 
   # plot function
   plotVal <- function(var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL) {
     if (is.null(units)) {
       units <- levels(rep$unit)
     }
-    b <- rep[rep$variable == var & rep$unit %in% units & rep$region_class != "GLO", ]
+    b <- rep[rep$variable == var & rep$unit %in% units, ]
+    if (nrow(b) == 0) {
+      withr::with_options(list(show.error.messages = FALSE), stop())
+    }
     b <- droplevels(b)
     units <- levels(b$unit)
     unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
     if (is.null(hist)) {
-      h <- val[val$variable == var & val$unit == unitHist & val$region_class != "GLO" & val$scenario == "historical" &
+      h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
                  val$period >= 1980 & val$period <= 2020, ]
     } else {
-      h <- val[val$variable == var & val$unit == unitHist & val$region_class != "GLO" & val$scenario == "historical" &
+      h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
                  val$period >= 1980 & val$period <= 2020 & val$model %in% hist, ]
       h <- droplevels(h)
       if (!is.null(histName)) levels(h$model) <- histName
     }
 
     if (!is.null(weight)) {
-      w1 <- rep[rep$variable == weight & rep$region_class != "GLO", ]
-      w2 <- val[val$variable == weight & val$region_class != "GLO" & val$scenario == "historical" &
+      w1 <- rep[rep$variable == weight, ]
+      w2 <- val[val$variable == weight & val$scenario == "historical" &
                   val$period >= 1980 & val$period <= 2020, ]
       b <- cbind(b, w1$value)
       h <- cbind(h, w2$value)
