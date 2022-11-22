@@ -223,14 +223,18 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
 
   # Nutrient surplus
-  p1 <- plotVal(var = "Resources|Nitrogen|Nutrient surplus from land and manure management",
-                varName = "Nutrient surplus from land and manure management",
-                hist = "MADRaT")
+  if ("Resources|Nitrogen|Nutrient surplus from land and manure management" %in% levels(rep$variable)) {
+    p1 <- plotVal(var = "Resources|Nitrogen|Nutrient surplus from land and manure management",
+                  varName = "Nutrient surplus from land and manure management",
+                  hist = "MADRaT")
 
-  ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.png", sep = "_")), p1,
-         width = 10, height = 10, scale = 1.3)
-  ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.pdf", sep = "_")), p1,
-         width = 10, height = 10, scale = 1.3)
+    ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.png", sep = "_")), p1,
+           width = 10, height = 10, scale = 1.3)
+    ggsave(filename = file.path(folder, paste(rev, "valNutrientSurplus.pdf", sep = "_")), p1,
+           width = 10, height = 10, scale = 1.3)
+  } else {
+    warning("Missing Variable: Resources|Nitrogen|Nutrient surplus from land and manure management")
+  }
 
 
   # Global Surface Temeprature
