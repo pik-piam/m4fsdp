@@ -10,7 +10,7 @@
 #' @details creates validation for FSDP MAgPIE runs
 #' @return NULL
 #' @author Florian Humpenoeder
-#' @import ggplot2 data.table patchwork withr
+#' @import ggplot2 data.table patchwork
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 
@@ -99,9 +99,6 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       units <- levels(rep$unit)
     }
     b <- rep[rep$variable == var & rep$unit %in% units, ]
-    if (nrow(b) == 0) {
-      withr::with_options(list(show.error.messages = FALSE), stop())
-    }
     b <- droplevels(b)
     units <- levels(b$unit)
     unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
