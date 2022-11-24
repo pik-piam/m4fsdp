@@ -15,11 +15,10 @@
 #' @importFrom stats reorder
 
 validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "output") {
-  #### get version
-  rev <- unlist(strsplit(repReg, "_"))[1]
 
   #### read in data files
   rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECe"), subset = FALSE)
+  rev <- levels(rep$version)
   rep$scenset <- NULL
   if (!is.data.frame(val)) val <- readRDS(val)
   val[region == "World", region := "GLO"]
