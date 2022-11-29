@@ -146,6 +146,11 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     else NULL, valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
              by = c("region", "model", "variable", "unit", "vargroup", "period",
                     "scenset", "bundle", "bundleOrder", "rounding")]
+  #bSum <- b[, list("label" = round(sum(get("value")), get("rounding")),
+  #  valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
+  #  by = c("region", "model", "variable", "unit", "vargroup", "period",
+  #         "scenset", "bundle", "bundleOrder", "rounding")]
+
   bSum <- droplevels(bSum)
   b <- droplevels(b)
 
@@ -161,25 +166,27 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       geom_bar_interactive(aes(fill = get("scenCol"),
                                tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))),
-                               data_id = get("bundleOrder")), position = "stack", stat = "identity") +
+                               data_id = get("bundleOrder")), position = "stack", stat = "identity",width=0.5) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", fill = "#26AD4C", size = 0) +
+                           position = "stack", stat = "identity", width=0.5, fill = "#26AD4C", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value < 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", fill = "#AD1515", size = 0) +
+                           position = "stack", stat = "identity", width=0.5, fill = "#AD1515", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value > 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", fill = "#AD1515", size = 0) +
+                           position = "stack", stat = "identity", width=0.5, fill = "#AD1515", size = 0) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value < 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", fill = "#26AD4C", size = 0) +
-      geom_text(data = bSum[get("scenset") %in% c("FSECa", "FSECb"), ], aes(label = get("label")),
-                size = 2.5, colour = "white", angle = 0) +
+                           position = "stack", stat = "identity", width=0.5, fill = "#26AD4C", size = 0) +
+      geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(label = get("label")),
+                size = 2.5, colour = "black", angle = 0, nudge_y = 0.4) +
+      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(label = get("label")),
+                size = 2.5, colour = "black", angle = 0, nudge_y = -0.4) +
       scale_fill_manual_interactive("Scenario", values = colors) +
       guides(fill = guide_legend(order = 1)) +
       labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
