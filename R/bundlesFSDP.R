@@ -73,63 +73,73 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   b[, "value" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
 
-  colors <- setNames(c("#C29511", "#4499FF", "#BD36FF", "#FC8014", "#26AD4C"),
-                     c("single1", "single2", "single3", "single4", "bundle"))
+  safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#332288", "#AA4499",
+                               "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
+  bundlecolor="#117733"
+  colors = setNames(c(safe_colorblind_palette,bundlecolor),
+                    c(paste0("single",c(1:length(safe_colorblind_palette))),"bundle"))
+  #colors <- setNames(c("#C29511", "#4499FF", "#BD36FF", "#FC8014", "#26AD4C"),
+  #                   c("single1", "single2", "single3", "single4", "bundle"))
 
-  selBundle <- function(b, bundle, single1, single2, single3 = NULL, single4 = NULL, bundleOrder = "A", colors) {
-    x <- b[get("scenario") %in% c(bundle, single1, single2, single3, single4), ]
-    if (!is.null(single3)) {
-      single3Label <- paste0("<span style='color: ", colors["single3"], "'>", single3, "</span>", "<br>")
-    } else {
-      single3Label <- NULL
+  selBundle <- function(b, bundle, singles, bundleOrder = "A", colors) {
+    x <- b[get("scenario") %in% c(bundle, singles), ]
+    single_label<-NULL
+    for (count in 1:length(singles)){
+      single_label <- c(single_label, paste0("<span style='color: ", colors[paste0("single",count)], "'>", singles[count], "</span>", "<br>"))
     }
-    if (!is.null(single4)) {
-      single4Label <- paste0("<span style='color: ", colors["single4"], "'>", single4, "</span>", "<br>")
-    } else {
-      single4Label <- NULL
-    }
-    x[, "bundle" := paste0("<span style='color: ", colors["single1"], "'>", single1, "</span>", "<br>",
-                      "<span style='color: ", colors["single2"], "'>", single2, "</span>", "<br>",
-                      single3Label,
-                      single4Label,
-                      "<span style='color: ", colors["bundle"], "'>", "bundle", "</span>")]
+
+    x[, "bundle" := paste0(c(single_label,
+                           "<span style='color: ", colors["bundle"], "'>", "bundle", "</span>"),collapse="")]
     x[, "bundleOrder" := bundleOrder]
-    x[get("scenario") %in% single1, "scenCol" := "single1"]
-    x[get("scenario") %in% single2, "scenCol" := "single2"]
-    x[get("scenario") %in% single3, "scenCol" := "single3"]
-    x[get("scenario") %in% single4, "scenCol" := "single4"]
+    for (count in 1:length(singles)){
+      x[get("scenario") %in% singles[count], "scenCol" := paste0("single",count)]
+    }
     x[get("scenario") %in% bundle, "scenCol" := "bundle"]
-    x[get("scenario") %in% c(single1, single2, single3, single4), "scenset" := "FSECa"]
+    x[get("scenario") %in% singles, "scenset" := "FSECa"]
     x[get("scenario") %in% bundle, "scenset" := "FSECb"]
 
     return(x)
   }
 
-  x <- selBundle(b, "ExternalPressures", "Population", "EconDevelop", "EnergyTrans", "Bioplastics",
+  x <- selBundle(b, "ExternalPressures", singles=c("Population", "EconDevelop", "EnergyTrans", "Bioplastics"),
                  bundleOrder = 1, colors = colors)
-  x <- rbind(x, selBundle(b, "WaterSoil", "WaterSparing", "SoilCarbon", bundleOrder = 2, colors = colors))
-  x <- rbind(x, selBundle(b, "REDDaffRuminants", "DietRuminants", "REDDaff", bundleOrder = 3, colors = colors))
-  x <- rbind(x, selBundle(b, "DietRotations", "AllHealth", "CropRotations", bundleOrder = 4, colors = colors))
-  x <- rbind(x, selBundle(b, "MonogastricsRotations", "DietMonogastrics", "CropRotations",
-                         bundleOrder = 5, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeRotations", "FairTrade", "CropRotations", bundleOrder = 6, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeREDDaff", "FairTrade", "REDDaff", bundleOrder = 7, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeSoil", "FairTrade", "SoilCarbon", bundleOrder = 8, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeMonogastrics", "FairTrade", "DietMonogastrics", bundleOrder = 9, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeRuminants", "FairTrade", "DietRuminants", bundleOrder = 10, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeVeggies", "FairTrade", "DietVegFruitsNutsSeeds",
-                          bundleOrder = 11, colors = colors))
-  x <- rbind(x, selBundle(b, "MonogastricsVeggies", "DietMonogastrics", "DietVegFruitsNutsSeeds",
-                         bundleOrder = 12, colors = colors))
-  x <- rbind(x, selBundle(b, "SoilMonogastric", "SoilCarbon", "DietMonogastrics", bundleOrder = 13, colors = colors))
-  x <- rbind(x, selBundle(b, "SoilMonogastricRuminants", "SoilCarbon", "DietMonogastrics", "DietRuminants",
-                         bundleOrder = 14, colors = colors))
-  x <- rbind(x, selBundle(b, "SoilRotations", "SoilCarbon", "CropRotations", bundleOrder = 15, colors = colors))
-  x <- rbind(x, selBundle(b, "LivestockManureMngmt", "LivestockMngmt", "ManureMngmt",
-                          bundleOrder = 16, colors = colors))
-  x <- rbind(x, selBundle(b, "LivestockNUEMngmt", "LivestockMngmt", "NitrogenEff",
-                          bundleOrder = 17, colors = colors))
 
+  x <- rbind(x, selBundle(b, "AllHealth",
+             singles=c("DietEmptyCals","DietFish","DietLegumes","DietMonogastrics",
+                       "DietRuminants","DietVegFruitsNutsSeeds","NoOverweight","NoUnderweight"),
+             bundleOrder = 1, colors = colors))
+  x <- rbind(x, selBundle(b, "AllNitrogen",
+                          singles=c("LivestockManureMngmt","DietMonogastrics",
+                                    "DietRuminants","LessFoodWaste","NitrogenEff"),
+                          bundleOrder = 1, colors = colors))
+  x <- rbind(x, selBundle(b, "AllClimate",
+                          singles=c("RiceMit","NitrogenEff","REDDaff","SoilCarbon","LivestockManureMngmt"),
+                          bundleOrder = 1, colors = colors))
+
+'
+  x <- rbind(x, selBundle(b, "WaterSoil", singles=c("WaterSparing", "SoilCarbon"), bundleOrder = 2, colors = colors))
+  x <- rbind(x, selBundle(b, "REDDaffRuminants", singles=c("DietRuminants", "REDDaff"), bundleOrder = 3, colors = colors))
+  x <- rbind(x, selBundle(b, "DietRotations", singles=c("AllHealth", "CropRotations"), bundleOrder = 4, colors = colors))
+  x <- rbind(x, selBundle(b, "MonogastricsRotations", singles=c("DietMonogastrics", "CropRotations"),
+                         bundleOrder = 5, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeRotations", singles=c("FairTrade", "CropRotations"), bundleOrder = 6, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeREDDaff", singles=c("FairTrade", "REDDaff"), bundleOrder = 7, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeSoil", singles=c("FairTrade", "SoilCarbon"), bundleOrder = 8, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeMonogastrics", singles=c("FairTrade", "DietMonogastrics"), bundleOrder = 9, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeRuminants", singles=c("FairTrade", "DietRuminants"), bundleOrder = 10, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeVeggies", singles=c("FairTrade", "DietVegFruitsNutsSeeds"),
+                          bundleOrder = 11, colors = colors))
+  x <- rbind(x, selBundle(b, "MonogastricsVeggies", singles=c("DietMonogastrics", "DietVegFruitsNutsSeeds"),
+                         bundleOrder = 12, colors = colors))
+  x <- rbind(x, selBundle(b, "SoilMonogastric", singles=c("SoilCarbon", "DietMonogastrics"), bundleOrder = 13, colors = colors))
+  x <- rbind(x, selBundle(b, "SoilMonogastricRuminants", singles=c("SoilCarbon", "DietMonogastrics", "DietRuminants"),
+                         bundleOrder = 14, colors = colors))
+  x <- rbind(x, selBundle(b, "SoilRotations", singles=c("SoilCarbon", "CropRotations"), bundleOrder = 15, colors = colors))
+  x <- rbind(x, selBundle(b, "LivestockManureMngmt", singles=c("LivestockMngmt", "ManureMngmt"),
+                          bundleOrder = 16, colors = colors))
+  x <- rbind(x, selBundle(b, "LivestockNUEMngmt", singles=c("LivestockMngmt", "NitrogenEff"),
+                          bundleOrder = 17, colors = colors))
+'
   b <- x
   b$bundle <- factor(b$bundle)
   b$bundleOrder <- factor(b$bundleOrder)
@@ -141,7 +151,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                              max(abs(get("bundlesum")), na.rm = TRUE),
                                       na.rm = TRUE)), by = list(get("variable"))]
 
-  bSum <- b[, list("label" = if (max(abs(get("valuefill")) > 0.5, na.rm = TRUE))
+  bSum <- b[, list("label" = if (max(abs(get("valuefill")) > 0.1, na.rm = TRUE))
     round(sum(get("value")), get("rounding"))
     else NULL, valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
              by = c("region", "model", "variable", "unit", "vargroup", "period",
@@ -184,9 +194,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", width=0.5, fill = "#26AD4C", size = 0) +
       geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(label = get("label")),
-                size = 2.5, colour = "black", angle = 0, nudge_y = 0.4) +
+                size = 4, colour = "black", angle = 0, nudge_y = 0.4) +
       geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(label = get("label")),
-                size = 2.5, colour = "black", angle = 0, nudge_y = -0.4) +
+                size = 4, colour = "black", angle = 0, nudge_y = -0.4) +
       scale_fill_manual_interactive("Scenario", values = colors) +
       guides(fill = guide_legend(order = 1)) +
       labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
@@ -215,8 +225,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                      border-radius:2px;border: black 1px solid;color:black;")
     ),
     width_svg = 11,
-    height_svg = 13
-  )
+    height_svg = 7)
 
   if (is.null(file)) {
     x <- NULL
@@ -231,7 +240,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     x[["data"]] <- b
     return(x)
   } else {
-    ggsave(file, m, scale = 1, width = 11, height = 13, bg = "white")
+    ggsave(file, m, scale = 1, width = 11, height = 7, bg = "white")
     ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 13, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
