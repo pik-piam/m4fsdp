@@ -38,18 +38,18 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   names(var) <- c("Health|Underweight\nmio people|1|decrease|0",
                   "Health|Obesity\nmio people|2|decrease|0",
-                  "Health|Attributable deaths (million people)|3",
-                  "Health|Years of life lost (million years)|4",
+                  "Health|Attributable deaths\nmillion people|3|decrease|0",
+                  "Health|Years of life lost\nmillion years|4|decrease|0",
                   "Environment|Biodiversity\nBII|1|increase|2",
-                  "Environment|Croparea diversity|Shannon|2|increase|2",
-                  "Environment|Nitrogen surplus (Mt N/yr)|3",
+                  "Environment|Croparea diversity\nShannon Index (1)|2|increase|2",
+                  "Environment|Nitrogen surplus\nMt N/yr|3|decrease|0",
                   "Environment|Water flow violations\nkm3/yr|4|decrease|0",
                   "Environment|Cum CO2 emissions\nGtCO2eq since 1995|5|decrease|0",
                   "Environment|Global Surface Temp\ndeg C|6|decrease|2",
                   "Inclusion|Cost agric. products\nUSD/person|1|decrease|0",
                   "Inclusion|People Below 3.20$/Day\nmio people|2|decrease|0",
                   "Inclusion|Agri. employment\nmio people|3|increase|0",
-                  "Inclusion|Agri. wages\nIndex|4|increase|0",
+                  "Inclusion|Agri. wages\nIndex|4|increase|2",
                   "Economy|Bioeconomy Supply\nbillion US$05/yr|1|increase|0",
                   "Economy|Costs\nbillion US$05/yr|1|decrease|0")
 
@@ -109,17 +109,23 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   x <- selBundle(b, "ExternalPressures", singles = c("Population", "EconDevelop", "EnergyTrans", "Bioplastics"),
                  bundleOrder = 1, colors = colors)
 
-  x <- rbind(x, selBundle(b, "AllHealth",
+  x <- rbind(x, selBundle(b, "Sufficiency",
              singles = c("DietEmptyCals", "DietFish", "DietLegumes", "DietMonogastrics",
-                       "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight", "NoUnderweight"),
-             bundleOrder = 1, colors = colors))
-  x <- rbind(x, selBundle(b, "AllNitrogen",
-                          singles = c("LivestockManureMngmt", "DietMonogastrics",
-                                    "DietRuminants", "LessFoodWaste", "NitrogenEff"),
-                          bundleOrder = 1, colors = colors))
-  x <- rbind(x, selBundle(b, "AllClimate",
-                          singles = c("RiceMit", "NitrogenEff", "REDDaff", "SoilCarbon", "LivestockManureMngmt"),
-                          bundleOrder = 1, colors = colors))
+                       "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight", "NoUnderweight","LessFoodWaste"),
+             bundleOrder = 2, colors = colors))
+  x <- rbind(x, selBundle(b, "Livelihoods",
+                          singles = c("LiberalizedTrade","MinWage"),
+                          bundleOrder = 3, colors = colors))
+  x <- rbind(x, selBundle(b, "NatureSparing",
+                          singles = c("REDDaff","LandSparing","PeatlandSparing","WaterSparing","BiodivSparing"),
+                          bundleOrder = 4, colors = colors))
+  x <- rbind(x, selBundle(b, "AgroMngmt",
+                          singles = c("CropRotatons", "NitrogenEff", "RiceMit", "LivestockMngmt", "ManureMngmt", "SoilCarbon"),
+                          bundleOrder = 5, colors = colors))
+  #x <- rbind(x, selBundle(b, "AllNitrogen",
+  #                        singles = c("LivestockManureMngmt", "DietMonogastrics",
+  #                                  "DietRuminants", "LessFoodWaste", "NitrogenEff"),
+  #                        bundleOrder = 1, colors = colors))
 
 '
   x <- rbind(x, selBundle(b, "WaterSoil", singles=c("WaterSparing", "SoilCarbon"), bundleOrder = 2, colors = colors))
@@ -127,12 +133,12 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   x <- rbind(x, selBundle(b, "DietRotations", singles=c("AllHealth", "CropRotations"), bundleOrder = 4, colors = colors))
   x <- rbind(x, selBundle(b, "MonogastricsRotations", singles=c("DietMonogastrics", "CropRotations"),
                          bundleOrder = 5, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeRotations", singles=c("FairTrade", "CropRotations"), bundleOrder = 6, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeREDDaff", singles=c("FairTrade", "REDDaff"), bundleOrder = 7, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeSoil", singles=c("FairTrade", "SoilCarbon"), bundleOrder = 8, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeMonogastrics", singles=c("FairTrade", "DietMonogastrics"), bundleOrder = 9, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeRuminants", singles=c("FairTrade", "DietRuminants"), bundleOrder = 10, colors = colors))
-  x <- rbind(x, selBundle(b, "TradeVeggies", singles=c("FairTrade", "DietVegFruitsNutsSeeds"),
+  x <- rbind(x, selBundle(b, "TradeRotations", singles=c("LiberalizedTrade", "CropRotations"), bundleOrder = 6, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeREDDaff", singles=c("LiberalizedTrade", "REDDaff"), bundleOrder = 7, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeSoil", singles=c("LiberalizedTrade", "SoilCarbon"), bundleOrder = 8, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeMonogastrics", singles=c("LiberalizedTrade", "DietMonogastrics"), bundleOrder = 9, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeRuminants", singles=c("LiberalizedTrade", "DietRuminants"), bundleOrder = 10, colors = colors))
+  x <- rbind(x, selBundle(b, "TradeVeggies", singles=c("LiberalizedTrade", "DietVegFruitsNutsSeeds"),
                           bundleOrder = 11, colors = colors))
   x <- rbind(x, selBundle(b, "MonogastricsVeggies", singles=c("DietMonogastrics", "DietVegFruitsNutsSeeds"),
                          bundleOrder = 12, colors = colors))

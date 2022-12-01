@@ -186,7 +186,7 @@ if (regionSel == "IND") {
   b <- b[scenario != "DietEmptyCals",]
   b <- b[scenario != "WaterSparing",]
   b <- b[scenario != "LandSparing",]
-  b <- b[scenario != "LandUseDiversity",]
+  b <- b[scenario != "BiodivSparing",]
   b <- b[scenario != "PeatlandSparing",]
   b <- b[scenario != "REDD",]
   b <- b[scenario != "REDDaff",]
@@ -196,7 +196,7 @@ if (regionSel == "IND") {
   b <- b[scenario != "LivestockMngmt",]
   b <- b[scenario != "AnimalWasteMngmt",]
   b <- b[scenario != "AirPollution",]
-  b <- b[scenario != "FairTrade",]
+  b <- b[scenario != "LiberalizedTrade",]
   b <- b[scenario != "DietRotations",]
   b <- b[scenario != "FullBiodiv",]
   b <- b[scenario != "Protection",]
@@ -228,11 +228,11 @@ if (regionSel == "IND") {
   scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
                  "DietLegumes", "DietFish", "DietEmptyCals")
-  scenProtect <- c("WaterSparing", "LandSparing", "LandUseDiversity", "PeatlandSparing")
+  scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing")
   scenClimate <- c("REDD", "REDDaff", "SoilCarbon")
   scenMngmt <- c("CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
                  "AirPollution")
-  scenInclusion <- c("FairTrade","MinWage")
+  scenInclusion <- c("LiberalizedTrade","MinWage")
   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
                         "REDDaffDietRuminants", "FullBiodiv")
   scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment",
