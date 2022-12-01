@@ -21,16 +21,16 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
-           # "Health|Attributable deaths|Risk|Diet and anthropometrics",
-           # "Health|Years of life lost|Risk|Diet and anthropometrics",
+           "Health|Attributable deaths|Risk|Diet and anthropometrics",
+           "Health|Years of life lost|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
-           #           "Biodiversity|Shannon croparea diversity index",
-           #           "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
+           "Biodiversity|Shannon crop area diversity index",
+           "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
            "Water|Environmental flow violation volume",
            "Emissions|GWP100AR6|Land|Cumulative",
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
-           #           "Number of People Below 3.20$/Day",
+           "Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
            "Hourly labor costs relative to 2020",
            "Value|Bioeconomy Demand",
@@ -38,20 +38,25 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   names(var) <- c("Health|Underweight\nmio people|1|decrease|0",
                   "Health|Obesity\nmio people|2|decrease|0",
-                  # "Health|Attributable deaths (million people)|3",
-                  # "Health|Years of life lost (million years)|4",
+                  "Health|Attributable deaths (million people)|3",
+                  "Health|Years of life lost (million years)|4",
                   "Environment|Biodiversity\nBII|1|increase|2",
-                  #                  "Environment|Croparea diversity|Shannon|2|increase|2",
-                  #                  "Environment|Nitrogen surplus (Mt N/yr)|3",
+                  "Environment|Croparea diversity|Shannon|2|increase|2",
+                  "Environment|Nitrogen surplus (Mt N/yr)|3",
                   "Environment|Water flow violations\nkm3/yr|4|decrease|0",
                   "Environment|Cum CO2 emissions\nGtCO2eq since 1995|5|decrease|0",
                   "Environment|Global Surface Temp\ndeg C|6|decrease|2",
                   "Inclusion|Cost agric. products\nUSD/person|1|decrease|0",
-                  #                  "Inclusion|People Below 3.20$/Day\nmio people|2|decrease|0",
+                  "Inclusion|People Below 3.20$/Day\nmio people|2|decrease|0",
                   "Inclusion|Agri. employment\nmio people|3|increase|0",
                   "Inclusion|Agri. wages\nIndex|4|increase|0",
                   "Economy|Bioeconomy Supply\nbillion US$05/yr|1|increase|0",
                   "Economy|Costs\nbillion US$05/yr|1|decrease|0")
+
+  if(any(!var%in%rep$variable)){
+    warning(paste(c("The following indicators are missing: ",var=var[!var%in%rep$variable]),collapse = " "))
+  }
+  var=var[var%in%rep$variable]
 
   levels(rep$region)[levels(rep$region) == "World"] <- "GLO"
   b <- rep[get("variable") %in% var & get("region") == regionSel & get("period") == 2050, ]
