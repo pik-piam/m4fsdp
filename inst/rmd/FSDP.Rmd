@@ -77,3 +77,90 @@ Bundles vs. Single measures
 datatable(x[["data"]], options = list(pageLength = 1000))
 ```
 
+HeatMap 1
+=======================================================================
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### HeatMap TableType = 1
+
+```{r echo=FALSE, fig.width = 11, fig.height = 13}
+x <- heatmapFSDP(repReg = repReg, regionSel = regionSel, tableType = 1)
+x[["plot"]]
+```
+
+
+Column {data-width=300 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Information
+
+some text 
+
+### Data
+
+**Data**
+
+```{r echo=FALSE, fig.height = 13}
+datatable(x[["data"]], options = list(pageLength = 1000))
+```
+
+HeatMap 2a
+=======================================================================
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### HeatMap TableType = 2a
+
+```{r echo=FALSE, fig.width = 11, fig.height = 13}
+x <- heatmapFSDP(repReg = repReg, regionSel = regionSel, tableType = "2a")
+x[["plot"]]
+```
+
+
+Column {data-width=300 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Information
+
+some text 
+
+### Data
+
+**Data**
+
+```{r echo=FALSE, fig.height = 13}
+datatable(x[["data"]], options = list(pageLength = 1000))
+```
+
+HeatMap 3
+=======================================================================
+
+Column {data-width=700}
+-----------------------------------------------------------------------
+
+### HeatMap TableType = 3
+
+```{r echo=FALSE, fig.width = 11, fig.height = 13}
+x <- heatmapFSDP(repReg = repReg, regionSel = regionSel, tableType = 3)
+x[["plot"]]
+```
+
+
+Column {data-width=300 .tabset .tabset-fade}
+-----------------------------------------------------------------------
+
+### Information
+
+some text 
+
+### Data
+
+**Data**
+
+```{r echo=FALSE, fig.height = 13}
+datatable(x[["data"]], options = list(pageLength = 1000))
+```
+
