@@ -7,6 +7,7 @@
 #' @param val rds file or data.frame with validation data
 #' @param regionSel Region that should be plotted (e.g. c("IND","EUR","GLO")). Aggregate will return LIR, MIR and HIR.
 #' @param folder output folder
+#' @param scens if "BAU_FSEC", BAU and FSEC scenarios are plotted, with "central" plots the core scenarios, "extended" plot the core scenarios and all ssps.
 #' @details creates validation for FSDP MAgPIE runs
 #' @return NULL
 #' @author Florian Humpenoeder
@@ -14,16 +15,18 @@
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 
-validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "output", ssps=FALSE) {
+validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "output", scens="BAU_FSEC") {
 
   #### read in data files
-  if(ssps){
+  if(scens=="central"){
     rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd","FSECe"), subset = FALSE)
-    #rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau", "SSP5bau", "FSDP"), ]
-  } else {
+  } else if (scens=="BAU_FSEC") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECc","FSECe"), subset = FALSE)
-  }
+  } else if (scens=="extended") {
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd","FSECe"), subset = FALSE)
+    rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
+  } else {stop("unknown scens")}
 
   rev <- levels(rep$version)
   rep$scenset <- NULL

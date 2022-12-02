@@ -4,7 +4,13 @@
 \alias{validationFSDP}
 \title{validationFSDP}
 \usage{
-validationFSDP(repReg, val, regionSel = "aggregate", folder = "output")
+validationFSDP(
+  repReg,
+  val,
+  regionSel = "aggregate",
+  folder = "output",
+  scens = "BAU_FSEC"
+)
 }
 \arguments{
 \item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
@@ -14,6 +20,8 @@ validationFSDP(repReg, val, regionSel = "aggregate", folder = "output")
 \item{regionSel}{Region that should be plotted (e.g. c("IND","EUR","GLO")). Aggregate will return LIR, MIR and HIR.}
 
 \item{folder}{output folder}
+
+\item{scens}{if "BAU_FSEC", BAU and FSEC scenarios are plotted, with "central" plots the core scenarios, "extended" plot the core scenarios and all ssps.}
 }
 \description{
 Validation for FSDP MAgPIE runs
