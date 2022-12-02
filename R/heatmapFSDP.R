@@ -296,25 +296,40 @@ if (regionSel == "IND") {
   m <- m + facet_grid(vars(period), vars(vargroup), scales = "free", space = "free") +
     scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
 
+  p <- girafe(
+    ggobj = m,
+    options = list(
+      opts_sizing(rescale = TRUE, width = .95),
+      opts_hover(css = "fill:NULL;cursor:pointer;"),
+      opts_hover_inv(css = "opacity:0.1;"),
+      opts_selection(girafe_css(css = "fill:NULL;stroke:grey"),
+                     only_shiny = FALSE, type = "multiple", selected = NULL),
+      opts_tooltip(css = "background-color:white;padding:5px;
+                     border-radius:2px;border: black 1px solid;color:black;")
+    ),
+    width_svg = 10,
+    height_svg = 10
+  )
+
   if (is.null(file)) {
-    return(m)
+    x <- NULL
+    x[["plot"]] <- p
+    b[, "value" := get("label")]
+    b$unit <- NULL
+    b[, c("variable", "unit") := tstrsplit(get("variable"), " (", fixed = TRUE)]
+    b$unit <- substring(b$unit,1,nchar(b$unit)-1)
+    setnames(b, "period", "scentype")
+    #b$period <- NULL
+    b[, c("scenario", "period") := tstrsplit(get("scenario"), " ", fixed = TRUE)]
+    b$period <- as.numeric(b$period)
+    b[is.na(get("period")), "period" := 2050]
+    b <- b[, c("scenset", "scentype", "scenario", "region", "period", "vargroup", "variable", "unit", "value")]
+    b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
+    x[["data"]] <- b
+    return(x)
   } else {
     ggsave(file, m, scale = 1.2, height = 8, width = 7, bg = "white")
     ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 8, width = 7, bg = "white")
-    p <- girafe(
-      ggobj = m,
-      options = list(
-        opts_sizing(rescale = TRUE, width = .95),
-        opts_hover(css = "fill:NULL;cursor:pointer;"),
-        opts_hover_inv(css = "opacity:0.1;"),
-        opts_selection(girafe_css(css = "fill:NULL;stroke:grey"),
-                       only_shiny = FALSE, type = "multiple", selected = NULL),
-        opts_tooltip(css = "background-color:white;padding:5px;
-                     border-radius:2px;border: black 1px solid;color:black;")
-      ),
-      width_svg = 10,
-      height_svg = 10
-    )
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }
