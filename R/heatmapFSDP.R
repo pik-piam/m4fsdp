@@ -59,7 +59,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Environment|Shannon crop area diversity index (Index)|2",
                   "Environment|Nitrogen surplus (Mt N/yr)|3",
                   "Environment|Water environmental flow violations (km3/yr)|4",
-                  "Environment|Cumulative GHG emissions (GtCO2eq since 1995)|5",
+                  "Environment|Cumulative GHG emissions (Gt CO2eq since 2000)|5",
                   "Environment|Global Surface Temperature (deg C)|6",
                   "Inclusion|Expenditure for agric. products (USD/person)|1",
                   "Inclusion|Number of People Below 3.20$/Day (million people)|2",
