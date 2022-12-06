@@ -1,12 +1,14 @@
-# MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project
+# MAgPIE outputs R package for MAgPIE version 4.x to create outputs
+    for FSDP project
 
-R package **m4fsdp**, version **0.24.5.9001**
+R package **m4fsdp**, version **0.25.21**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/m4fsdp)](https://cran.r-project.org/package=m4fsdp)  [![R build status](https://github.com/pik-piam/m4fsdp/workflows/check/badge.svg)](https://github.com/pik-piam/m4fsdp/actions) [![codecov](https://codecov.io/gh/pik-piam/m4fsdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/m4fsdp) [![r-universe](https://pik-piam.r-universe.dev/badges/m4fsdp)](https://pik-piam.r-universe.dev/ui#builds)
 
 ## Purpose and Functionality
 
-Output routines for extracting results from the MAgPIE framework (versions 4.x) for the FSDP project.
+Output routines for extracting results from the MAgPIE
+    framework (versions 4.x) for the FSDP project.
 
 
 ## Installation
@@ -38,16 +40,17 @@ In case of questions / problems please contact Benjamin Leon Bodirsky <bodirsky@
 
 To cite package **m4fsdp** in publications use:
 
-Bodirsky B, Dietrich J, Humpenoeder F (2022). _m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi: ? (URL: https://doi.org/?), R package version 0.24.5.9001, <URL: https://github.com/pik-piam/m4fsdp>.
+Bodirsky B, Dietrich J, Humpenoeder F (2022). _m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi: ? (URL: https://doi.org/?), R package version 0.25.21, <URL: https://github.com/pik-piam/m4fsdp>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Manual{,
-  title = {m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project},
+  title = {m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
+for FSDP project},
   author = {Benjamin Leon Bodirsky and Jan Philipp Dietrich and Florian Humpenoeder},
   year = {2022},
-  note = {R package version 0.24.5.9001},
+  note = {R package version 0.25.21},
   doi = {?},
   url = {https://github.com/pik-piam/m4fsdp},
 }

@@ -1,4 +1,3 @@
-globalVariables(c("scenario", "scenset", "region", "period", "unit", "variable", "varunit", "value"))
 #' @title convertReportFSDP
 #' @description reads in FSDP reporting file
 #'
@@ -17,18 +16,25 @@ globalVariables(c("scenario", "scenset", "region", "period", "unit", "variable",
 convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = NULL) {
 
   if (!is.data.frame(rep)) rep <- readRDS(rep)
-  rep <- as.data.table(rep)
-  rep <- rep[!scenario %like% "calibration_FSEC", ]
-  rep[, c("version", "scenset", "scenario") := tstrsplit(scenario, "_", fixed = TRUE)]
-  rep[, version := NULL]
-  if (!is.null(scengroup)) rep <- rep[scenset %in% scengroup]
+  if (!is.data.table(rep)) rep <- as.data.table(rep)
+
+  if (!all(c("version", "scenset") %in% names(rep))) {
+    rep <- rep[!get("scenario") %like% "calibration_FSEC", ]
+    rep[, c("version", "scenset", "scenario") := tstrsplit(scenario, "_", fixed = TRUE)]
+  }
+
+  #keep only latest version
+  rep$version <- factor(rep$version)
+  rep <- rep[get("version") == levels(rep$version)[length(levels(rep$version))], ]
+
+  if (!is.null(scengroup)) rep <- rep[get("scenset") %in% scengroup]
   rep$scenario <- factor(rep$scenario)
   rep <- droplevels(rep)
   if (!is.null(varlist)) {
     if (!is.null(rep$unit)) {
-      rep[, varunit := paste0(variable, " (", unit, ")")]
+      rep[, "varunit" := paste0(get("variable"), " (", unit, ")")]
       write.csv(unique(rep$varunit), varlist, row.names = FALSE, quote = FALSE)
-      rep[, varunit := NULL]
+      rep[, "varunit" := NULL]
     } else {
       write.csv(paste0(unique(rep$variable)), varlist, row.names = FALSE, quote = FALSE)
     }
@@ -36,13 +42,13 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
 
   if (subset) {
     if (!is.null(rep$region)) {
-      rep <- rep[region != "GLO", ]
-      rep <- rep[region != "World", ]
+      rep <- rep[get("region") != "GLO", ]
+      rep <- rep[get("region") != "World", ]
     }
 
-    rep <- rep[period %in% c(2020, 2050) & scenario %in% c("BAU", "FSDP"), ]
-    rep <- rep[!(scenario == "FSDP" & period == 2020), ]
-    rep[, scenario := paste(scenario, period)]
+    rep <- rep[get("period") %in% c(2020, 2050) & get("scenario") %in% c("BAU", "FSDP"), ]
+    rep <- rep[!(get("scenario") == "FSDP" & get("period") == 2020), ]
+    rep[, "scenario" := paste(get("scenario"), get("period"))]
     rep$scenario <- factor(rep$scenario, levels = c("BAU 2020", "BAU 2050", "FSDP 2050"))
   }
 

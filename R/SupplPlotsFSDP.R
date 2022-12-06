@@ -1,7 +1,7 @@
 globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive",
                   "hours", "Products", "RegionG_f"))
 
-#' @title supplPlotsFSDP
+#' @title SupplPlotsFSDP
 #' @description creates supplementary plots for FSDP MAgPIE runs
 #'
 #' @export
@@ -9,16 +9,19 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
 #' @param scenarioType options: all, or one of the a-e groupings
 #' @param file  file name to save to
+#' @param calorieSupply parameter to set if calorie figures needed for calories supply or calorie intake, set FALSE for Intake
+#' @param caseRegion set TRUE if plots are being used for country case studies (India, Brazil, China)
+#' @param region Code of the region for which plots are being created, works only if caseRegion is TRUE
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
-#' @author David M Chen
+#' @author David M Chen, Vartika Singh
 #' @import ggplot2 data.table scales magpiesets
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>%
 
-supplPlotsFSDP <- function(repReg, scenarioType = "all", file = NULL) {
+SupplPlotsFSDP <- function(repReg, scenarioType = "all", file = NULL, calorieSupply = TRUE, caseRegion = TRUE, region = "IND") {
 
-
+#repReg <- "C:/Users/IIMA/Dropbox (IFPRI)/PhD/FSEC/Data/v26_FSDP_reg.rds"
  # repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
 
 if (scenarioType == "all") {
@@ -40,10 +43,16 @@ if (scenarioType == "all") {
 
 plots <- list()
 
+selRegion <- region
 LIR <- c("SSA", "IND")
 HIR <- c("USA", "CAN", "ANZ", "EUR", "JKO", "NEU")
 ROW <- c("CHA", "BRA", "LAM", "MEA", "NEA", "OAS", "REF")
 
+if (caseRegion) {
+  scens <- rep %>%
+    mutate(RegionG =  case_when( # add region groupings
+      region %in% selRegion ~ selRegion))
+} else {
 scens <- rep %>%
 mutate(RegionG =  case_when( # add region groupings
          region %in% LIR ~ "Low-Income Regions",
@@ -53,6 +62,8 @@ mutate(RegionG =  case_when( # add region groupings
        RegionG = factor(RegionG,
                         levels = c("High-Income Regions",
                                    "Rest of World", "Low-Income Regions", "World")))
+}
+
 
 scenarios <- as.character(unique(scens$scenario)) # re-order scenario factors to put BAU first
 scenarios <- c(scenarios[which(scenarios == "BAU")], scenarios[-which(scenarios == "BAU")])
@@ -72,6 +83,8 @@ kcr <- findset("kcr")
 kfo <- findset("kfo")
 ksd <- findset("ksd")
 
+if (calorieSupply) {
+
 cropDem <- "Nutrition|Calorie Supply|Crops|"
 procDem <- "Nutrition|Calorie Supply|Secondary products|+|"
 livDem <- "Nutrition|Calorie Supply|Livestock products|+|"
@@ -85,8 +98,22 @@ processed <- paste0(procDem, reportingnames(c("alcohol",
                                               "sugar", "oils",  "scp",  "molasses", "brans")))
 animal <- paste0(livDem, reportingnames(kli))
 fish <- "Nutrition|Calorie Supply|+|Fish"
+} else {
 
+cropInt <- "Nutrition|Calorie Intake|Crops|"
+procInt <- "Nutrition|Calorie Intake|Secondary products|+|"
+livInt <- "Nutrition|Calorie Intake|Livestock products|+|"
 
+cereals <- paste0(cropInt, "Cereals|+|", reportingnames(c("maiz", "rice_pro", "tece", "trce")))
+oilCrops <- paste0(cropInt, "Oil crops|+|", reportingnames(c("soybean", "rapeseed",  "sunflower", "groundnut")))
+otherCrops <- paste0(cropInt, "Other Crops|+|", reportingnames(c("others", "potato", "cassav_sp",
+                                                                 "puls_pro")))
+sugarCrops <-  paste0(cropInt, "Sugar Crops|+|", reportingnames(c("sugr_beet", "sugr_cane")))
+processed <- paste0(procInt, reportingnames(c("alcohol",
+                                              "sugar", "oils",  "scp",  "molasses", "brans")))
+animal <- paste0(livInt, reportingnames(kli))
+fish <- "Nutrition|Calorie Intake|+|Fish"
+}
 
 # groupings
 staples <- c(cereals, otherCrops[-grep("Fruit", otherCrops)],
@@ -117,6 +144,26 @@ food_df <- filter(scens, variable %in% c(cereals, oilCrops, otherCrops,
 food_df <- food_df[-which(food_df$period == 2020 & food_df$scenario != "BAU"), ] # remove nonBAU 2010 values
 food_df$pop_barwidth <- rescale(food_df$pop, c(0.05, 0.45))   # scale pop for barwidths
 
+if (caseRegion) {
+  food_df <- food_df %>% filter(RegionG == selRegion)
+  plotCalSupply <- ggplot() +
+    facet_grid(cols = vars(period), scales = "free_x", space = "free_x",   switch = "x") +
+    geom_col(data = food_df[order(food_df$FoodGroup), ],
+             aes(x = scenario, y = CalorieSupply, group = scenario, fill = FoodGroup),
+             position = "stack",
+             width = filter(food_df[order(food_df$FoodGroup), ], RegionG == selRegion)$pop_barwidth) +
+    themeSupplFood(base_size = 25) +
+       ylab("Kcal/capita/day") +
+    scale_fill_manual(values = c("#fcba03", "#a11523", "#66407a", "#40945a"),
+                      guide = guide_legend(reverse = TRUE)) +
+    if (calorieSupply) {
+      labs(title = "Calorie Supply")
+    } else {
+      labs(title = "Calorie Intake")
+    }
+
+} else {
+
 plotCalSupply <- ggplot() +
   facet_grid(cols = vars(period), scales = "free_x", space = "free_x",   switch = "x") +
   geom_col(data = filter(food_df[order(food_df$FoodGroup), ],
@@ -138,12 +185,16 @@ width = filter(food_df[order(food_df$FoodGroup), ],
                           RegionG == "Low-Income Regions")$pop_barwidth
   ) +
   themeSupplFood(base_size = 25) +
-  labs(title = "Calorie Supply") +
   ylab("Kcal/capita/day") +
   scale_fill_manual(values = c("#fcba03", "#a11523", "#66407a", "#40945a"),
-                    guide = guide_legend(reverse = TRUE))
+                    guide = guide_legend(reverse = TRUE)) +
+  if (calorieSupply) {
+    labs(title = "Calorie Supply")
+  } else {
+    labs(title = "Calorie Intake")
+  }
 
-
+}
 
 ### product demand per capita
 demandCats <- scens[grep("Demand\\|\\+\\|", scens$variable), ]$variable %>%
@@ -169,7 +220,20 @@ agDem <- filter(scens, variable %in% demandCats,
 agDem <- agDem[-which(agDem$period == 2020 & agDem$scenario != "BAU"), ] # remove nonBAU 2010 values
 agDem$pop_barwidth <- rescale(agDem$pop, c(0.2, 0.8))   # scale pop for barwidths
 
-
+if (caseRegion) {
+  plotAgDem <- ggplot() +
+    geom_col(data = agDem,
+             aes(x = scenario, y = value, group = scenario, fill = variable),
+             position = "stack",
+             width = filter(agDem,
+                            RegionG == selRegion)$pop_barwidth) +
+    themeSupplFood(base_size = 25) +
+    labs(title = "Crop-Based Product Demand") +
+    facet_grid(cols = vars(period), scales = "free_x", space = "free_x",   switch = "x") +
+    ylab("Mt dm") +
+    scale_fill_manual(values = c("#FCE900", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"),
+                      guide = guide_legend(reverse = TRUE))
+  } else {
 plotAgDem <- ggplot() +
   geom_col(data = filter(agDem, RegionG == "High-Income Regions"),
            aes(x = scenario, y = value, group = scenario, fill = variable),
@@ -192,7 +256,7 @@ plotAgDem <- ggplot() +
   ylab("Mt dm") +
   scale_fill_manual(values = c("#FCE900", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"),
                     guide = guide_legend(reverse = TRUE))
-
+}
 
 ###### emissions
 
@@ -239,7 +303,7 @@ plotEmissGlo <- ggplot(filter(emiss_glo, scenario %in% c("BAU", "FSDP")), aes(x 
 
 
 # emis reg CUMULATIVE
-emiss_reg <- filter(scens, region != "World",
+emissReg <- filter(scens, region != "World",
                     variable %in% varEmiss,
                     period > 2020) %>%
   droplevels() %>%
@@ -253,13 +317,17 @@ emiss_reg <- filter(scens, region != "World",
   mutate(value = cumsum(value / 1000) * 5) %>%   # Gt and cumulative, multiply by the 5 year time steps
   filter(period == 2050) # subset to 2050 value
 
-emiss_reg$positive <- ifelse(emiss_reg$value >= 0, emiss_reg$value, 0)
-emiss_reg$negative <- ifelse(emiss_reg$value < 0, emiss_reg$value, -1e-36)
+emissReg$positive <- ifelse(emissReg$value >= 0, emissReg$value, 0)
+emissReg$negative <- ifelse(emissReg$value < 0, emissReg$value, -1e-36)
 
 # emiss_reg <- emiss_reg[-which(emiss_reg$period == 2020 & emiss_reg$scenario!= "BAU"),] #remove nonBAU 2010 values
 unit <- expression(bold("Gt CO"[2] ~ "since 2020")) # "Gt CO2eq since 2020"
 
-plotEmissReg <- ggplot(emiss_reg, aes(y = scenario)) +
+if (caseRegion) {
+  emissReg <- emissReg %>% filter(RegionG == selRegion)
+}
+
+plotEmissReg <- ggplot(emissReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
   geom_bar(aes(x = positive, fill = variable), position = "stack", stat = "identity", width = 0.75) +
@@ -272,7 +340,6 @@ plotEmissReg <- ggplot(emiss_reg, aes(y = scenario)) +
   guides(fill = guide_legend("AFOLU emission type", ncol = 4, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab(unit) + scale_x_continuous(guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = c(0.05, 0.1)),
                                   breaks = pretty_breaks()) # breaks= function(x) seq(round(min(x)/0.5)*0.5, round(max(x)/0.5)*0.5, by = 1)#+scale_x_continuous(breaks = c(-2,0,2,4))# + labs(caption = paste(Sys.Date()))
-
 
 ########## Land Use
 landVar <- c("Resources|Land Cover|+|Cropland", "Resources|Land Cover|Cropland|+|Bioenergy crops",
@@ -317,7 +384,9 @@ landReg <- filter(land_df, region != "GLO", period == 2050) %>%
   summarise(value = sum(value), positive = sum(positive), negative = sum(negative)) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario))))
 
-
+if (caseRegion) {
+  landReg <- landReg %>% filter(RegionG == selRegion)
+}
 plotLandReg <- ggplot(landReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
@@ -328,6 +397,7 @@ plotLandReg <- ggplot(landReg, aes(y = scenario)) +
   theme(legend.position = "bottom") + guides(fill = guide_legend("Land type", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab("Change in Mha compared to 2020") +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+
 
 ### Crop Area ##########
 
@@ -397,8 +467,11 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario))))
 
 # write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
+ if (caseRegion) {
+   cropReg <- cropReg %>% filter(RegionG == selRegion)
+ }
 
-plotCropReg <- ggplot(cropReg, aes(y = scenario)) +
+ plotCropReg <- ggplot(cropReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
   geom_bar(aes(x = positive, fill = CropGroup), position = "stack", stat = "identity", width = 0.75) +
@@ -457,6 +530,11 @@ nitrReg <- nitrReg[-which(nitrReg$period == 2020 & nitrReg$scenario != "BAU"), ]
 
 # write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
 
+if (caseRegion) {
+  nitrReg <- nitrReg %>% filter(RegionG == selRegion)
+}
+
+
 plotnitrReg <- ggplot(nitrReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
@@ -505,6 +583,10 @@ waterReg <- filter(water_df, region != "GLO", period == 2050) %>%
   summarise(value = sum(value), positive = sum(positive), negative = sum(negative)) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario))))
 
+if (caseRegion) {
+  waterReg <- waterReg %>% filter(RegionG == selRegion)
+}
+
 plotWaterReg <- ggplot(waterReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
@@ -523,7 +605,7 @@ plotWaterReg <- ggplot(waterReg, aes(y = scenario)) +
 ### Health
 
 healthVar <-  scens[grep("Nutrition\\|Anthropometrics\\|People", scens$variable), ]$variable %>%  unique()
-names(healthVar) <- c("Underweight", "Normal Weight", "Overweight", "Obese")
+names(healthVar) <- c("Normal weight", "Obese", "Overweight", "Underweight")
 
 
 health_df <- filter(scens,
@@ -534,8 +616,7 @@ health_df <- filter(scens,
   group_by(model, scenario, region, period) %>%
   mutate(variable = factor(variable, levels = rev(healthVar),
                            labels = names(rev(healthVar))),
-         variable = factor(variable, levels = rev(c("Underweight", "Normal Weight",
-                                                    "Overweight", "Obese"))))
+         variable = factor(variable, levels = rev(c("Normal weight", "Obese", "Overweight", "Underweight"))))
 
 
 healthGlo <- filter(health_df, region == "GLO")
@@ -553,6 +634,10 @@ healthReg <- filter(health_df, region != "GLO", period == 2050) %>%
   group_by(model, scenario, variable, period, RegionG) %>%
   summarise(value = sum(value)) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario))))
+
+if (caseRegion) {
+  healthReg <- healthReg %>% filter(RegionG == selRegion)
+}
 
 plotHealthReg <- ggplot(healthReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
@@ -628,7 +713,13 @@ empReg <- filter(emp_df, region != "GLO", period == 2050) %>%
   summarise(value = sum(value), positive = sum(positive), negative = sum(negative)) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario))))
 
-empReg$RegionG_f <- factor(empReg$RegionG, levels = c("High-Income Regions", "Rest of World", "Low-Income Regions"))
+
+if (caseRegion) {
+  empReg <- empReg %>% filter(RegionG == selRegion) %>% mutate(RegionG_f = selRegion)
+} else {
+  empReg$RegionG_f <- factor(empReg$RegionG, levels = c("High-Income Regions", "Rest of World", "Low-Income Regions"))
+}
+
 
 plotEmpReg <- ggplot(empReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG_f), scales = "free", space = "free") +
@@ -671,6 +762,10 @@ labReg <- filter(labor_df, region != "GLO") %>%
   summarise(value = weighted.mean(value, w = hours)) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario)))) %>%
   group_by(model, scenario, RegionG, variable)
+
+if (caseRegion) {
+  labReg <- labReg %>% filter(RegionG == selRegion)
+}
 
 plotLabReg <- ggplot(filter(labReg, scenario %in% c("BAU", "FSDP")), aes(x = period)) +
   facet_grid(cols = vars(RegionG), scales = "free") +
@@ -719,6 +814,10 @@ ineqReg <- filter(ineq_df, region != "GLO") %>%
   group_by(model, scenario, RegionG, variable) %>%
   filter(period == 2050)
 
+if (caseRegion) {
+  ineqReg <- ineqReg %>% filter(RegionG == selRegion)
+}
+
 plotGiniReg <- ggplot(filter(ineqReg, variable == "Gini Coefficient"), aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
@@ -730,9 +829,9 @@ plotGiniReg <- ggplot(filter(ineqReg, variable == "Gini Coefficient"), aes(y = s
 
 
 plotBelowPovGlo <- ggplot(filter(ineqGlo, variable == "Number of People Below 3.20$/Day",
-                          scenario %in% c("BAU", "SSP1", "SSP3", "SSP4", "FairTrade",
-                                          "SocioEconDevelop", "Efficiency", "FSDP")),
-                   aes(x = period)) +
+     #                     scenario %in% c("BAU", "SSP1", "SSP3", "SSP4", "FairTrade",
+      #                                    "SocioEconDevelop", "Efficiency", "FSDP")),
+                   aes(x = period))) +
   themeSupplReg(base_size = 25, panel.spacing = 3, rotate_x = 90) +
   ylab("Million People below 3.20$/Day Poverty Line") +
   geom_line(aes(y = value, color = scenario), lwd = 1.1) +

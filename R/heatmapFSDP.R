@@ -6,12 +6,12 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @export
 #'
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
-#' @param regionSel Region that should be plotted
+#' @param regionSel Region that should be plotted. select "IND" for India plots
 #' @param tableType options: 1 (FSECa,FSECc), 2 (FSECb,FSECc,FSECd)
 #' @param file file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
-#' @author Florian Humpenoeder
+#' @author Florian Humpenoeder, Vartika Singh
 #' @import ggplot2 ggiraph forcats data.table scales htmlwidgets tidyr
 #' @importFrom rlang .data
 #' @importFrom dplyr %>% filter pull select mutate
@@ -38,7 +38,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
-           "Health|Attributable deaths|Risk|Diet and anthropometrics",
            "Health|Years of life lost|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
            "Biodiversity|Shannon crop area diversity index",
@@ -55,13 +54,12 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   names(var) <- c("Health|Prevalence of underweight (million people)|1",
                   "Health|Prevalence of obesity (million people)|2",
-                  "Health|Attributable deaths (million people)|3",
-                  "Health|Years of life lost (million years)|4",
+                  "Health|Years of life lost (million years)|3",
                   "Environment|Biodiversity Intactness (Index)|1",
                   "Environment|Shannon crop area diversity index (Index)|2",
                   "Environment|Nitrogen surplus (Mt N/yr)|3",
                   "Environment|Water environmental flow violations (km3/yr)|4",
-                  "Environment|Cumulative CO2 emissions (GtCO2eq since 1995)|5",
+                  "Environment|Cumulative GHG emissions (Gt CO2eq since 2000)|5",
                   "Environment|Global Surface Temperature (deg C)|6",
                   "Inclusion|Expenditure for agric. products (USD/person)|1",
                   "Inclusion|Number of People Below 3.20$/Day (million people)|2",
@@ -70,7 +68,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Economy|Bioeconomy Supply (billion US$05/yr)|1",
                   "Economy|Costs (billion US$05/yr)|1")
 
+  if (regionSel == "GLO") {
   rep[region == "World", region := "GLO"]
+  }
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]
   b <- droplevels(b)
 
@@ -113,22 +113,26 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
       variable %in% c("Agricultural wages (Index)"),
     valuefill := NA]
 
-  # Adding and greying-out the attributable deaths and years of life lost for non-dietary scenarios
+  # Adding and greying-out years of life lost for non-dietary scenarios
   tb <- as.data.frame(b)
 
-  nonDietaryScenarios <- tb %>%
-    filter(!.data$scenario %in% c("BAU", "NoUnderweight", "NoOverweight", "LessFoodWaste",
-                            "DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
-                            "DietLegumes", "DietFish", "DietEmptyCals")) %>%
+  allScenarios <- tb %>%
     pull(.data$scenario) %>%
     unique() %>%
     as.character()
 
+  haveYLLScenarios <- tb %>%
+    filter(.data$variable == "Years of life lost (million years)") %>%
+    pull(.data$scenario) %>%
+    unique() %>%
+    as.character()
+
+  nonDietaryScenarios <- setdiff(allScenarios, haveYLLScenarios)
+
   tb <- tb %>%
     filter(.data$scenario == "BAU",
            .data$period == "2050",
-           .data$variable %in% c("Attributable deaths (million people)",
-                                 "Years of life lost (million years)")) %>%
+           .data$variable %in% "Years of life lost (million years)") %>%
     select(-.data$scenario)
 
   tb <- tidyr::expand_grid(tb, scenario = nonDietaryScenarios) %>%
@@ -162,6 +166,60 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     by = .(region, model, scenario, variable, unit, period)]
   #b[, label := formatC(value, 1, format = "f"), by = .(region, model, scenario, variable, unit, period)]
 
+
+if (regionSel == "IND") {
+
+  ##Dropping scenarios not relevant for India
+  b <- b[scenario != "SSP1",]
+  b <- b[scenario != "SSP3",]
+  b <- b[scenario != "SSP4",]
+  b <- b[scenario != "SSP5",]
+  b <- b[scenario != "ExternalPressures",]
+  b <- b[scenario != "NoUnderweight",]
+  b <- b[scenario != "NoOverweight",]
+  b <- b[scenario != "LessFoodWaste",]
+  b <- b[scenario != "DietVegFruitsNutsSeeds",]
+  b <- b[scenario != "DietRuminants",]
+  b <- b[scenario != "DietMonogastrics",]
+  b <- b[scenario != "DietLegumes",]
+  b <- b[scenario != "DietFish",]
+  b <- b[scenario != "DietEmptyCals",]
+  b <- b[scenario != "WaterSparing",]
+  b <- b[scenario != "LandSparing",]
+  b <- b[scenario != "BiodivSparing",]
+  b <- b[scenario != "PeatlandSparing",]
+  b <- b[scenario != "REDD",]
+  b <- b[scenario != "REDDaff",]
+  b <- b[scenario != "SoilCarbon",]
+  b <- b[scenario != "CropRotations",]
+  b <- b[scenario != "NitrogenUptakeEff",]
+  b <- b[scenario != "LivestockMngmt",]
+  b <- b[scenario != "AnimalWasteMngmt",]
+  b <- b[scenario != "AirPollution",]
+  b <- b[scenario != "LiberalizedTrade",]
+  b <- b[scenario != "DietRotations",]
+  b <- b[scenario != "FullBiodiv",]
+  b <- b[scenario != "Protection",]
+  b <- b[scenario != "REDDaffDietRuminants",]
+  b <- b[scenario != "SoilMonogastric",]
+  b <- b[scenario != "SoilRotations",]
+  b <- b[scenario != "Sufficiency",]
+
+
+  scenFirst <- c("SSP2 2020", "SSP2 2050")
+  scenLast <- c("FSDP")
+
+  scenCombinations <- c("WaterSoil", "Efficiency")
+  scenArchetypes <- c("AllHealth", "AllEnvironment",
+                      "AllClimate", "AllInclusion")
+  scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
+  scenMiddle <- c(scenCombinations,scenArchetypes)
+  scenOrder <- c(rev(scenLast), rev(scenMiddle), scenOrder[!scenOrder %in% c(scenFirst, scenMiddle, scenLast)], rev(scenFirst))
+  b$scenario <- factor(b$scenario, levels = scenOrder)
+  b <- droplevels(b)
+
+} else {
+
   scenFirst <- c("SSP2 2020", "SSP2 2050")
   scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
   scenLast <- c("FSDP")
@@ -170,11 +228,11 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
                  "DietLegumes", "DietFish", "DietEmptyCals")
-  scenProtect <- c("WaterSparing", "LandSparing", "LandUseDiversity", "PeatlandSparing")
+  scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing")
   scenClimate <- c("REDD", "REDDaff", "SoilCarbon")
   scenMngmt <- c("CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
                  "AirPollution")
-  scenInclusion <- c("FairTrade","MinWage")
+  scenInclusion <- c("LiberalizedTrade","MinWage")
   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
                         "REDDaffDietRuminants", "FullBiodiv")
   scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment",
@@ -199,6 +257,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
   b <- droplevels(b)
+
+}
+
 
   makeExp <- function(x, y) {
     exp <- vector(length = 0, mode = "expression")
@@ -235,24 +296,40 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   m <- m + facet_grid(vars(period), vars(vargroup), scales = "free", space = "free") +
     scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
 
+  p <- girafe(
+    ggobj = m,
+    options = list(
+      opts_sizing(rescale = TRUE, width = .95),
+      opts_hover(css = "fill:NULL;cursor:pointer;"),
+      opts_hover_inv(css = "opacity:0.1;"),
+      opts_selection(girafe_css(css = "fill:NULL;stroke:grey"),
+                     only_shiny = FALSE, type = "multiple", selected = NULL),
+      opts_tooltip(css = "background-color:white;padding:5px;
+                     border-radius:2px;border: black 1px solid;color:black;")
+    ),
+    width_svg = 10,
+    height_svg = 10
+  )
+
   if (is.null(file)) {
-    return(m)
+    x <- NULL
+    x[["plot"]] <- p
+    b[, "value" := get("label")]
+    b$unit <- NULL
+    b[, c("variable", "unit") := tstrsplit(get("variable"), " (", fixed = TRUE)]
+    b$unit <- substring(b$unit,1,nchar(b$unit)-1)
+    setnames(b, "period", "scentype")
+    #b$period <- NULL
+    b[, c("scenario", "period") := tstrsplit(get("scenario"), " ", fixed = TRUE)]
+    b$period <- as.numeric(b$period)
+    b[is.na(get("period")), "period" := 2050]
+    b <- b[, c("scenset", "scentype", "scenario", "region", "period", "vargroup", "variable", "unit", "value")]
+    b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
+    x[["data"]] <- b
+    return(x)
   } else {
     ggsave(file, m, scale = 1.2, height = 8, width = 7, bg = "white")
-    p <- girafe(
-      ggobj = m,
-      options = list(
-        opts_sizing(rescale = TRUE, width = .95),
-        opts_hover(css = "fill:NULL;cursor:pointer;"),
-        opts_hover_inv(css = "opacity:0.1;"),
-        opts_selection(girafe_css(css = "fill:NULL;stroke:grey"),
-                       only_shiny = FALSE, type = "multiple", selected = NULL),
-        opts_tooltip(css = "background-color:white;padding:5px;
-                     border-radius:2px;border: black 1px solid;color:black;")
-      ),
-      width_svg = 10,
-      height_svg = 10
-    )
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 8, width = 7, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }
