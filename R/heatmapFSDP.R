@@ -328,8 +328,8 @@ if (regionSel == "IND") {
     x[["data"]] <- b
     return(x)
   } else {
-    ggsave(file, m, scale = 1.2, height = 8, width = 7, bg = "white")
-    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 8, width = 7, bg = "white")
+    ggsave(file, m, scale = 1.2, height = 6, width = 7, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 6, width = 7, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }
