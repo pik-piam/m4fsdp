@@ -288,7 +288,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
                      "empty", #valdataname
                      "empty"), #weight,
                    "Inclusion|Agricultural wages"=c(
-                     "Hourly labor costs relative to 2020", #var
+                     "Hourly labor costs relative to 2000", #var
                      "empty", #valdataname
                      "empty"), #weight,
                    "Economy|Bioeconomy Supply"=c(

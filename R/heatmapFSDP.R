@@ -48,7 +48,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Household Expenditure|Food|Expenditure",
            "Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
-           "Hourly labor costs relative to 2020",
+           "Hourly labor costs relative to 2000",
            "Value|Bioeconomy Demand",
            "Costs Without Incentives")
 
