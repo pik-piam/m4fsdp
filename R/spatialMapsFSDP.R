@@ -141,14 +141,13 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
                                              Country size indicates the number of people potentially affected.")
 
   title <- "Inclusion: Expenditure for agr. products per capita"
-  b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"] /
-                    value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
   plotEXPENDITURE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
+    scale_fill_gradientn("USD/capita", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 1000)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
                                              Country size indicates the number of people potentially affected.")
 
