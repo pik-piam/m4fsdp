@@ -56,7 +56,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   if(any(!var%in%rep$variable)){
     warning(paste(c("The following indicators are missing: ",var=var[!var%in%rep$variable]),collapse = " "))
   }
-  var=var[var%in%rep$variable]
+  var <- var[var %in% rep$variable]
 
   levels(rep$region)[levels(rep$region) == "World"] <- "GLO"
   b <- rep[get("variable") %in% var & get("region") == regionSel & get("period") == 2050, ]
@@ -81,8 +81,10 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#332288", "#AA4499",
                                "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
   bundlecolor <- "#117733"
-  colors <- setNames(c(safe_colorblind_palette, bundlecolor),
-                    c(paste0("single", c(1:length(safe_colorblind_palette))), "bundle"))
+  # colors <- setNames(c(safe_colorblind_palette, bundlecolor),
+  #                   c(paste0("single", c(1:length(safe_colorblind_palette))), "bundle"))
+  colors <- setNames(c(safe_colorblind_palette),
+                     c(paste0("single", c(1:length(safe_colorblind_palette)))))
   # colors <- setNames(c("#C29511", "#4499FF", "#BD36FF", "#FC8014", "#26AD4C"),
   #                   c("single1", "single2", "single3", "single4", "bundle"))
 
@@ -90,11 +92,17 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     x <- b[get("scenario") %in% c(bundle, singles), ]
     single_label <- NULL
     for (count in 1:length(singles)) {
-      single_label <- c(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>", "<br>"))
+      if (count < length(singles)) {
+        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>", "<br>"))
+      } else {
+        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>"))
+      }
     }
 
-    x[, "bundle" := paste0(c(single_label,
-                           "<span style='color: ", colors["bundle"], "'>", "bundle", "</span>"), collapse = "")]
+    # x[, "bundle" := paste0(c(single_label,
+    #                        "<span style='color: ", colors["bundle"], "'>", "bundle", "</span>"), collapse = "")]
+    # print(str(single_label))
+    x[, "bundle" := single_label]
     x[, "bundleOrder" := bundleOrder]
     for (count in 1:length(singles)) {
       x[get("scenario") %in% singles[count], "scenCol" := paste0("single", count)]
@@ -162,11 +170,17 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                              max(abs(get("bundlesum")), na.rm = TRUE),
                                       na.rm = TRUE)), by = list(get("variable"))]
 
-  bSum <- b[, list("label" = if (max(abs(get("valuefill")) > 0, na.rm = TRUE))
-    round(sum(get("value")), get("rounding"))
-    else NULL, valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
-             by = c("region", "model", "variable", "unit", "vargroup", "period",
+  bSum <- b[, list(
+    "label" = if (max(abs(get("value")) > 0, na.rm = TRUE))
+    round(sum(get("value")), get("rounding")) else NULL,
+    "valuefill" = if (max(abs(get("valuefill")) > 0, na.rm = TRUE))
+      sum(get("valuefill")) else NULL),by = c("region", "model", "variable","improvment", "unit", "vargroup", "period",
                     "scenset", "bundle", "bundleOrder", "rounding")]
+  bSum[,"color" := ifelse((get("improvment") == "increase" & get("valuefill") > 0) | (get("improvment") == "decrease" & get("valuefill") < 0),"green","red")]
+
+  # bSum[bundleOrder==5 & variable=="Agri. employment\nmio people",c("scenset","label","valuefill","color","bundle")]
+  # b[bundleOrder==4 & variable=="Agri. employment\nmio people",c("scenset","value")]
+  # sum(b[bundleOrder==2 & variable=="Agri. employment\nmio people" & scenset=="FSECa",c("value")])
   # bSum <- b[, list("label" = round(sum(get("value")), get("rounding")),
   #  valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
   #  by = c("region", "model", "variable", "unit", "vargroup", "period",
@@ -175,43 +189,91 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   bSum <- droplevels(bSum)
   b <- droplevels(b)
 
-  plotBundle2 <- function(plotData) {
+  # plotBundle2 <- function(plotData) {
+  #   set.seed(42)
+  #   plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb"), ])
+  #   p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
+  #     theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
+  #     facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
+  #                  strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90)),
+  #                                       by_layer_x = TRUE)) +
+  #     geom_bar_interactive(aes(fill = get("scenCol"),
+  #                              tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+  #                                               round(get("value"), get("rounding"))),
+  #                              data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5) +
+  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
+  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
+  #                          position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
+  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value < 0, ],
+  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
+  #                          position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
+  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value > 0, ],
+  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
+  #                          position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
+  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value < 0, ],
+  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
+  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
+  #                          position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
+  #     geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey") +
+  #     geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(x = 0, label = get("label")),
+  #               size = 3, colour = "black", angle = 0, nudge_y = 0.4) +
+  #     geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(x = 0, label = get("label")),
+  #               size = 3, colour = "black", angle = 0, nudge_y = -0.4) +
+  #     scale_fill_manual_interactive("Scenario", values = colors) +
+  #     guides(fill = guide_legend(order = 1)) +
+  #     labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
+  #     theme(legend.position = "none") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
+  #     theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
+  #           axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
+  #           panel.grid.minor = element_blank(), axis.text.x.bottom = element_blank(),
+  #           axis.text.y = element_blank()) + theme(plot.margin = margin(1, 35, 1, 1, "pt")) +
+  #     theme(axis.text.x = element_text(angle = 30, hjust = 0),
+  #           strip.text.y.left = ggtext::element_markdown(size = 10, angle = 0))
+  #
+  #   return(p)
+  # }
+
+  plotBundle3 <- function(plotData) {
     set.seed(42)
-    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb"), ])
-    p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
+    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa","FSECb"), ])
+    p <- ggplot(plotData, aes(x = get("valuefill"), y = get("bundleOrder"))) +
+    #p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
       facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
                    strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90)),
                                         by_layer_x = TRUE)) +
-      geom_bar_interactive(aes(fill = get("scenCol"),
+      geom_bar_interactive(data = plotData[get("scenset") == "FSECa", ],
+                           mapping = aes(fill = get("scenCol"),
                                tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))),
-                               data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
-                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value < 0, ],
-                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value > 0, ],
-                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value < 0, ],
-                           mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-                                                round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-                           position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
-      geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey") +
-      geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(x = 0, label = get("label")),
-                size = 3, colour = "black", angle = 0, nudge_y = 0.4) +
-      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(x = 0, label = get("label")),
-                size = 3, colour = "black", angle = 0, nudge_y = -0.4) +
+                               data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5, show.legend = FALSE) +
+      geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey", show.legend = FALSE) +
+      geom_point_interactive(data = bSum[get("scenset") == "FSECa", ], mapping = aes(shape = get("scenset"), color = get("color"),
+        tooltip = paste0("Bundle","\nValue: ", get("label")),
+        data_id = get("bundleOrder")), position = position_nudge(y = 0.3), show.legend = TRUE) +
+      geom_point_interactive(data = bSum[get("scenset") == "FSECb", ], mapping = aes(shape = get("scenset"), color = get("color"),
+        tooltip = paste0("Bundle","\nValue: ", get("label")),
+        data_id = get("bundleOrder")), position = position_nudge(y = -0.3), show.legend = TRUE) +
+      geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+                size = 3, angle = 0, nudge_y = 0.4, show.legend = FALSE) +
+      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+                size = 3, angle = 0, nudge_y = -0.4, show.legend = FALSE) + #, hjust = "inward") +#if ("valuefill" < 0) 0 else
       scale_fill_manual_interactive("Scenario", values = colors) +
-      guides(fill = guide_legend(order = 1)) +
+      # scale_color_manual_interactive("Net Effect", values = c("#26AD4C","#AD1515"),labels=c("Single Measures","Bundle")) +
+
+      scale_colour_manual(name = "Direction",
+                          labels = c("Positive", "Negative"),
+                          values = c("#26AD4C","#AD1515")) +
+      scale_shape_manual(name = "Net Effect",
+                         labels = c("Single Measures", "Bundle"),
+                         values = c(6, 2)) +
+      #guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
+      guides(fill = "none", color = "none", shape = guide_legend(order = 1)) +
       labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
-      theme(legend.position = "none") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
+      theme(legend.position = c(0.1, 0.3), legend.direction = "vertical") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
       theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
             axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(), axis.text.x.bottom = element_blank(),
@@ -221,8 +283,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
     return(p)
   }
-  m <- plotBundle2(b)
-  # ggsave("SingleBundle2.png", m, width = 11, height = 7, scale = 1)
+
+  m <- plotBundle3(b)
+  #ggsave("SingleBundle5.png", m, width = 11, height = 8.5, scale = 1)
 
   p <- girafe(
     ggobj = m,
@@ -236,7 +299,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                      border-radius:2px;border: black 1px solid;color:black;")
     ),
     width_svg = 11,
-    height_svg = 7)
+    height_svg = 8.5)
 
   if (is.null(file)) {
     x <- NULL
@@ -251,8 +314,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     x[["data"]] <- b
     return(x)
   } else {
-    ggsave(file, m, scale = 1, width = 11, height = 7, bg = "white")
-    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 13, bg = "white")
+    ggsave(file, m, scale = 1, width = 11, height = 8.5, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 8.5, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }
