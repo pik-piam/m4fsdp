@@ -1,4 +1,10 @@
-themeSupplFood = function(base_size = 16) {
+#' @title themeSupplFood
+#' @description creates supplementary themes for FSDP MAgPIE runs
+#'
+#' @export
+#' @param base_size base size of plot
+
+themeSupplFood <- function(base_size = 16) {
   theme_classic(base_size=base_size) +
   theme(axis.ticks.x=element_blank(),
         #legend.position = "none",
@@ -11,4 +17,3 @@ themeSupplFood = function(base_size = 16) {
         panel.grid.minor = element_blank(),
         panel.grid.major = element_blank())
 }
-  

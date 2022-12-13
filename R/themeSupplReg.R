@@ -1,3 +1,14 @@
+#' @title themeSupplFood
+#' @description creates supplementary themes for FSDP MAgPIE runs
+#'
+#' @export
+#'
+#' @param base_size plot settings
+#' @param base_family plot settings
+#' @param rotate_x plot settings
+#' @param panel.spacing plot settings
+
+
 themeSupplReg <- function(base_size = 11, base_family = "",rotate_x=FALSE, panel.spacing=3) {
   txt <- element_text(size = base_size, colour = "black", face = "plain")
   bold_txt <- element_text(size = base_size, colour = "black", face = "bold")

@@ -17,7 +17,7 @@
 
 bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   #### read in data files
-  rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc"), subset = FALSE)
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECe"), subset = FALSE)
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
@@ -122,6 +122,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   x <- rbind(x, selBundle(b, "AgroMngmt",
                           singles = c("CropRotatons", "NitrogenEff", "RiceMit", "LivestockMngmt", "ManureMngmt", "SoilCarbon"),
                           bundleOrder = 5, colors = colors))
+  x <- rbind(x, selBundle(b, "FSDP",
+                          singles = c("ExternalPressures", "Sufficiency", "Livelihoods", "NatureSparing", "AgroMngmt"),
+                          bundleOrder = 6, colors = colors))
   #x <- rbind(x, selBundle(b, "AllNitrogen",
   #                        singles = c("LivestockManureMngmt", "DietMonogastrics",
   #                                  "DietRuminants", "LessFoodWaste", "NitrogenEff"),
@@ -177,7 +180,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   plotBundle2 <- function(plotData) {
     set.seed(42)
-    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb"), ])
+    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb", "FSECe"), ])
     p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
       facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
@@ -187,26 +190,26 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))),
                                data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
+      geom_bar_interactive(data = plotData[get("scenset") %in% c("FSECb", "FSECe") & get("improvment") == "increase" & value > 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value < 0, ],
+      geom_bar_interactive(data = plotData[get("scenset") %in% c("FSECb", "FSECe") & get("improvment") == "increase" & value < 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value > 0, ],
+      geom_bar_interactive(data = plotData[get("scenset") %in% c("FSECb", "FSECe") & get("improvment") == "decrease" & value > 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value < 0, ],
+      geom_bar_interactive(data = plotData[get("scenset") %in% c("FSECb", "FSECe") & get("improvment") == "decrease" & value < 0, ],
                            mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
                            position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
       geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey") +
       geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(x = 0, label = get("label")),
                 size = 3, colour = "black", angle = 0, nudge_y = 0.4) +
-      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(x = 0, label = get("label")),
+      geom_text(data = bSum[get("scenset") %in% c("FSECb", "FSECe"), ], aes(x = 0, label = get("label")),
                 size = 3, colour = "black", angle = 0, nudge_y = -0.4) +
       scale_fill_manual_interactive("Scenario", values = colors) +
       guides(fill = guide_legend(order = 1)) +
@@ -236,7 +239,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                      border-radius:2px;border: black 1px solid;color:black;")
     ),
     width_svg = 11,
-    height_svg = 7)
+    height_svg = 8)
 
   if (is.null(file)) {
     x <- NULL

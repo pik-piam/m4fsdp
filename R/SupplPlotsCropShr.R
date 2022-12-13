@@ -6,9 +6,9 @@ globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "Crop
 #' @export
 #'
 #' @param gdx gdx File
-#' @param png Name of png file output in the form *.png
+#' @param file Name of file output
 #' @param folder output folder ending with a slash
-#' @param year year to be plotted
+#' @param plotyear year to be plotted
 #' @param panel plot regions as "row" or as "matrix"
 #' @details blub
 #' @return Crop share on the y-axis and cropland area in each cluster on the x-axis.
@@ -17,7 +17,7 @@ globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "Crop
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select %>%
 
-SupplPlotsCropShr <- function(gdx, folder="", png=NULL, plotyear="y2050", panel="row") {
+SupplPlotsCropShr <- function(gdx, folder="", file=NULL, plotyear="y2050", panel="row") {
 
   if(nchar(plotyear)==5){plotyear=as.integer(substring(plotyear,2))}
 
@@ -154,21 +154,16 @@ SupplPlotsCropShr <- function(gdx, folder="", png=NULL, plotyear="y2050", panel=
       guides(fill = guide_legend(ncol = 2))
   }
 
-
-
-
-  if (!is.null(png)){
+  if (!is.null(file)){
     if(panel=="row"){
-      ggsave(filename = paste0(folder,"REG_",png), CropShrReg, width = 9, height = 3, scale = 1)
+      ggsave(filename = paste0(folder,"REG_",file), CropShrReg, width = 9, height = 3, scale = 1)
     }else{
-      ggsave(filename = paste0(folder,"REG_",png), CropShrReg, width = 9, height = 9, scale = 1)
+      ggsave(filename = paste0(folder,"REG_",file), CropShrReg, width = 9, height = 9, scale = 1)
     }
   } else {
     CropShrReg
   }
 
-
-  ### Global plot
 
   CropShrGlo <-
     ggplot(aes(
@@ -186,10 +181,14 @@ SupplPlotsCropShr <- function(gdx, folder="", png=NULL, plotyear="y2050", panel=
     xlab("Cropland area (Mha)") +
     ylab("Crop share") +
     facet_wrap(~Region, ncol = 3)
-  if (!is.null(png)){
-    ggsave(filename = paste0(folder,"GLO_",png), CropShrGlo, width = 12, height = 6, scale = 1)
-  } else {
-    CropShrGlo
+
+  combined <- CropShrReg +
+              CropShrGlo +
+              plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+  if (!is.null(file)){
+   ggsave(filename = paste0(folder,"GLO_",file), CropShrGlo, width = 12, height = 6, scale = 1)  } else {
+    return(combined)
   }
 
 }
