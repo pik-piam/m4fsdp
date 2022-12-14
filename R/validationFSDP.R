@@ -109,7 +109,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
   # plot function
   plotVal <- function(var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL) {
-    empty2null<-function(x){out<-x; if(!is.null(x)){if(x=="empty"){out<-NULL}}; return(out)}
+    empty2null<-function(x){out<-x; if(!is.null(x)){if(any(x=="empty")){out<-NULL}}; return(out)}
     varName=empty2null(varName)
     weight=empty2null(weight)
     hist=empty2null(hist)
@@ -136,7 +136,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       }
 
       if (!is.null(weight)) {
-        w1 <- rep[rep$variable == weight, ]
+        w1 <- rep[rep$variable == weight & rep$period >= 1995 & rep$period <= 2050, ]
         w2 <- valdata[valdata$variable == weight & valdata$scenario == "historical" &
                     valdata$period >= 1980 & valdata$period <= 2020, ]
         b <- cbind(b, w1$value)
@@ -155,10 +155,10 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       if (is.null(varName)) varName <- var
       if (is.null(unitName)) unitName <- units
 
-      p <- ggplot(b, aes_string(x = "period", y = "value"))
+      p <- ggplot(b, aes(x = get("period"), y = get("value")))
       p <- p + labs(title = varName) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 90)
-      if (nrow(h) > 0) p <- p + geom_point(data = h, aes_string(shape = "model"))
-      p <- p + geom_line(aes_string(color = "scenario")) + facet_wrap("region_class")
+      if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")))
+      p <- p + geom_line(aes(color = get("scenario"))) + facet_wrap("region_class")
       p <- p + scale_shape_discrete("Historical data", solid = 0)
       #p <- p + scale_color_brewer("MAgPIE scenario", palette = "Set2")
       p <- p + scale_color_manual("MAgPIE scenario", values = safe_colorblind_palette)
@@ -195,9 +195,9 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   p2 <- plotVal(var = "Resources|Land Cover|+|Pastures and Rangelands",
                 varName = "Land Cover|Pastures and Rangelands", hist = "FAO_crop_past")
   p3 <- plotVal(var = "Resources|Land Cover|Forest|+|Managed Forest",
-                varName = "Managed forest incl. afforestation", hist = "MAgPIEown", histName = "Based on LUH2")
-  p4 <- plotVal(var = "Resources|Land Cover|Forest|+|Natural Forest",
-                varName = "Primary and secondary forest", hist = "MAgPIEown", histName = "Based on LUH2")
+                varName = "Managed forest incl. afforestation", hist = "MAgPIEown", histName = "XXX")
+  p4 <- plotVal(var = "Resources|Land Cover|+|Forest",
+                varName = "Total forest area", hist = c("FAO_forest","MAgPIEown","LUH2v2"), histName = c("FAO_forest","Adjusted LUH2v2","Original LUH2v2"))
   p5 <- plotVal(var = "Resources|Land Cover|+|Other Land",
                 varName = "Other natural land", hist = "MAgPIEown", histName = "Based on LUH2")
   p6 <- plotVal(var = "Resources|Land Cover|+|Urban Area",
