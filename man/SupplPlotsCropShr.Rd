@@ -19,9 +19,9 @@ SupplPlotsCropShr(
 
 \item{file}{Name of file output}
 
-\item{panel}{plot regions as "row" or as "matrix"}
+\item{plotyear}{year to be plotted}
 
-\item{year}{year to be plotted}
+\item{panel}{plot regions as "row" or as "matrix"}
 }
 \value{
 Crop share on the y-axis and cropland area in each cluster on the x-axis.

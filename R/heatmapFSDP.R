@@ -48,6 +48,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Household Expenditure|Food|Expenditure",
            "Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
+           "Hourly labor costs relative to 2000",
            "Hourly labor costs relative to 2020",
            "Value|Bioeconomy Demand",
            "Costs Without Incentives")
@@ -64,6 +65,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Inclusion|Expenditure for agric. products (USD/person)|1",
                   "Inclusion|Number of People Below 3.20$/Day (million people)|2",
                   "Inclusion|Agricultural employment (million people)|3",
+                  "Inclusion|Agricultural wages (Index)|4",
                   "Inclusion|Agricultural wages (Index)|4",
                   "Economy|Bioeconomy Supply (billion US$05/yr)|1",
                   "Economy|Costs (billion US$05/yr)|1")
@@ -142,12 +144,12 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   # end greying-out attributable deaths and YLL for non-dietary scenarios
 
   # greying out scenarios without remind
-  b[scenario %in% c("SSP3bau", "SSP4bau",
-                     "SSP3fsdp", "SSP4fsdp",
+  b[scenario %in% c("SSP3bau", "SSP4bau", "SSP5bau",
+                     "SSP3fsdp", "SSP4fsdp", "SSP5fsdp",
                      "Population", "EconDevelop", "TimberCities", "Bioplastics",
                      "ExternalPressures") &
       variable %in% c("Global Surface Temperature (deg C)"),
-    valuefill := NA]
+    c("value", "valuefill") := list(NA, NA)]
 
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
