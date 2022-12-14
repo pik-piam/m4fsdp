@@ -262,15 +262,15 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                                 round(get("value"), get("rounding"))),
                                data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5, show.legend = FALSE) +
       geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey", show.legend = FALSE) +
-      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECa","FSECe"), ], mapping = aes(shape = get("scenset"), color = get("color"),
-        tooltip = paste0("Bundle","\nValue: ", get("label")),
+      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECa"), ], mapping = aes(shape = get("scenset"), color = get("color"),
+        tooltip = paste0("Sum of \nindividual \neffects","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = 0.3), show.legend = TRUE) +
-      geom_point_interactive(data = bSum[get("scenset") == "FSECb", ], mapping = aes(shape = get("scenset"), color = get("color"),
+      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECb","FSECe"), ], mapping = aes(shape = get("scenset"), color = get("color"),
         tooltip = paste0("Bundle","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = -0.3), show.legend = TRUE) +
       geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = 0.4, show.legend = FALSE) +
-      geom_text(data = bSum[get("scenset")  %in% c("FSECa","FSECe"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+      geom_text(data = bSum[get("scenset")  %in% c("FSECb","FSECe"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = -0.4, show.legend = FALSE) + #, hjust = "inward") +#if ("valuefill" < 0) 0 else
       scale_fill_manual_interactive("Scenario", values = colors) +
       # scale_color_manual_interactive("Net Effect", values = c("#26AD4C","#AD1515"),labels=c("Single Measures","Bundle")) +
@@ -279,9 +279,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                           labels = c("Positive", "Negative"),
                           values = c("#26AD4C","#AD1515")) +
       scale_shape_manual(name = "Net Effect",
-                         labels = c("Single Measures", "Bundle"),
-                         values = c(6, 2)) +
-      #guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
+                         labels = c("Sum of \nindividual \neffects", "Bundle", "FSDP"),
+                         values = c(6, 17, 17)) +
+      guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
       guides(fill = "none", color = "none", shape = guide_legend(order = 1)) +
       labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
       theme(legend.position = c(0.1, 0.3), legend.direction = "vertical") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
