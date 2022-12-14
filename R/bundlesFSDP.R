@@ -17,7 +17,7 @@
 
 bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   #### read in data files
-  rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc"), subset = FALSE)
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECe"), subset = FALSE)
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
@@ -30,9 +30,10 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
            "Emissions|GWP100AR6|Land|Cumulative",
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
-           "Number of People Below 3.20$/Day",
+           "Income|Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
            "Hourly labor costs relative to 2000",
+           "Hourly labor costs relative to 2020",
            "Value|Bioeconomy Demand",
            "Costs Without Incentives")
 
@@ -49,6 +50,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                   "Inclusion|Cost agric. products\nUSD/person|1|decrease|0",
                   "Inclusion|People Below 3.20$/Day\nmio people|2|decrease|0",
                   "Inclusion|Agri. employment\nmio people|3|increase|0",
+                  "Inclusion|Agri. wages\nIndex|4|increase|2",
                   "Inclusion|Agri. wages\nIndex|4|increase|2",
                   "Economy|Bioeconomy Supply\nbillion US$05/yr|1|increase|0",
                   "Economy|Costs\nbillion US$05/yr|1|decrease|0")
@@ -130,6 +132,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   x <- rbind(x, selBundle(b, "AgroMngmt",
                           singles = c("CropRotatons", "NitrogenEff", "RiceMit", "LivestockMngmt", "ManureMngmt", "SoilCarbon"),
                           bundleOrder = 5, colors = colors))
+  x <- rbind(x, selBundle(b, "FSDP",
+                          singles = c("ExternalPressures", "Sufficiency", "Livelihoods", "NatureSparing", "AgroMngmt"),
+                          bundleOrder = 6, colors = colors))
   #x <- rbind(x, selBundle(b, "AllNitrogen",
   #                        singles = c("LivestockManureMngmt", "DietMonogastrics",
   #                                  "DietRuminants", "LessFoodWaste", "NitrogenEff"),
@@ -169,6 +174,12 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b[, "valuefill" := list(get("value") / max(max(abs(get("value")), na.rm = TRUE),
                                              max(abs(get("bundlesum")), na.rm = TRUE),
                                       na.rm = TRUE)), by = list(get("variable"))]
+
+  #bSum <- b[, list("label" = if (max(abs(get("valuefill")) > 0, na.rm = TRUE))
+  #  round(sum(get("value")), get("rounding"))
+  #  else NULL, valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
+  #  by = c("region", "model", "variable", "unit", "vargroup", "period",
+  #         "scenset", "bundle", "bundleOrder", "rounding")]
 
   bSum <- b[, list(
     "label" = if (max(abs(get("value")) > 0, na.rm = TRUE))
@@ -238,7 +249,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   plotBundle3 <- function(plotData) {
     set.seed(42)
-    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa","FSECb"), ])
+    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb", "FSECe"), ])
     p <- ggplot(plotData, aes(x = get("valuefill"), y = get("bundleOrder"))) +
     #p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
@@ -251,15 +262,15 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                                                 round(get("value"), get("rounding"))),
                                data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5, show.legend = FALSE) +
       geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey", show.legend = FALSE) +
-      geom_point_interactive(data = bSum[get("scenset") == "FSECa", ], mapping = aes(shape = get("scenset"), color = get("color"),
-        tooltip = paste0("Bundle","\nValue: ", get("label")),
+      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECa"), ], mapping = aes(shape = get("scenset"), color = get("color"),
+        tooltip = paste0("Sum of \nindividual \neffects","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = 0.3), show.legend = TRUE) +
-      geom_point_interactive(data = bSum[get("scenset") == "FSECb", ], mapping = aes(shape = get("scenset"), color = get("color"),
+      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECb","FSECe"), ], mapping = aes(shape = get("scenset"), color = get("color"),
         tooltip = paste0("Bundle","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = -0.3), show.legend = TRUE) +
       geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = 0.4, show.legend = FALSE) +
-      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+      geom_text(data = bSum[get("scenset")  %in% c("FSECb","FSECe"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = -0.4, show.legend = FALSE) + #, hjust = "inward") +#if ("valuefill" < 0) 0 else
       scale_fill_manual_interactive("Scenario", values = colors) +
       # scale_color_manual_interactive("Net Effect", values = c("#26AD4C","#AD1515"),labels=c("Single Measures","Bundle")) +
@@ -268,9 +279,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                           labels = c("Positive", "Negative"),
                           values = c("#26AD4C","#AD1515")) +
       scale_shape_manual(name = "Net Effect",
-                         labels = c("Single Measures", "Bundle"),
-                         values = c(6, 2)) +
-      #guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
+                         labels = c("Sum of \nindividual \neffects", "Bundle", "FSDP"),
+                         values = c(6, 17, 17)) +
+      guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
       guides(fill = "none", color = "none", shape = guide_legend(order = 1)) +
       labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
       theme(legend.position = c(0.1, 0.3), legend.direction = "vertical") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +

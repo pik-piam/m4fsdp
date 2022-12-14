@@ -26,6 +26,9 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   } else if (scens=="extended") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd","FSECe"), subset = FALSE)
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
+  } else if (scens=="bundles") {
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
+    rep <- rep[rep$scenario %in%c("SSP2bau","ExternalPressures","Sufficiency","Livelihoods","NatureSparing", "AgroMngmt", "FSDP"), ]
   } else {stop("unknown scens")}
 
   rev <- levels(rep$version)
@@ -33,10 +36,14 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   if (!is.data.frame(val)) valdata <- readRDS(val)
   valdata[region == "World", region := "GLO"]
 
-  safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#332288", "#AA4499",
-                               "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
-  fsec <- c("#88CCEE", "#CC6677", "#DDCC77", "#332288", "#AA4499",
-                               "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
+  #safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#332288", "#AA4499",
+  #                             "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
+
+  safe_colorblind_palette <- c("#68023F","#008169","#EF0096","#00DCB5","#FFCFE2",
+    "#003C86","#9400E6","#009FFA","#FF71FD","#7CFFFA","#6A0213","#008607","#F60239","#00E307","#FFDC3D")
+  order=safe_colorblind_palette[c(15,9,8,12,13,7,c(1:15)[!(1:15%in%c(15,9,8,12,13,7))])]
+  # alternative colors in this order"#00463C","#C00B6F","#00A090","#FF95BA","#5FFFDE","#590A87","#0063E5","#ED0DFD","#00C7F9","#FFD5FD","#3D3C04","#C80B2A","#00A51C","#FFA035","#9BFF2D"
+
 
   themeMy <- function(baseSize = 11, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
     txt <- element_text(size = baseSize, colour = "black", face = "plain")
@@ -289,6 +296,10 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
                      "empty"), #weight,
                    "Inclusion|Agricultural wages"=c(
                      "Hourly labor costs relative to 2000", #var
+                     "empty", #valdataname
+                     "empty"), #weight,
+                   "Inclusion|Agricultural wages"=c(
+                     "Hourly labor costs relative to 2020", #var
                      "empty", #valdataname
                      "empty"), #weight,
                    "Economy|Bioeconomy Supply"=c(

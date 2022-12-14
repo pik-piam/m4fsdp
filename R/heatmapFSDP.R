@@ -46,9 +46,10 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
            "Emissions|GWP100AR6|Land|Cumulative",
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
-           "Number of People Below 3.20$/Day",
+           "Income|Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
            "Hourly labor costs relative to 2000",
+           "Hourly labor costs relative to 2020",
            "Value|Bioeconomy Demand",
            "Costs Without Incentives")
 
@@ -64,6 +65,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                   "Inclusion|Expenditure for agric. products (USD/person)|1",
                   "Inclusion|Number of People Below 3.20$/Day (million people)|2",
                   "Inclusion|Agricultural employment (million people)|3",
+                  "Inclusion|Agricultural wages (Index)|4",
                   "Inclusion|Agricultural wages (Index)|4",
                   "Economy|Bioeconomy Supply (billion US$05/yr)|1",
                   "Economy|Costs (billion US$05/yr)|1")
@@ -328,8 +330,8 @@ if (regionSel == "IND") {
     x[["data"]] <- b
     return(x)
   } else {
-    ggsave(file, m, scale = 1.2, height = 8, width = 7, bg = "white")
-    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 8, width = 7, bg = "white")
+    ggsave(file, m, scale = 1.2, height = 6, width = 7, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 6, width = 7, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }

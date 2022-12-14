@@ -7,18 +7,20 @@ globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "Crop
 #'
 #' @param gdx gdx File
 #' @param file Name of file output
+#' @param folder output folder ending with a slash
+#' @param plotyear year to be plotted
+#' @param panel plot regions as "row" or as "matrix"
 #' @details blub
 #' @return Crop share on the y-axis and cropland area in each cluster on the x-axis.
-#' @author Patrick v. Jeetze
+#' @author Patrick v. Jeetze, Benjamin Bodirsky
 #' @import ggplot2 data.table scales magpiesets magpie4
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select %>%
 
-SupplPlotsCropShr <- function(gdx, file = NULL) {
+SupplPlotsCropShr <- function(gdx, folder="", file=NULL, plotyear="y2050", panel="row") {
 
+  if(nchar(plotyear)==5){plotyear=as.integer(substring(plotyear,2))}
 
-  # Years of interest
-  yrs <- c(2015, 2050)
 
   #-----------------------------
   # Data processing
@@ -87,7 +89,7 @@ SupplPlotsCropShr <- function(gdx, file = NULL) {
     right_join(CerealRank, by = c("Cell", "Year", "Region"))
 
   # Subset years
-  plotData <- plotData[plotData[, "Year"] %in% yrs, ]
+  plotData <- plotData[plotData[, "Year"] %in% plotyear, ]
   # Set Names
   names(plotData) <- c("Cell", "Region", "Year", "Crop", "CropShare", "CropGroup", "TotalArea", "CerealRank")
 
@@ -116,35 +118,52 @@ SupplPlotsCropShr <- function(gdx, file = NULL) {
     "#E73F74",
     "#7F3C8D",
     "#3969AC",
-    "#A5AA99",
-    "#11A579"
+    "#11A579",
+    "#A5AA99"
   )
 
-  # set plot year (preliminary)
-  plotyear <- "2050"
 
   ### Regional plot
 
   CropShrReg <-
     ggplot(aes(
       y = CropShare, x = BarPos,
-      fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other", "Fallow", "Fruits & Vegetables")))
+      fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")))
     ),
     data = filter(plotData, Year == plotyear)
     ) +
     geom_col(position = "fill", width = filter(plotData, Year == plotyear)$TotalArea) +
     scale_fill_manual(
       values = colors,
-      limits = c("Cereals", "Legumes", "Plantations", "Other", "Fallow", "Fruits & Vegetables")
+      limits = c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")
     ) +
     labs(fill = "Crop group") +
     xlab("Cropland area (Mha)") +
-    ylab("Crop share") +
-    facet_wrap(~Region, ncol = 3) +
-    theme(legend.position = c(1, 0), legend.justification = c(1, 0)) +
-    guides(fill = guide_legend(ncol = 2))
+    ylab("Crop share")
 
-  ### Global plot
+  if(panel=="row"){
+    CropShrReg <- CropShrReg +
+      facet_grid (.~ Region, scales = "free_x", space = "free_x") +
+      theme(legend.position = "bottom", legend.box = "horizontal") +
+      scale_x_continuous(breaks = c(0,50,100,150,200,250,300))+
+      guides(fill = guide_legend(nrow = 1))
+  }else {
+    CropShrReg <- CropShrReg +
+      facet_wrap(~Region, ncol = 3) +
+      theme(legend.position = c(1, 0), legend.justification = c(1, 0)) +
+      guides(fill = guide_legend(ncol = 2))
+  }
+
+  if (!is.null(file)){
+    if(panel=="row"){
+      ggsave(filename = paste0(folder,"REG_",file), CropShrReg, width = 9, height = 3, scale = 1)
+    }else{
+      ggsave(filename = paste0(folder,"REG_",file), CropShrReg, width = 9, height = 9, scale = 1)
+    }
+  } else {
+    CropShrReg
+  }
+
 
   CropShrGlo <-
     ggplot(aes(
@@ -168,8 +187,7 @@ SupplPlotsCropShr <- function(gdx, file = NULL) {
               plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
 
   if (!is.null(file)){
-    ggsave(filename = file, combined, width = 12, height = 6, scale = 1, bg = "white")
-  } else {
+   ggsave(filename = paste0(folder,"GLO_",file), CropShrGlo, width = 12, height = 6, scale = 1)  } else {
     return(combined)
   }
 

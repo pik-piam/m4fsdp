@@ -4,12 +4,24 @@
 \alias{SupplPlotsCropShr}
 \title{SupplPlotsCropShr}
 \usage{
-SupplPlotsCropShr(gdx, file = NULL)
+SupplPlotsCropShr(
+  gdx,
+  folder = "",
+  file = NULL,
+  plotyear = "y2050",
+  panel = "row"
+)
 }
 \arguments{
 \item{gdx}{gdx File}
 
+\item{folder}{output folder ending with a slash}
+
 \item{file}{Name of file output}
+
+\item{plotyear}{year to be plotted}
+
+\item{panel}{plot regions as "row" or as "matrix"}
 }
 \value{
 Crop share on the y-axis and cropland area in each cluster on the x-axis.
@@ -21,5 +33,5 @@ Creates crop share plot
 blub
 }
 \author{
-Patrick v. Jeetze
+Patrick v. Jeetze, Benjamin Bodirsky
 }
