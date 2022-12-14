@@ -91,6 +91,10 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   #                   c("single1", "single2", "single3", "single4", "bundle"))
 
   selBundle <- function(b, bundle, singles, bundleOrder = "A", colors) {
+    if(!(all(c(bundle, singles)%in%unique(b$scenario)))){
+      warning(
+        paste0("bundle ", bundle, " is not including all scenarios necessary. The following are missing: ", paste(setdiff(c(bundle, singles), unique(b$scenario)),collapse = ", "))
+        )}
     x <- b[get("scenario") %in% c(bundle, singles), ]
     single_label <- NULL
     for (count in 1:length(singles)) {
@@ -99,17 +103,13 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       } else {
         single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>"))
       }
-    }
-
-    # x[, "bundle" := paste0(c(single_label,
-    #                        "<span style='color: ", colors["bundle"], "'>", "bundle", "</span>"), collapse = "")]
-    # print(str(single_label))
-    x[, "bundle" := single_label]
-    x[, "bundleOrder" := bundleOrder]
-    for (count in 1:length(singles)) {
+      x[, "bundle" := single_label]
       x[get("scenario") %in% singles[count], "scenCol" := paste0("single", count)]
     }
-    x[get("scenario") %in% bundle, "scenCol" := "bundle"]
+
+    x[, "bundleOrder" := bundleOrder]
+    tmp=bundle  # somehow the dataset is empty when the parameter name is bundle. maybe a function with the same name?
+    x[get("scenario") %in% tmp, "scenCol" := "bundle"]
     x[get("scenario") %in% singles, "scenset" := "FSECa"]
     x[get("scenario") %in% bundle, "scenset" := "FSECb"]
 
@@ -121,7 +121,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   x <- rbind(x, selBundle(b, "Sufficiency",
              singles = c("DietEmptyCals", "DietFish", "DietLegumes", "DietMonogastrics",
-                       "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight", "NoUnderweight","LessFoodWaste"),
+                       "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight","HalfOverweight", "NoUnderweight","LessFoodWaste"),
              bundleOrder = 2, colors = colors))
   x <- rbind(x, selBundle(b, "Livelihoods",
                           singles = c("LiberalizedTrade","MinWage"),
@@ -130,7 +130,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                           singles = c("REDDaff","LandSparing","PeatlandSparing","WaterSparing","BiodivSparing"),
                           bundleOrder = 4, colors = colors))
   x <- rbind(x, selBundle(b, "AgroMngmt",
-                          singles = c("CropRotatons", "NitrogenEff", "RiceMit", "LivestockMngmt", "ManureMngmt", "SoilCarbon"),
+                          singles = c("NitrogenEff", "CropRotations",  "RiceMit", "LivestockMngmt", "ManureMngmt", "SoilCarbon"),
                           bundleOrder = 5, colors = colors))
   x <- rbind(x, selBundle(b, "FSDP",
                           singles = c("ExternalPressures", "Sufficiency", "Livelihoods", "NatureSparing", "AgroMngmt"),
@@ -174,103 +174,49 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b[, "valuefill" := list(get("value") / max(max(abs(get("value")), na.rm = TRUE),
                                              max(abs(get("bundlesum")), na.rm = TRUE),
                                       na.rm = TRUE)), by = list(get("variable"))]
+  b[, "bundlesumfill" := list(get("bundlesum") / max(max(abs(get("value")), na.rm = TRUE),
+                                             max(abs(get("bundlesum")), na.rm = TRUE),
+                                             na.rm = TRUE)), by = list(get("variable"))]
 
-  #bSum <- b[, list("label" = if (max(abs(get("valuefill")) > 0, na.rm = TRUE))
-  #  round(sum(get("value")), get("rounding"))
-  #  else NULL, valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
-  #  by = c("region", "model", "variable", "unit", "vargroup", "period",
-  #         "scenset", "bundle", "bundleOrder", "rounding")]
+  b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "model", "variable","improvment", "unit", "vargroup", "period",
+                                                                                 "scenset", "bundle", "bundleOrder", "rounding")]
+  b <- b[,"labelbundle":= round(get("value"), get("rounding"))]
 
-  bSum <- b[, list(
-    "label" = if (max(abs(get("value")) > 0, na.rm = TRUE))
-    round(sum(get("value")), get("rounding")) else NULL,
-    "valuefill" = if (max(abs(get("valuefill")) > 0, na.rm = TRUE))
-      sum(get("valuefill")) else NULL),by = c("region", "model", "variable","improvment", "unit", "vargroup", "period",
-                    "scenset", "bundle", "bundleOrder", "rounding")]
-  bSum[,"color" := ifelse((get("improvment") == "increase" & get("valuefill") > 0) | (get("improvment") == "decrease" & get("valuefill") < 0),"green","red")]
+  b$valuefill[b$label==0|(b$labelbundle==0&b$scenCol=="bundle")] <- NA
+  b$bundlesumfill[is.na(b$valuefill)] <- NA
+  b$label[is.na(b$valuefill)] <- NA
+  b$labelbundle[is.na(b$valuefill)] <- NA
 
-  # bSum[bundleOrder==5 & variable=="Agri. employment\nmio people",c("scenset","label","valuefill","color","bundle")]
-  # b[bundleOrder==4 & variable=="Agri. employment\nmio people",c("scenset","value")]
-  # sum(b[bundleOrder==2 & variable=="Agri. employment\nmio people" & scenset=="FSECa",c("value")])
-  # bSum <- b[, list("label" = round(sum(get("value")), get("rounding")),
-  #  valuefill = sum(get("valuefill"), na.rm = TRUE) / 2),
-  #  by = c("region", "model", "variable", "unit", "vargroup", "period",
-  #         "scenset", "bundle", "bundleOrder", "rounding")]
 
-  bSum <- droplevels(bSum)
+
+  b[,"color" := ifelse((get("improvment") == "increase" & get("valuefill") > 0) | (get("improvment") == "decrease" & get("valuefill") < 0),"green","red")]
+
   b <- droplevels(b)
-
-  # plotBundle2 <- function(plotData) {
-  #   set.seed(42)
-  #   plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb"), ])
-  #   p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
-  #     theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
-  #     facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
-  #                  strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90)),
-  #                                       by_layer_x = TRUE)) +
-  #     geom_bar_interactive(aes(fill = get("scenCol"),
-  #                              tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-  #                                               round(get("value"), get("rounding"))),
-  #                              data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5) +
-  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value > 0, ],
-  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-  #                          position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
-  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "increase" & value < 0, ],
-  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-  #                          position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
-  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value > 0, ],
-  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-  #                          position = "stack", stat = "identity", width = 0.5, fill = "#AD1515", size = 0) +
-  #     geom_bar_interactive(data = plotData[get("scenset") == "FSECb" & get("improvment") == "decrease" & value < 0, ],
-  #                          mapping = aes(tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
-  #                                               round(get("value"), get("rounding"))), data_id = get("bundleOrder")),
-  #                          position = "stack", stat = "identity", width = 0.5, fill = "#26AD4C", size = 0) +
-  #     geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey") +
-  #     geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(x = 0, label = get("label")),
-  #               size = 3, colour = "black", angle = 0, nudge_y = 0.4) +
-  #     geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(x = 0, label = get("label")),
-  #               size = 3, colour = "black", angle = 0, nudge_y = -0.4) +
-  #     scale_fill_manual_interactive("Scenario", values = colors) +
-  #     guides(fill = guide_legend(order = 1)) +
-  #     labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
-  #     theme(legend.position = "none") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
-  #     theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
-  #           axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
-  #           panel.grid.minor = element_blank(), axis.text.x.bottom = element_blank(),
-  #           axis.text.y = element_blank()) + theme(plot.margin = margin(1, 35, 1, 1, "pt")) +
-  #     theme(axis.text.x = element_text(angle = 30, hjust = 0),
-  #           strip.text.y.left = ggtext::element_markdown(size = 10, angle = 0))
-  #
-  #   return(p)
-  # }
 
   plotBundle3 <- function(plotData) {
     set.seed(42)
-    plotData <- droplevels(plotData[get("scenset") %in% c("FSECa", "FSECb", "FSECe"), ])
+    plotData <- droplevels(plotData[substr(get("scenCol"),1,6) %in% c("single", "bundle"), ])
     p <- ggplot(plotData, aes(x = get("valuefill"), y = get("bundleOrder"))) +
     #p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
       facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
                    strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90)),
                                         by_layer_x = TRUE)) +
-      geom_bar_interactive(data = plotData[get("scenset") == "FSECa", ],
+      geom_bar_interactive(data = plotData[substr(get("scenCol"),1,6) == "single", ],
                            mapping = aes(fill = get("scenCol"),
                                tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))),
                                data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5, show.legend = FALSE) +
       geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey", show.legend = FALSE) +
-      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECa"), ], mapping = aes(shape = get("scenset"), color = get("color"),
+      geom_point_interactive(data = b[get("scenCol") %in% c("single1"), ], mapping = aes(x=get("bundlesumfill"), shape = get("scenset"), color = get("color"),
         tooltip = paste0("Sum of \nindividual \neffects","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = 0.3), show.legend = TRUE) +
-      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECb","FSECe"), ], mapping = aes(shape = get("scenset"), color = get("color"),
-        tooltip = paste0("Bundle","\nValue: ", get("label")),
+      geom_point_interactive(data = b[get("scenCol") %in% c("bundle"), ], mapping = aes(x=get("valuefill"), shape = get("scenset"), color = get("color"),
+        tooltip = paste0("Bundle","\nValue: ", get("labelbundle")),
         data_id = get("bundleOrder")), position = position_nudge(y = -0.3), show.legend = TRUE) +
-      geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+      geom_text(data = b[get("scenCol") %in% c("single1"), ], aes(x=get("bundlesumfill"), color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = 0.4, show.legend = FALSE) +
-      geom_text(data = bSum[get("scenset")  %in% c("FSECb","FSECe"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+      geom_text(data = b[get("scenCol") %in% c("bundle"), ], aes(color = get("color"), label = get("labelbundle"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = -0.4, show.legend = FALSE) + #, hjust = "inward") +#if ("valuefill" < 0) 0 else
       scale_fill_manual_interactive("Scenario", values = colors) +
       # scale_color_manual_interactive("Net Effect", values = c("#26AD4C","#AD1515"),labels=c("Single Measures","Bundle")) +
