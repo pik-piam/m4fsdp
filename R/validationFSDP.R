@@ -134,18 +134,20 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       unitHist <- levels(valdata$unit)[grep(units, levels(valdata$unit), fixed = TRUE)][1]
       if (is.null(hist)) {
         h <- valdata[valdata$variable == var & valdata$unit == unitHist & valdata$scenario == "historical" &
-                   valdata$period >= 1980 & valdata$period <= 2020, ]
+                   valdata$period >= 1975 & valdata$period <= 2020, ]
       } else {
         h <- valdata[valdata$variable == var & valdata$unit == unitHist & valdata$scenario == "historical" &
-                   valdata$period >= 1980 & valdata$period <= 2020 & valdata$model %in% hist, ]
+                   valdata$period >= 1975 & valdata$period <= 2020 & valdata$model %in% hist, ]
         h <- droplevels(h)
-        if (!is.null(histName)) levels(h$model) <- histName
+        if (!is.null(histName)) {
+          h$model <- factor(h$model,hist,histName)
+        }
       }
 
       if (!is.null(weight)) {
         w1 <- rep[rep$variable == weight & rep$period >= 1995 & rep$period <= 2050, ]
         w2 <- valdata[valdata$variable == weight & valdata$scenario == "historical" &
-                    valdata$period >= 1980 & valdata$period <= 2020, ]
+                    valdata$period >= 1975 & valdata$period <= 2020, ]
         b <- cbind(b, w1$value)
         h <- cbind(h, w2$value)
         b <- b[, list(value = weighted.mean(get("value"), get("V2"))),
@@ -164,6 +166,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
       p <- ggplot(b, aes(x = get("period"), y = get("value")))
       p <- p + labs(title = varName) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 90)
+      p <- p + scale_x_continuous(NULL,breaks = c(1975,2000,2025,2050))
       if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")))
       p <- p + geom_line(aes(color = get("scenario"))) + facet_wrap("region_class")
       p <- p + scale_shape_discrete("Historical data", solid = 0)
