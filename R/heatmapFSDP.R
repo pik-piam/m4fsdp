@@ -101,7 +101,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   # greying out non-nutrition scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
-                     "NoOverweight", "NoUnderweight", "AllHealth", "DietRotations",
+                     "NoOverweight", "HalfOverweight", "NoUnderweight", "AllHealth", "DietRotations",
                      "Population", "ExternalPressures", "AllInclusion", "Sufficiency",
                      "EconDevelop", "DietHealth") &
       variable %in% c("Prevalence of underweight (million people)",
@@ -179,6 +179,7 @@ if (regionSel == "IND") {
   b <- b[scenario != "ExternalPressures",]
   b <- b[scenario != "NoUnderweight",]
   b <- b[scenario != "NoOverweight",]
+  b <- b[scenario != "HalfOverweight",]
   b <- b[scenario != "LessFoodWaste",]
   b <- b[scenario != "DietVegFruitsNutsSeeds",]
   b <- b[scenario != "DietRuminants",]
@@ -227,12 +228,12 @@ if (regionSel == "IND") {
   scenLast <- c("FSDP")
   scenSSPs <- c("SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau","SSP1PLUSbau")
   scenFSTs <- c("SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","SSP1PLUSfsdp")
-  scenDiet <- c("NoUnderweight", "NoOverweight", "LessFoodWaste")
+  scenDiet <- c("NoUnderweight", "HalfOverweight", "NoOverweight", "LessFoodWaste")
   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
                  "DietLegumes", "DietFish", "DietEmptyCals")
   scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing")
-  scenClimate <- c("REDD", "REDDaff", "SoilCarbon")
-  scenMngmt <- c("CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
+  scenClimate <- c("REDD", "REDDaff")
+  scenMngmt <- c("SoilCarbon","CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
                  "AirPollution")
   scenInclusion <- c("LiberalizedTrade","MinWage")
   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
@@ -253,8 +254,8 @@ if (regionSel == "IND") {
   b <- droplevels(b)
 
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-  scenMiddle <- c(scenSSPs, scenFSTs, scenDiet, scenDiet2, scenProtect, scenMngmt,
-  scenClimate, scenInclusion, scenCombinations, scenArchetypes)
+  scenMiddle <- c(scenSSPs, scenFSTs, scenDiet, scenDiet2, scenInclusion, scenProtect, scenClimate, scenMngmt,
+  scenCombinations, scenArchetypes)
   scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
   b$scenario <- factor(b$scenario, levels = scenOrder)
