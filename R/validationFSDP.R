@@ -33,8 +33,8 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
   rev <- levels(rep$version)
   rep$scenset <- NULL
-  if (!is.data.frame(val)) valdata <- readRDS(val)
-  valdata[region == "World", region := "GLO"]
+  if (!is.data.frame(val)) val <- readRDS(val)
+  val[region == "World", region := "GLO"]
 
   #safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#332288", "#AA4499",
   #                             "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
@@ -96,21 +96,21 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     map[14, ] <- c("USA", "HIR")
     map[15, ] <- c("GLO", "GLO")
     rep <- merge(rep, map)
-    valdata <- merge(valdata, map)
+    val <- merge(val, map)
 
     regSubOrder <- c("LIR", "MIR", "HIR", "GLO")
     rep$region_class <- factor(rep$region_class, levels = regSubOrder)
-    valdata$region_class <- factor(valdata$region_class, levels = regSubOrder)
+    val$region_class <- factor(val$region_class, levels = regSubOrder)
 
     rep <- rep[rep$region_class != "GLO", ]
-    valdata <- valdata[valdata$region_class != "GLO", ]
+    val <- val[val$region_class != "GLO", ]
 
   } else {
 
     rep$region_class <- rep$region
-    valdata$region_class <- valdata$region
+    val$region_class <- val$region
     rep <- rep[rep$region_class %in% regionSel, ]
-    valdata <- valdata[valdata$region_class %in% regionSel, ]
+    val <- val[val$region_class %in% regionSel, ]
 
   }
 
@@ -131,13 +131,13 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       b <- rep[rep$variable == var & rep$unit %in% units & rep$period >= 1995 & rep$period <= 2050, ]
       b <- droplevels(b)
       units <- levels(b$unit)
-      unitHist <- levels(valdata$unit)[grep(units, levels(valdata$unit), fixed = TRUE)][1]
+      unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
       if (is.null(hist)) {
-        h <- valdata[valdata$variable == var & valdata$unit == unitHist & valdata$scenario == "historical" &
-                   valdata$period >= 1975 & valdata$period <= 2020, ]
+        h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
+                   val$period >= 1975 & val$period <= 2020, ]
       } else {
-        h <- valdata[valdata$variable == var & valdata$unit == unitHist & valdata$scenario == "historical" &
-                   valdata$period >= 1975 & valdata$period <= 2020 & valdata$model %in% hist, ]
+        h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
+                   val$period >= 1975 & val$period <= 2020 & val$model %in% hist, ]
         h <- droplevels(h)
         if (!is.null(histName)) {
           h$model <- factor(h$model,hist,histName)
@@ -146,8 +146,8 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
       if (!is.null(weight)) {
         w1 <- rep[rep$variable == weight & rep$period >= 1995 & rep$period <= 2050, ]
-        w2 <- valdata[valdata$variable == weight & valdata$scenario == "historical" &
-                    valdata$period >= 1975 & valdata$period <= 2020, ]
+        w2 <- val[val$variable == weight & val$scenario == "historical" &
+                    val$period >= 1975 & val$period <= 2020, ]
         b <- cbind(b, w1$value)
         h <- cbind(h, w2$value)
         b <- b[, list(value = weighted.mean(get("value"), get("V2"))),
