@@ -90,12 +90,12 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   # colors <- setNames(c("#C29511", "#4499FF", "#BD36FF", "#FC8014", "#26AD4C"),
   #                   c("single1", "single2", "single3", "single4", "bundle"))
 
-  selBundle <- function(b, bundle, singles, bundleOrder = "A", colors) {
-    if(!(all(c(bundle, singles)%in%unique(b$scenario)))){
+  selBundle <- function(b, bundleScen, singles, bundleOrder = "A", colors) {
+    if(!(all(c(bundleScen, singles)%in%unique(b$scenario)))){
       warning(
-        paste0("bundle ", bundle, " is not including all scenarios necessary. The following are missing: ", paste(setdiff(c(bundle, singles), unique(b$scenario)),collapse = ", "))
+        paste0("bundle ", bundleScen, " is not including all scenarios necessary. The following are missing: ", paste(setdiff(c(bundleScen, singles), unique(b$scenario)),collapse = ", "))
         )}
-    x <- b[get("scenario") %in% c(bundle, singles), ]
+    x <- b[get("scenario") %in% c(bundleScen, singles), ]
     single_label <- NULL
     for (count in 1:length(singles)) {
       if (count < length(singles)) {
@@ -108,10 +108,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     }
 
     x[, "bundleOrder" := bundleOrder]
-    tmp=bundle  # somehow the dataset is empty when the parameter name is bundle. maybe a function with the same name?
-    x[get("scenario") %in% tmp, "scenCol" := "bundle"]
+    x[get("scenario") %in% bundleScen, "scenCol" := "bundle"]
     x[get("scenario") %in% singles, "scenset" := "FSECa"]
-    x[get("scenario") %in% bundle, "scenset" := "FSECb"]
+    x[get("scenario") %in% bundleScen, "scenset" := "FSECb"]
 
     return(x)
   }
@@ -170,53 +169,48 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b$bundle <- fct_reorder(b$bundle, as.integer(b$bundleOrder))
 
 
+
   b[, "bundlesum" := sum(get("value"), na.rm = TRUE), by = list(get("variable"), get("bundle"), get("scenset"))]
   b[, "valuefill" := list(get("value") / max(max(abs(get("value")), na.rm = TRUE),
                                              max(abs(get("bundlesum")), na.rm = TRUE),
                                       na.rm = TRUE)), by = list(get("variable"))]
-  b[, "bundlesumfill" := list(get("bundlesum") / max(max(abs(get("value")), na.rm = TRUE),
-                                             max(abs(get("bundlesum")), na.rm = TRUE),
-                                             na.rm = TRUE)), by = list(get("variable"))]
 
   b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "model", "variable","improvment", "unit", "vargroup", "period",
                                                                                  "scenset", "bundle", "bundleOrder", "rounding")]
-  b <- b[,"labelbundle":= round(get("value"), get("rounding"))]
 
-  b$valuefill[b$label==0|(b$labelbundle==0&b$scenCol=="bundle")] <- NA
-  b$bundlesumfill[is.na(b$valuefill)] <- NA
-  b$label[is.na(b$valuefill)] <- NA
-  b$labelbundle[is.na(b$valuefill)] <- NA
+  bSum <- b[, list(
+    "label" = if (max(abs(get("value")) > 0, na.rm = TRUE))
+      round(sum(get("value")), get("rounding")) else NULL,
+    "valuefill" = if (max(abs(get("valuefill")) > 0, na.rm = TRUE))
+      sum(get("valuefill")) else NULL),by = c("region", "model", "variable","improvment", "unit", "vargroup", "period",
+                                              "scenset", "bundle", "bundleOrder", "rounding")]
+  bSum[,"color" := ifelse((get("improvment") == "increase" & get("valuefill") > 0) | (get("improvment") == "decrease" & get("valuefill") < 0),"green","red")]
 
-
-
-  b[,"color" := ifelse((get("improvment") == "increase" & get("valuefill") > 0) | (get("improvment") == "decrease" & get("valuefill") < 0),"green","red")]
-
+  bSum <- droplevels(bSum)
   b <- droplevels(b)
 
   plotBundle3 <- function(plotData) {
     set.seed(42)
-    plotData <- droplevels(plotData[substr(get("scenCol"),1,6) %in% c("single", "bundle"), ])
     p <- ggplot(plotData, aes(x = get("valuefill"), y = get("bundleOrder"))) +
-    #p <- ggplot(plotData, aes(x = get("valuefill"), y = reorder(get("scenset"), dplyr::desc(get("scenset"))))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
       facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
-                   strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90)),
+                   strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90)), #text_y = elem_list_text(angle = c(90, 0)),
                                         by_layer_x = TRUE)) +
-      geom_bar_interactive(data = plotData[substr(get("scenCol"),1,6) == "single", ],
+      geom_bar_interactive(data = plotData[get("scenset") == "FSECa", ],
                            mapping = aes(fill = get("scenCol"),
                                tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))),
                                data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5, show.legend = FALSE) +
       geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey", show.legend = FALSE) +
-      geom_point_interactive(data = b[get("scenCol") %in% c("single1"), ], mapping = aes(x=get("bundlesumfill"), shape = get("scenset"), color = get("color"),
+      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECa"), ], mapping = aes(shape = get("scenset"), color = get("color"),
         tooltip = paste0("Sum of \nindividual \neffects","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = 0.3), show.legend = TRUE) +
-      geom_point_interactive(data = b[get("scenCol") %in% c("bundle"), ], mapping = aes(x=get("valuefill"), shape = get("scenset"), color = get("color"),
-        tooltip = paste0("Bundle","\nValue: ", get("labelbundle")),
+      geom_point_interactive(data = bSum[get("scenset") %in% c("FSECb"), ], mapping = aes(shape = get("scenset"), color = get("color"),
+        tooltip = paste0("Bundle","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = -0.3), show.legend = TRUE) +
-      geom_text(data = b[get("scenCol") %in% c("single1"), ], aes(x=get("bundlesumfill"), color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+      geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.85, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = 0.4, show.legend = FALSE) +
-      geom_text(data = b[get("scenCol") %in% c("bundle"), ], aes(color = get("color"), label = get("labelbundle"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.85, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = -0.4, show.legend = FALSE) + #, hjust = "inward") +#if ("valuefill" < 0) 0 else
       scale_fill_manual_interactive("Scenario", values = colors) +
       # scale_color_manual_interactive("Net Effect", values = c("#26AD4C","#AD1515"),labels=c("Single Measures","Bundle")) +
@@ -225,8 +219,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                           labels = c("Positive", "Negative"),
                           values = c("#26AD4C","#AD1515")) +
       scale_shape_manual(name = "Net Effect",
-                         labels = c("Sum of \nindividual \neffects", "Bundle", "FSDP"),
-                         values = c(6, 17, 17)) +
+                         labels = c("Sum of \nindividual \neffects\n", "Bundle or\nFSDP (last row)"),
+                         values = c(6, 17)) +
       guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
       guides(fill = "none", color = "none", shape = guide_legend(order = 1)) +
       labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
@@ -242,7 +236,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   }
 
   m <- plotBundle3(b)
-  #ggsave("SingleBundle5.png", m, width = 11, height = 8.5, scale = 1)
+  #ggsave("SingleBundle6.png", m, width = 11, height = 10, scale = 1)
 
   p <- girafe(
     ggobj = m,
@@ -256,7 +250,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                      border-radius:2px;border: black 1px solid;color:black;")
     ),
     width_svg = 11,
-    height_svg = 8.5)
+    height_svg = 10)
 
   if (is.null(file)) {
     x <- NULL
@@ -271,8 +265,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     x[["data"]] <- b
     return(x)
   } else {
-    ggsave(file, m, scale = 1, width = 11, height = 8.5, bg = "white")
-    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 8.5, bg = "white")
+    ggsave(file, m, scale = 1, width = 11, height = 10, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 10, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }
