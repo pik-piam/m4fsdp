@@ -9,8 +9,7 @@ SupplPlotsFSDP(
   scenarioType = "all",
   file = NULL,
   calorieSupply = TRUE,
-  caseRegion = TRUE,
-  region = "IND"
+  caseRegion = NULL
 )
 }
 \arguments{
@@ -22,18 +21,14 @@ SupplPlotsFSDP(
 
 \item{calorieSupply}{parameter to set if calorie figures needed for calories supply or calorie intake, set FALSE for Intake}
 
-\item{caseRegion}{set TRUE if plots are being used for country case studies (India, Brazil, China)}
-
-\item{region}{Code of the region for which plots are being created, works only if caseRegion is TRUE}
+\item{caseRegion}{set to a particular region (i.e. "IND")
+if plots are being used for country case studies}
 }
 \value{
 if file is NULL a ggplot2 object will be return
 }
 \description{
 creates supplementary plots for FSDP MAgPIE runs
-}
-\details{
-blub
 }
 \author{
 David M Chen, Vartika Singh

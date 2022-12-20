@@ -34,6 +34,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   countries <- ne_countries(returnclass = "sf", scale = "small")
   countries <- subset(countries, iso_a3 %in% levels(repIso$iso_a3))
   countries <- countries[-grep("Antarctica", countries$name), ]
+  countries <- countries[-grep("Fr. S. Antarctic Lands", countries$name), ]
 
   # function to calc polygons for cartogram
   calcPolygon <- function(pop, name) {
