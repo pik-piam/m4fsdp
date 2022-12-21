@@ -36,39 +36,41 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     stop("Table type does not exist")
   }
 
-  var <- c("SDG|SDG02|Prevalence of underweight",
-           "SDG|SDG03|Prevalence of obesity",
-           "Health|Years of life lost|Risk|Diet and anthropometrics",
-           "Biodiversity|BII",
-           "Biodiversity|Shannon crop area diversity index",
-           "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
-           "Water|Environmental flow violation volume",
-           "Emissions|GWP100AR6|Land|Cumulative",
-           "Global Surface Temperature",
-           "Household Expenditure|Food|Expenditure",
-           "Income|Number of People Below 3.20$/Day",
-           "Agricultural employment|Crop and livestock products",
-           "Hourly labor costs relative to 2000",
-           "Hourly labor costs relative to 2020",
-           "Value|Bioeconomy Demand",
-           "Costs Without Incentives")
+  # var <- c("SDG|SDG02|Prevalence of underweight",
+  #          "SDG|SDG03|Prevalence of obesity",
+  #          "Health|Years of life lost|Risk|Diet and anthropometrics",
+  #          "Biodiversity|BII",
+  #          "Biodiversity|Shannon crop area diversity index",
+  #          "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
+  #          "Water|Environmental flow violation volume",
+  #          "Emissions|GWP100AR6|Land|Cumulative",
+  #          "Global Surface Temperature",
+  #          "Household Expenditure|Food|Expenditure",
+  #          "Income|Number of People Below 3.20$/Day",
+  #          "Agricultural employment|Crop and livestock products",
+  #          "Hourly labor costs relative to 2000",
+  #          "Hourly labor costs relative to 2020",
+  #          "Value|Bioeconomy Demand",
+  #          "Costs Without Incentives")
+  #
+  # names(var) <- c("Health|Prevalence of underweight (million people)|1",
+  #                 "Health|Prevalence of obesity (million people)|2",
+  #                 "Health|Years of life lost (million years)|3",
+  #                 "Environment|Biodiversity Intactness (Index)|1",
+  #                 "Environment|Shannon crop area diversity index (Index)|2",
+  #                 "Environment|Nitrogen surplus (Mt N/yr)|3",
+  #                 "Environment|Water environmental flow violations (km3/yr)|4",
+  #                 "Environment|Cumulative GHG emissions (Gt CO2eq since 2000)|5",
+  #                 "Environment|Global Surface Temperature (deg C)|6",
+  #                 "Inclusion|Expenditure for agric. products (USD/person)|1",
+  #                 "Inclusion|Number of People Below 3.20$/Day (million people)|2",
+  #                 "Inclusion|Agricultural employment (million people)|3",
+  #                 "Inclusion|Agricultural wages (Index)|4",
+  #                 "Inclusion|Agricultural wages (Index)|4",
+  #                 "Economy|Bioeconomy Supply (billion US$05/yr)|1",
+  #                 "Economy|Costs (billion US$05/yr)|1")
 
-  names(var) <- c("Health|Prevalence of underweight (million people)|1",
-                  "Health|Prevalence of obesity (million people)|2",
-                  "Health|Years of life lost (million years)|3",
-                  "Environment|Biodiversity Intactness (Index)|1",
-                  "Environment|Shannon crop area diversity index (Index)|2",
-                  "Environment|Nitrogen surplus (Mt N/yr)|3",
-                  "Environment|Water environmental flow violations (km3/yr)|4",
-                  "Environment|Cumulative GHG emissions (Gt CO2eq since 2000)|5",
-                  "Environment|Global Surface Temperature (deg C)|6",
-                  "Inclusion|Expenditure for agric. products (USD/person)|1",
-                  "Inclusion|Number of People Below 3.20$/Day (million people)|2",
-                  "Inclusion|Agricultural employment (million people)|3",
-                  "Inclusion|Agricultural wages (Index)|4",
-                  "Inclusion|Agricultural wages (Index)|4",
-                  "Economy|Bioeconomy Supply (billion US$05/yr)|1",
-                  "Economy|Costs (billion US$05/yr)|1")
+  var <- getVariables()
 
   if (regionSel == "GLO") {
   rep[region == "World", region := "GLO"]
@@ -81,22 +83,23 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b <- rbind(bb, b)
 
   b$variable <- factor(b$variable, levels = var, labels = names(var))
-  b[, c("vargroup", "variable", "order") := tstrsplit(variable, "|", fixed = TRUE)]
+  b[, c("vargroup", "order", "variableName", "unit", "improvment", "rounding","factor") := tstrsplit(get("variable"), "|", fixed = TRUE)]
+  #b[, c("vargroup", "variable", "order") := tstrsplit(variable, "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
+  b$rounding <- as.numeric(b$rounding)
+  b$factor <- as.numeric(b$factor)
 
   vargroupOrder <- c("Health", "Environment", "Inclusion", "Economy")
   b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
 
+  b[,"variable" := paste(get("variableName"),get("unit"),sep="\n")]
   b$variable <- reorder(b$variable, b$order)
 
-  b[, valuefill := value - value[scenario == "BAU" & period == "2050"], by = .(variable)]
+  b[,"value" := get("value") * get("factor")]
 
-  b[variable %in% c("Biodiversity Intactness (Index)",
-                    "Shannon crop area diversity index (Index)",
-                    "Agricultural wages (Index)",
-                    "Agricultural employment (million people)",
-                    "Bioeconomy Supply (billion US$05/yr)"
-                    ), valuefill := -valuefill]
+  b[get("improvment") == "increase", "value" := -get("value")]
+  b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
+
 
   # greying out non-nutrition scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
@@ -104,16 +107,16 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                      "NoOverweight", "HalfOverweight", "NoUnderweight", "AllHealth", "DietRotations",
                      "Population", "ExternalPressures", "AllInclusion", "Sufficiency",
                      "EconDevelop", "DietHealth") &
-      variable %in% c("Prevalence of underweight (million people)",
-                      "Prevalence of obesity (million people)"),
-    valuefill := NA]
+      get("variableName") %in% c("Underweight",
+                      "Obesity"),
+    c("valuefill","value") := NA]
 
   # greying out non-inclusion scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
                      "ExternalPressures", "AllInclusion", "EconDevelop", "MinWage") &
-      variable %in% c("Agricultural wages (Index)"),
-    valuefill := NA]
+      get("variableName") %in% c("Agri. wages"),
+    c("valuefill","value") := NA]
 
   # Adding and greying-out years of life lost for non-dietary scenarios
   tb <- as.data.frame(b)
@@ -124,7 +127,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     as.character()
 
   haveYLLScenarios <- tb %>%
-    filter(.data$variable == "Years of life lost (million years)") %>%
+    filter(.data$variableName == "Years of life lost") %>%
     pull(.data$scenario) %>%
     unique() %>%
     as.character()
@@ -134,11 +137,11 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   tb <- tb %>%
     filter(.data$scenario == "BAU",
            .data$period == "2050",
-           .data$variable %in% "Years of life lost (million years)") %>%
+           .data$variableName %in% "Years of life lost") %>%
     select(-.data$scenario)
 
   tb <- tidyr::expand_grid(tb, scenario = nonDietaryScenarios) %>%
-    mutate(valuefill = NA)
+    mutate(valuefill = NA, value = NA)
 
   b <- rbind(b, as.data.table(tb))
   # end greying-out attributable deaths and YLL for non-dietary scenarios
@@ -148,24 +151,28 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
                      "SSP3fsdp", "SSP4fsdp", "SSP5fsdp",
                      "Population", "EconDevelop", "TimberCities", "Bioplastics",
                      "ExternalPressures") &
-      variable %in% c("Global Surface Temperature (deg C)"),
+      get("variableName") %in% c("Global Surface Temp"),
     c("value", "valuefill") := list(NA, NA)]
 
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
-  b[variable %in% c("Costs (billion US$05/yr)"), value := value / 1000]
-  b[variable %in% c("Bioeconomy Supply (billion US$05/yr)"), value := value / 1000]
-  b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
+  # b[variable %in% c("Costs (billion US$05/yr)"), value := value / 1000]
+  # b[variable %in% c("Bioeconomy Supply (billion US$05/yr)"), value := value / 1000]
+  # b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
 
   #b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
   #                     formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
   #  b[, label := formatC(value, if (max(value) > 100) 0 else 2, format = "f"),
   #    by = .(region, model, scenario, variable, unit, period)]
-  b[, label := if (max(value,na.rm=T) > 100)
-    formatC(value, 0, format = "f")
-    else
-      formatC(value, 2, format = "f"),
-    by = .(region, model, scenario, variable, unit, period)]
+  # b[, label := if (max(value,na.rm=T) > 100)
+  #   formatC(value, 0, format = "f")
+  #   else
+  #     formatC(value, 2, format = "f"),
+  #   by = .(region, model, scenario, variable, unit, period)]
+  #b <-  b[,"label" := round(sum(get("value")), get("rounding"))]
+  b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "scenario", "model", "variable","unit", "period")]
+
+
   #b[, label := formatC(value, 1, format = "f"), by = .(region, model, scenario, variable, unit, period)]
 
 
@@ -276,7 +283,7 @@ if (regionSel == "IND") {
     return(exp)
   }
 
-  m <- ggplot(b, aes(y = scenario, x = variable)) + theme_minimal() +
+  m <- ggplot(b, aes(y = scenario, x = 1)) + theme_minimal() +
     theme(panel.border = element_rect(colour = NA, fill = NA)) +
     geom_tile_interactive(aes(fill = valuefill,
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
@@ -285,9 +292,10 @@ if (regionSel == "IND") {
                                      na.value = "grey95", high = "#fc8d59", breaks = c(-1, 0, 1),
                                      labels = c("positive", "zero", "negative")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
-                              data_id = interaction(variable)), size = 3, color = "grey50") +
-    theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-    labs(y = NULL, x = "Indicator",
+                              data_id = interaction(variable)), size = 2.5, color = "grey50") +
+    #theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+    theme(axis.text.x = element_blank()) +
+    labs(y = NULL, x = NULL,
          fill = bquote(atop(atop(textstyle("Impact"), textstyle("relative to")), textstyle(bold("SSP2 2050"))))) +
     theme(legend.position = "right") +
     guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)),
@@ -299,8 +307,11 @@ if (regionSel == "IND") {
           panel.grid.minor = element_blank()) +
     scale_y_discrete(labels = function(x) makeExp(x, "SSP2 2050"))
 
-  m <- m + facet_grid(vars(period), vars(vargroup), scales = "free", space = "free") +
-    scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
+  m <- m + facet_nested(get("period") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
+                        strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90), face=c("bold","plain")), #text_y = elem_list_text(angle = c(90, 0)),
+                                                   by_layer_x = TRUE))
+    #facet_grid(vars(period), vars(vargroup), scales = "free", space = "free")# +
+    #scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
 
   p <- girafe(
     ggobj = m,

@@ -19,44 +19,10 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   #### read in data files
   rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECe"), subset = FALSE)
 
-  var <- c("SDG|SDG02|Prevalence of underweight",
-           "SDG|SDG03|Prevalence of obesity",
-           "Health|Attributable deaths|Risk|Diet and anthropometrics",
-           "Health|Years of life lost|Risk|Diet and anthropometrics",
-           "Biodiversity|BII",
-           "Biodiversity|Shannon crop area diversity index",
-           "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
-           "Water|Environmental flow violation volume",
-           "Emissions|GWP100AR6|Land|Cumulative",
-           "Global Surface Temperature",
-           "Household Expenditure|Food|Expenditure",
-           "Income|Number of People Below 3.20$/Day",
-           "Agricultural employment|Crop and livestock products",
-           "Hourly labor costs relative to 2000",
-           "Hourly labor costs relative to 2020",
-           "Value|Bioeconomy Demand",
-           "Costs Without Incentives")
-
-  names(var) <- c("Health|Underweight\nmio people|1|decrease|0",
-                  "Health|Obesity\nmio people|2|decrease|0",
-                  "Health|Attributable deaths\nmillion people|3|decrease|0",
-                  "Health|Years of life lost\nmillion years|4|decrease|0",
-                  "Environment|Biodiversity\nBII|1|increase|2",
-                  "Environment|Croparea diversity\nShannon Index (1)|2|increase|2",
-                  "Environment|Nitrogen surplus\nMt N/yr|3|decrease|0",
-                  "Environment|Water flow violations\nkm3/yr|4|decrease|0",
-                  "Environment|Cum CO2 emissions\nGtCO2eq since 1995|5|decrease|0",
-                  "Environment|Global Surface Temp\ndeg C|6|decrease|2",
-                  "Inclusion|Cost agric. products\nUSD/person|1|decrease|0",
-                  "Inclusion|People Below 3.20$/Day\nmio people|2|decrease|0",
-                  "Inclusion|Agri. employment\nmio people|3|increase|0",
-                  "Inclusion|Agri. wages\nIndex|4|increase|2",
-                  "Inclusion|Agri. wages\nIndex|4|increase|2",
-                  "Economy|Bioeconomy Supply\nbillion US$05/yr|1|increase|0",
-                  "Economy|Costs\nbillion US$05/yr|1|decrease|0")
+  var <- getVariables()
 
   if(any(!var%in%rep$variable)){
-    warning(paste(c("The following indicators are missing: ",var=var[!var%in%rep$variable]),collapse = " "))
+    warning(paste(c("The following indicators are missing: \n",var=var[!var%in%rep$variable]),collapse = "\n"))
   }
   var <- var[var %in% rep$variable]
 
@@ -65,18 +31,25 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b <- droplevels(b)
 
   b$variable <- factor(b$variable, levels = var, labels = names(var))
-  b[, c("vargroup", "variable", "order", "improvment", "rounding") := tstrsplit(get("variable"), "|", fixed = TRUE)]
+  b[, c("vargroup", "order", "variableName", "unit", "improvment", "rounding","factor") := tstrsplit(get("variable"), "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
   b$rounding <- as.numeric(b$rounding)
+  b$factor <- as.numeric(b$factor)
 
   vargroupOrder <- c("Health", "Environment", "Inclusion", "Economy")
   b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
 
+  #b$variable <- reorder(b$variable, b$order)
+  b[,"variable" := paste(get("variableName"),get("unit"),sep="\n")]
   b$variable <- reorder(b$variable, b$order)
 
-  b[variable %in% c("Costs\nbillion US$05/yr"), "value" := get("value") / 1000]
-  b[variable %in% c("Bioeconomy Supply\nbillion US$05/yr"), "value" := get("value") / 1000]
-  b[variable %in% c("Biodiversity\nBII"), "value" := get("value") * 100]
+
+  b$unit <- reorder(b$unit, b$order)
+
+  b[,"value" := get("value") * get("factor")]
+  # b[variable %in% c("Costs\nbillion US$05/yr"), "value" := get("value") / 1000]
+  # b[variable %in% c("Bioeconomy Supply\nbillion US$05/yr"), "value" := get("value") / 1000]
+  # b[variable %in% c("Biodiversity\nBII"), "value" := get("value") * 100]
 
   b[, "value" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
 
@@ -194,7 +167,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     p <- ggplot(plotData, aes(x = get("valuefill"), y = get("bundleOrder"))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
       facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
-                   strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90)), #text_y = elem_list_text(angle = c(90, 0)),
+                   strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90), face=c("bold","plain")), #text_y = elem_list_text(angle = c(90, 0)),
                                         by_layer_x = TRUE)) +
       geom_bar_interactive(data = plotData[get("scenset") == "FSECa", ],
                            mapping = aes(fill = get("scenCol"),
