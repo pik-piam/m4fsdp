@@ -6,7 +6,7 @@
 \usage{
 SupplPlotsFSDP(
   repReg,
-  scenarioType = "all",
+  scenarioType = "bundlesBAUFSDP",
   file = NULL,
   calorieSupply = TRUE,
   caseRegion = NULL

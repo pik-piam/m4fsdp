@@ -1,15 +1,14 @@
-globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "CropShare", "BarPos"))
+globalVariables(c("gdx", "folder", "Data1", "Value", "Year", "Region", "Crop", "TotalArea", "CropShare", "BarPos"))
 
 #' @title SupplPlotsCropShr
 #' @description Creates crop share plot
 #'
 #' @export
 #'
-#' @param gdx gdx File
+#' @param repGrid gridded joint fsdp report
 #' @param file Name of file output
-#' @param folder output folder ending with a slash
-#' @param plotyear year to be plotted
 #' @param panel plot regions as "row" or as "matrix"
+#' @param plotyear year for the plot
 #' @details blub
 #' @return Crop share on the y-axis and cropland area in each cluster on the x-axis.
 #' @author Patrick v. Jeetze, Benjamin Bodirsky
@@ -17,10 +16,9 @@ globalVariables(c("Data1", "Value", "Year", "Region", "Crop", "TotalArea", "Crop
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select %>%
 
-SupplPlotsCropShr <- function(gdx, folder="", file=NULL, plotyear="y2050", panel="row") {
+SupplPlotsCropShr <- function(repGrid, file=NULL, plotyear = "2050", panel="row") {
 
-  if(nchar(plotyear)==5){plotyear=as.integer(substring(plotyear,2))}
-
+  repGrid <- convertReportFSDP(repGrid, subset = TRUE)
 
   #-----------------------------
   # Data processing

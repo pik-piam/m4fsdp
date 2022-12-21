@@ -4,22 +4,14 @@
 \alias{SupplPlotsCropShr}
 \title{SupplPlotsCropShr}
 \usage{
-SupplPlotsCropShr(
-  gdx,
-  folder = "",
-  file = NULL,
-  plotyear = "y2050",
-  panel = "row"
-)
+SupplPlotsCropShr(repGrid, file = NULL, plotyear = "2050", panel = "row")
 }
 \arguments{
-\item{gdx}{gdx File}
-
-\item{folder}{output folder ending with a slash}
+\item{repGrid}{gridded joint fsdp report}
 
 \item{file}{Name of file output}
 
-\item{plotyear}{year to be plotted}
+\item{plotyear}{year for the plot}
 
 \item{panel}{plot regions as "row" or as "matrix"}
 }

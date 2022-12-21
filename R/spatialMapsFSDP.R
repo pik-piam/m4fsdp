@@ -160,7 +160,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn("Share", colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 0.4)) +
+    #scale_fill_manual(values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
+    #                  breaks = seq(0, 0.4, by = 0.1)) +
+    scale_fill_gradientn("Share", colors = rev(brewer.pal(11, "RdYlGn")[-1]), na.value = "grey90", limits = c(0,1)) +
     myTheme + labs(title = title, caption = "Projection: Cartogram based on population.
                                              Country size indicates the number of people potentially affected.")
 
