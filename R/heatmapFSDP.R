@@ -231,8 +231,7 @@ if (regionSel == "IND") {
   scenDiet <- c("NoUnderweight", "HalfOverweight", "NoOverweight", "LessFoodWaste")
   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
                  "DietLegumes", "DietFish", "DietEmptyCals")
-  scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing")
-  scenClimate <- c("REDD", "REDDaff")
+  scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing","REDD", "REDDaff")
   scenMngmt <- c("SoilCarbon","CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
                  "AirPollution")
   scenInclusion <- c("LiberalizedTrade","MinWage")
@@ -244,6 +243,10 @@ if (regionSel == "IND") {
   b[scenario == "BAU", scenario := paste("SSP2", period)]
   b$period <- factor(b$period)
   b[scenario %in% scenFirst, period := "Ref"]
+  b[scenario %in% c(scenDiet,scenDiet2), period := "Diet"]
+  b[scenario %in% c(scenInclusion), period := "Incl."]
+  b[scenario %in% c(scenProtect), period := "Protect"]
+  b[scenario %in% c(scenMngmt), period := "Management"]
   b[scenario %in% scenExt, period := "Ext. Transf."]
   b[scenario %in% scenSSPs, period := "SSPs"]
   b[scenario %in% scenFSTs, period := "FSTs"]
@@ -254,7 +257,7 @@ if (regionSel == "IND") {
   b <- droplevels(b)
 
   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-  scenMiddle <- c(scenSSPs, scenFSTs, scenDiet, scenDiet2, scenInclusion, scenProtect, scenClimate, scenMngmt,
+  scenMiddle <- c(scenSSPs, scenFSTs, scenDiet2, scenDiet, scenInclusion, scenProtect, scenMngmt,
   scenCombinations, scenArchetypes)
   scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
