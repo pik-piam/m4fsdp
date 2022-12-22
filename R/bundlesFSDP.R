@@ -47,9 +47,6 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b$unit <- reorder(b$unit, b$order)
 
   b[,"value" := get("value") * get("factor")]
-  # b[variable %in% c("Costs\nbillion US$05/yr"), "value" := get("value") / 1000]
-  # b[variable %in% c("Bioeconomy Supply\nbillion US$05/yr"), "value" := get("value") / 1000]
-  # b[variable %in% c("Biodiversity\nBII"), "value" := get("value") * 100]
 
   b[, "value" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
 
@@ -70,9 +67,14 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
         )}
     x <- b[get("scenario") %in% c(bundleScen, singles), ]
     single_label <- NULL
+    if(length(singles) >= 6) {
+      sep <- ", "
+    } else {
+      sep <- "<br>"
+    }
     for (count in 1:length(singles)) {
       if (count < length(singles)) {
-        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>", "<br>"))
+        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>", sep))
       } else {
         single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>"))
       }
@@ -81,6 +83,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     }
 
     x[, "bundleOrder" := bundleOrder]
+    x[, "bundleName" := bundleScen]
     x[get("scenario") %in% bundleScen, "scenCol" := "bundle"]
     x[get("scenario") %in% singles, "scenset" := "FSECa"]
     x[get("scenario") %in% bundleScen, "scenset" := "FSECb"]
@@ -139,8 +142,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b <- x
   b$bundle <- factor(b$bundle)
   b$bundleOrder <- factor(b$bundleOrder)
+  b$bundleName <- factor(b$bundleName)
   b$bundle <- fct_reorder(b$bundle, as.integer(b$bundleOrder))
-
+  b$bundleName <- fct_reorder(b$bundleName, as.integer(b$bundleOrder))
 
 
   b[, "bundlesum" := sum(get("value"), na.rm = TRUE), by = list(get("variable"), get("bundle"), get("scenset"))]
@@ -155,16 +159,20 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     "label" = if (max(abs(get("value")) > 0, na.rm = TRUE))
       round(sum(get("value")), get("rounding")) else NULL,
     "valuefill" = if (max(abs(get("valuefill")) > 0, na.rm = TRUE))
-      sum(get("valuefill")) else NULL),by = c("region", "model", "variable","improvment", "unit", "vargroup", "period",
-                                              "scenset", "bundle", "bundleOrder", "rounding")]
+      sum(get("valuefill")) else NULL),by = c("region", "model", "variable", "variableName","improvment", "unit", "vargroup", "period",
+                                              "scenset", "bundle", "bundleOrder", "bundleName", "rounding")]
   bSum[,"color" := ifelse((get("improvment") == "increase" & get("valuefill") > 0) | (get("improvment") == "decrease" & get("valuefill") < 0),"green","red")]
 
   bSum <- droplevels(bSum)
   b <- droplevels(b)
 
+  # bSum[bundleOrder==6 & variableName == "Croparea diversity",c("scenset","label","valuefill")]
+  # b[bundleOrder==6 & variableName == "Croparea diversity",c("scenset","scenario","label","value","valuefill")]
+  # sum(b[bundleOrder==6 & variableName == "Croparea diversity" & scenset=="FSECa",c("valuefill")])
+
   plotBundle3 <- function(plotData) {
     set.seed(42)
-    p <- ggplot(plotData, aes(x = get("valuefill"), y = get("bundleOrder"))) +
+    p <- ggplot(plotData, aes(x = get("valuefill"), y = get("bundleName"))) +
       theme_minimal() + theme(panel.border = element_rect(colour = NA, fill = NA)) +
       facet_nested(get("bundle") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
                    strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90), face=c("bold","plain")), #text_y = elem_list_text(angle = c(90, 0)),
@@ -173,7 +181,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                            mapping = aes(fill = get("scenCol"),
                                tooltip = paste0("Scenario: ", get("scenario"), "\nValue: ",
                                                 round(get("value"), get("rounding"))),
-                               data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.5, show.legend = FALSE) +
+                               data_id = get("bundleOrder")), position = "stack", stat = "identity", width = 0.45, show.legend = FALSE) +
       geom_errorbar(data = plotData[get("valuefill") != 0, ], mapping = aes(x = 0, xmax = 0, xmin = 0), width = 0.6, color = "grey", show.legend = FALSE) +
       geom_point_interactive(data = bSum[get("scenset") %in% c("FSECa"), ], mapping = aes(shape = get("scenset"), color = get("color"),
         tooltip = paste0("Sum of \nindividual \neffects","\nValue: ", get("label")),
@@ -181,10 +189,10 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       geom_point_interactive(data = bSum[get("scenset") %in% c("FSECb"), ], mapping = aes(shape = get("scenset"), color = get("color"),
         tooltip = paste0("Bundle","\nValue: ", get("label")),
         data_id = get("bundleOrder")), position = position_nudge(y = -0.3), show.legend = TRUE) +
-      geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.85, "inward",0.5)),
+      geom_text(data = bSum[get("scenset") %in% c("FSECa"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
                 size = 3, angle = 0, nudge_y = 0.4, show.legend = FALSE) +
-      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.85, "inward",0.5)),
-                size = 3, angle = 0, nudge_y = -0.4, show.legend = FALSE) + #, hjust = "inward") +#if ("valuefill" < 0) 0 else
+      geom_text(data = bSum[get("scenset") %in% c("FSECb"), ], aes(color = get("color"), label = get("label"), hjust = ifelse(abs(get("valuefill")) > 0.9, "inward",0.5)),
+                size = 3, angle = 0, nudge_y = -0.4, show.legend = FALSE, fontface="bold") + #, hjust = "inward") +#if ("valuefill" < 0) 0 else
       scale_fill_manual_interactive("Scenario", values = colors) +
       # scale_color_manual_interactive("Net Effect", values = c("#26AD4C","#AD1515"),labels=c("Single Measures","Bundle")) +
 
@@ -196,20 +204,21 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                          values = c(6, 17)) +
       guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
       guides(fill = "none", color = "none", shape = guide_legend(order = 1)) +
-      labs(y = NULL, x = NULL) + scale_x_continuous(limits = c(-1.25, 1.25)) +
-      theme(legend.position = c(0.1, 0.3), legend.direction = "vertical") + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
+      labs(y = NULL, x = NULL) + #scale_x_continuous(limits = c(-1.25, 1.25)) +
+      theme(legend.position = c(-0.15, 1.13), legend.direction = "vertical",legend.background = element_rect(colour = "black", size = 0.5)) + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
       theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
             axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(), axis.text.x.bottom = element_blank(),
-            axis.text.y = element_blank()) + theme(plot.margin = margin(1, 35, 1, 1, "pt")) +
-      theme(axis.text.x = element_text(angle = 30, hjust = 0),
-            strip.text.y.left = ggtext::element_markdown(size = 10, angle = 0))
+            panel.grid.minor = element_blank(), axis.text.x.bottom = element_blank()) + #axis.text.y = element_blank()#theme(plot.margin = margin(1, 35, 1, 1, "pt")) +
+      #scale_y_discrete(labels = wrap_format(10)) +
+      theme(axis.text.y = element_text(angle = 90, vjust = 0.5, hjust = 0.5, face = "bold"),
+            strip.text.y.left = ggtext::element_textbox_simple(size = 10, width = unit(200, "pt"), padding = margin(4, 4, 2, 4), margin = margin(0, 0, 2, 0),))
+            #strip.text.y.left = ggtext::element_markdown(size = 10, angle = 0))
 
     return(p)
   }
 
   m <- plotBundle3(b)
-  #ggsave("SingleBundle6.png", m, width = 11, height = 10, scale = 1)
+  #ggsave("SingleBundle6.png", m, width = 11, height = 8, scale = 1.1)
 
   p <- girafe(
     ggobj = m,
