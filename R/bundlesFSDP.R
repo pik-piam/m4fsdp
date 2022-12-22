@@ -218,7 +218,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   }
 
   m <- plotBundle3(b)
-  #ggsave("SingleBundle6.png", m, width = 11, height = 8, scale = 1.1)
+  #ggsave("SingleBundle7.png", m, width = 12, height = 8.5, scale = 1)
 
   p <- girafe(
     ggobj = m,
@@ -231,8 +231,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       opts_tooltip(css = "background-color:white;padding:5px;
                      border-radius:2px;border: black 1px solid;color:black;")
     ),
-    width_svg = 11,
-    height_svg = 10)
+    width_svg = 12,
+    height_svg = 8.5)
 
   if (is.null(file)) {
     x <- NULL
@@ -247,8 +247,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     x[["data"]] <- b
     return(x)
   } else {
-    ggsave(file, m, scale = 1, width = 11, height = 10, bg = "white")
-    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 11, height = 10, bg = "white")
+    ggsave(file, m, scale = 1, width = 12, height = 8.5, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, width = 12, height = 8.5, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }
