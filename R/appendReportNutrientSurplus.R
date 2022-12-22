@@ -15,7 +15,7 @@
 #' @importFrom dplyr %>% mutate select arrange rename
 #' @importFrom forcats fct_recode
 #' @importFrom quitte as.quitte
-#' @importFrom madrat toolGetMapping toolAggregate
+#' @importFrom madrat toolAggregate
 #' @importFrom rlang .data
 
 appendReportNutrientSurplus <- function(scenario, dir = ".") {
@@ -28,13 +28,14 @@ appendReportNutrientSurplus <- function(scenario, dir = ".") {
 
     NScountry <- dimSums(NSgrid, dim = 1.2) # Grid -> country level
 
-    mapping <- toolGetMapping("regionmappingH12.csv")
+    gdx <- file.path(dir, "fulldata.gdx")
+    mapping <- readGDX(gdx, "i_to_iso")
     mapping <- mapping %>% mutate(GlobalCode = "World")
 
     NSregWorld <- toolAggregate(x       = NScountry,
                                 rel     = mapping,
-                                from    = "CountryCode",
-                                to      = "RegionCode+GlobalCode",
+                                from    = "iso",
+                                to      = "i+GlobalCode",
                                 partrel = TRUE)
 
     NSregWorld <- NSregWorld %>% as.data.frame()
