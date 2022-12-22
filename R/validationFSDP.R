@@ -290,7 +290,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
                      "empty", #valdataname
                      "empty"), #weight
                    "Inclusion|Number of People Below 3.20$/Day"=c(
-                     "Number of People Below 3.20$/Day", #var
+                     "Income|Number of People Below 3.20$/Day", #var
                      "empty", #valdataname
                      "empty"), #weight
                    "Inclusion|Agricultural employment"=c(
