@@ -15,27 +15,27 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
 
   if(is.null(reg)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_reg.rds"))
-    reg <- a[order(a,decreasing = TRUE)][1]
+    reg <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
   }
 
   if(is.null(iso)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_iso.rds"))
-    iso <- a[order(a,decreasing = TRUE)][1]
+    iso <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
   }
 
   if(is.null(grid)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_grid.rds"))
-    grid <- a[order(a,decreasing = TRUE)][1]
+    grid <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
   }
 
   if(is.null(val)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_validation.rds"))
-    val <- a[order(a,decreasing = TRUE)][1]
+    val <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
   }
 
   if(is.null(reg2iso)) {
     a <- list.files(outputfolder,pattern = glob2rx("reg2iso.rds"))
-    reg2iso <- a[order(a,decreasing = TRUE)][1]
+    reg2iso <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
   }
 
   #get revision
