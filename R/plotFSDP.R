@@ -13,24 +13,34 @@
 
 plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NULL, val = NULL, reg2iso = NULL) {
 
+  rev <- NULL
+
   if(is.null(reg)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_reg.rds"))
-    reg <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
+    a <- a[order(a,decreasing = TRUE)][1]
+    rev <- c(rev,a)
+    reg <- file.path(outputfolder,a)
   }
 
   if(is.null(iso)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_iso.rds"))
-    iso <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
+    a <- a[order(a,decreasing = TRUE)][1]
+    rev <- c(rev,a)
+    iso <- file.path(outputfolder,a)
   }
 
   if(is.null(grid)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_grid.rds"))
-    grid <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
+    a <- a[order(a,decreasing = TRUE)][1]
+    rev <- c(rev,a)
+    grid <- file.path(outputfolder,a)
   }
 
   if(is.null(val)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_validation.rds"))
-    val <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
+    a <- a[order(a,decreasing = TRUE)][1]
+    rev <- c(rev,a)
+    val <- file.path(outputfolder,a)
   }
 
   if(is.null(reg2iso)) {
@@ -39,9 +49,10 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   }
 
   #get revision
-  rev <- unlist(lapply(strsplit(c(reg,iso,grid,val),"_"),function(x) x[[1]]))
+  rev <- unlist(lapply(strsplit(rev,"_"),function(x) x[[1]]))
   if (all(rev[1] == rev)) rev <- rev[1] else stop("No complete version found")
 
+  message("Reading RDS files ...")
   if (!is.data.frame(reg)) reg <- readRDS(reg)
   if (!is.data.frame(iso)) iso <- readRDS(iso)
   if (!is.data.frame(grid)) grid <- readRDS(grid)
@@ -59,5 +70,6 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   try(validationFSDP(repReg = reg, val = val, regionSel = "aggregate", folder = file.path(outputfolder), scens = "BAU_FSEC"))
   try(validationFSDP(repReg = reg, val = val, regionSel = "GLO", folder = file.path(outputfolder), scens = "bundles"))
   try(dashboardFSDP(repReg = reg, repIso = iso, repGrid = grid, outputDir = file.path(outputfolder), file = paste0(rev, "_FSDP_dashboard.html")))
+  message("Finished")
 
   }
