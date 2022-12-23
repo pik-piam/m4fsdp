@@ -68,7 +68,7 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   try(SupplPlotsFSDP(reg, scenarioType = "all", file = file.path(outputfolder, paste0(rev, "_FSDP_supplPlots.png"))))
   #SupplPlotsCropShr(gdx = gdx, file = file.path(outputfolder, paste0(rev, "_FSDP_supplPlotCropShr.png")))
   try(validationFSDP(repReg = reg, val = val, regionSel = "aggregate", folder = file.path(outputfolder), scens = "BAU_FSEC"))
-  try(validationFSDP(repReg = reg, val = val, regionSel = "GLO", folder = file.path(outputfolder), scens = "bundles"))
+  try(lineplotFSDP(reg,val,file = file.path(outputfolder, paste0(rev, "_FSDP_lineplots.png"))))
   try(dashboardFSDP(repReg = reg, repIso = iso, repGrid = grid, outputDir = file.path(outputfolder), file = paste0(rev, "_FSDP_dashboard.html")))
   message("Finished")
 

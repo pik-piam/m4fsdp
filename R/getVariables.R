@@ -11,7 +11,7 @@ getVariables <- function() {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
-           "Health|Attributable deaths|Risk|Diet and anthropometrics",
+#           "Health|Attributable deaths|Risk|Diet and anthropometrics",
            "Health|Years of life lost|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
            "Biodiversity|Shannon crop area diversity index",
@@ -29,7 +29,7 @@ getVariables <- function() {
   #vargroup|var#|variableName|variableUnit|DirectionImprovment|rounding|factor
   names(var) <- c("Health|1|Underweight|mio people|decrease|0|1",
                   "Health|2|Obesity|mio people|decrease|0|1",
-                  "Health|3|Attributable deaths|million people|decrease|0|1",
+#                  "Health|3|Attributable deaths|million people|decrease|0|1",
                   "Health|4|Years of life lost|million years|decrease|0|1",
                   "Environment|5|Biodiversity|BII|increase|2|100",
                   "Environment|6|Croparea diversity|Shannon Index (1)|increase|2|1",

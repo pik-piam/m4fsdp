@@ -31,7 +31,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     rep <- rep[rep$scenario %in%c("SSP2bau","ExternalPressures","Sufficiency","Livelihoods","NatureSparing", "AgroMngmt", "FSDP"), ]
   } else {stop("unknown scens")}
 
-  rev <- levels(rep$version)
+  rev <- tail(levels(rep$version),n=1)
   rep$scenset <- NULL
   if (!is.data.frame(val)) val <- readRDS(val)
   val[region == "World", region := "GLO"]
@@ -128,16 +128,16 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       if (is.null(units)) {
         units <- levels(rep$unit)
       }
-      b <- rep[rep$variable == var & rep$unit %in% units & rep$period >= 1995 & rep$period <= 2050, ]
+      b <- rep[rep$variable == var & rep$unit %in% units & rep$period >= 2000 & rep$period <= 2050, ]
       b <- droplevels(b)
       units <- levels(b$unit)
       unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
       if (is.null(hist)) {
         h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
-                   val$period >= 1975 & val$period <= 2020, ]
+                   val$period >= 2000 & val$period <= 2020, ]
       } else {
         h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
-                   val$period >= 1975 & val$period <= 2020 & val$model %in% hist, ]
+                   val$period >= 2000 & val$period <= 2020 & val$model %in% hist, ]
         h <- droplevels(h)
         if (!is.null(histName)) {
           h$model <- factor(h$model,hist,histName)
@@ -145,9 +145,9 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       }
 
       if (!is.null(weight)) {
-        w1 <- rep[rep$variable == weight & rep$period >= 1995 & rep$period <= 2050, ]
+        w1 <- rep[rep$variable == weight & rep$period >= 2000 & rep$period <= 2050, ]
         w2 <- val[val$variable == weight & val$scenario == "historical" &
-                    val$period >= 1975 & val$period <= 2020, ]
+                    val$period >= 2000 & val$period <= 2020, ]
         b <- cbind(b, w1$value)
         h <- cbind(h, w2$value)
         b <- b[, list(value = weighted.mean(get("value"), get("V2"))),
@@ -166,7 +166,8 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
       p <- ggplot(b, aes(x = get("period"), y = get("value")))
       p <- p + labs(title = varName) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 90)
-      p <- p + scale_x_continuous(NULL,breaks = c(1975,2000,2025,2050))
+      p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050)) +
+        scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
       if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")))
       p <- p + geom_line(aes(color = get("scenario"))) + facet_wrap("region_class")
       p <- p + scale_shape_discrete("Historical data", solid = 0)
@@ -201,17 +202,18 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
          width = 10, height = 10, scale = 1.3)
 
   # Validation land
-  p1 <- plotVal(var = "Resources|Land Cover|+|Cropland", varName = "Land Cover|Cropland", hist = "FAO_crop_past")
-  p2 <- plotVal(var = "Resources|Land Cover|+|Pastures and Rangelands",
-                varName = "Land Cover|Pastures and Rangelands", hist = "FAO_crop_past")
+  p1 <- plotVal(var = "Resources|Land Cover|+|Cropland", varName = "Land Cover|Cropland",
+                hist = c("FAO_crop_past","MAgPIEown","LUH2v2"), histName = c("FAO","mod. LUH2v2","orig. LUH2v2"))
+  p2 <- plotVal(var = "Resources|Land Cover|+|Pastures and Rangelands", varName = "Land Cover|Pastures and Rangelands",
+                hist = c("FAO_crop_past","MAgPIEown","LUH2v2"), histName = c("FAO","mod. LUH2v2","orig. LUH2v2"))
   p3 <- plotVal(var = "Resources|Land Cover|Forest|+|Managed Forest",
-                varName = "Managed forest incl. afforestation", hist = "MAgPIEown", histName = "XXX")
+                varName = "Managed forest incl. afforestation", hist = "MAgPIEown", histName = "FRA")
   p4 <- plotVal(var = "Resources|Land Cover|+|Forest",
-                varName = "Total forest area", hist = c("FAO_forest","MAgPIEown","LUH2v2"), histName = c("FAO_forest","Adjusted LUH2v2","Original LUH2v2"))
+                varName = "Total forest area", hist = c("FAO_forest","MAgPIEown","LUH2v2"), histName = c("FAO","mod. LUH2v2","orig. LUH2v2"))
   p5 <- plotVal(var = "Resources|Land Cover|+|Other Land",
-                varName = "Other natural land", hist = "MAgPIEown", histName = "Based on LUH2")
+                varName = "Other natural land", hist = c("MAgPIEown","LUH2v2"), histName = c("mod. LUH2v2", "orig. LUH2v2"))
   p6 <- plotVal(var = "Resources|Land Cover|+|Urban Area",
-                varName = "Urban land", hist = "MAgPIEown", histName = "Based on LUH2")
+                varName = "Urban land", hist = c("MAgPIEown","LUH2v2"), histName = c("mod. LUH2v2", "orig. LUH2v2"))
 
   combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
@@ -223,119 +225,20 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   # Validation Yields and TC
   p1 <- plotVal(var = "Productivity|Landuse Intensity Indicator Tau",
                 varName = "Landuse Intensity Indicator Tau",
-                weight = "Resources|Land Cover|+|Cropland")
+                weight = "Resources|Land Cover|+|Cropland",
+                hist = "dietrich_et_al_2012_update",
+                histName = "Dietrich 2012")
   p2 <- plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer",
-                varName = "Sythetic nitrogen fertilizer", hist = "Bodirsky")
-  p3 <- plotVal(var = "Productivity|Yield|Crops|+|Cereals",
-                varName = "Cereal crop yields",
-                weight = "Resources|Land Cover|+|Cropland")
-  p4 <- plotVal(var = "Productivity|Yield|Crops|+|Sugar crops",
-                varName = "Sugar crop yields",
-                weight = "Resources|Land Cover|+|Cropland")
-  p5 <- plotVal(var = "Productivity|Yield|Crops|+|Oil crops",
-                varName = "Oil crop yields",
-                weight = "Resources|Land Cover|+|Cropland")
-  p6 <- plotVal(var = "Productivity|Yield|+|Pasture",
-                varName = "Pasture yields",
-                weight = "Resources|Land Cover|+|Pastures and Rangelands")
+                varName = "Sythetic nitrogen fertilizer", hist = "Bodirsky", histName = "Bodirsky 2015")
+  p3 <- plotVal(var = "Resources|Water|Withdrawal|Agriculture",
+                varName = "Water Withdrawal Agriculture",
+                hist = c("foley_2011","shiklomanov_2000","wada_2011"))
 
-  combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
+  combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
-  ggsave(filename = file.path(folder, paste(rev, "valYield.png", sep = "_")), combined,
-         width = 10, height = 10, scale = 1.3)
-  ggsave(filename = file.path(folder, paste(rev, "valYield.pdf", sep = "_")), combined,
-         width = 10, height = 10, scale = 1.3)
-
-  # Validation outcome inidicators:
-
-
-  varname_ind <- list("Health|Prevalence of underweight"=c( #varname
-                          "SDG|SDG02|Prevalence of underweight",#var
-                          "empty", #valdataname
-                          "empty"), #weight
-                   "Health|Prevalence of obesity"=c(
-                     "SDG|SDG03|Prevalence of obesity", #var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Health|Years of life lost"=c(
-                     "Health|Years of life lost|Risk|Diet and anthropometrics", #var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Environment|Biodiversity Intactness"=c(
-                     "Biodiversity|BII", #var
-                     "Phillips et al", #valdataname
-                     "Resources|Land Cover"), #weight
-                   "Environment|Shannon crop area diversity index"=c(
-                     "Biodiversity|Shannon crop area diversity index", #var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Environment|Nitrogen surplus"=c(
-                     "Resources|Nitrogen|Nutrient surplus incl natural vegetation", #var
-                     "MADRaT", #valdataname
-                     "empty"), #weight
-                   "Environment|Water environmental flow violations"=c(
-                     "Water|Environmental flow violation volume", #var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Environment|Cumulative GHG emissions"=c(
-                     "Emissions|GWP100AR6|Land|Cumulative", #var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Environment|Global Surface Temperature"=c(
-                     "Global Surface Temperature", #var
-                     "GISTEMP", #valdataname
-                     "empty"), #weight
-                   "Inclusion|Expenditure for agric. products"=c(
-                     "Household Expenditure|Food|Expenditure", #var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Inclusion|Number of People Below 3.20$/Day"=c(
-                     "Income|Number of People Below 3.20$/Day", #var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Inclusion|Agricultural employment"=c(
-                     "Agricultural employment|Crop and livestock products", #var
-                     "empty", #valdataname
-                     "empty"), #weight,
-                   "Inclusion|Agricultural wages"=c(
-                     "Hourly labor costs relative to 2000", #var
-                     "empty", #valdataname
-                     "empty"), #weight,
-                   "Inclusion|Agricultural wages"=c(
-                     "Hourly labor costs relative to 2020", #var
-                     "empty", #valdataname
-                     "empty"), #weight,
-                   "Economy|Bioeconomy Supply"=c(
-                     "Value|Bioeconomy Demand",#var
-                     "empty", #valdataname
-                     "empty"), #weight
-                   "Economy|Costs"=c(
-                     "Costs Without Incentives", #var
-                     "empty", #valdataname
-                     "empty") #weight
-  )
-
-  names(varname_ind)<-gsub(pattern = "\\|",replacement = "\n",x = names(varname_ind))
-
-  # BII
-  combined=NULL
-  for (count in 1:length(varname_ind)){
-    tmp <- plotVal(var = varname_ind[[count]][[1]],
-                varName = names(varname_ind[count]),
-                hist = varname_ind[[count]][[2]],
-                weight = varname_ind[[count]][[3]])
-    if(!is.null(tmp)){
-      if(!is.null(combined)){
-        combined <- combined+tmp
-      } else {combined <- tmp}
-    }
-  }
-
-  combined <- combined + plot_annotation(tag_levels = "a")
-  combined <- combined + plot_layout(guides = "collect", ncol = 5) & theme(legend.position = "bottom")
-  ggsave(filename = file.path(folder, paste(rev, "valOutcome.png", sep = "_")), combined,
-         width = 10, height = 8, scale = 1.3)
-  ggsave(filename = file.path(folder, paste(rev, "valOutcome.pdf", sep = "_")), combined,
-         width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valManagement.png", sep = "_")), combined,
+         width = 10, height = 6, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valManagement.pdf", sep = "_")), combined,
+         width = 10, height = 6, scale = 1.3)
 
 }
