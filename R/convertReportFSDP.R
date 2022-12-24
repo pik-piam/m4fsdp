@@ -23,8 +23,9 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
     rep[, c("version", "scenset", "scenario") := tstrsplit(scenario, "_", fixed = TRUE)]
   }
 
+  #keep only latest version
   rep$version <- factor(rep$version)
-  #rep <- rep[get("version") == levels(rep$version)[length(levels(rep$version))], ]
+  rep <- rep[get("version") == levels(rep$version)[length(levels(rep$version))], ]
 
   if (!is.null(scengroup)) rep <- rep[get("scenset") %in% scengroup]
   rep$scenario <- factor(rep$scenario)

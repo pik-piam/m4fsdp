@@ -91,7 +91,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     return(x)
   }
 
-  x <- selBundle(b, "ExternalPressures", singles = c("Population", "EconDevelop", "EnergyTrans", "Bioplastics"),
+  x <- selBundle(b, "ExternalPressures", singles = c("Population", "EconDevelop", "EnergyTrans", "Bioplastics", "TimberCities"),
                  bundleOrder = 1, colors = colors)
 
   x <- rbind(x, selBundle(b, "Sufficiency",
