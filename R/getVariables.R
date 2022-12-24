@@ -40,7 +40,7 @@ getVariables <- function() {
                   "Inclusion|11|Expenditures for agri.|USD/person|decrease|0|1",
                   "Inclusion|12|People Below 3.20$/Day|mio people|decrease|0|1",
                   "Inclusion|13|Agri. employment|mio people|increase|0|1",
-                  "Inclusion|14|Agri. wages|Index|increase|2|1",
+                  "Inclusion|14|Agri. wages|Index rel. to 2000|increase|2|1",
                   "Economy|15|Bioeconomy Supply|billion US$05/yr|increase|0|0.001",
                   "Economy|16|Costs|billion US$05/yr|decrease|0|0.001")
 

@@ -17,7 +17,7 @@
 #' @importFrom stringr str_extract str_replace str_remove
 #' @importFrom forcats fct_recode
 #' @importFrom quitte as.quitte
-#' @importFrom madrat toolGetMapping toolAggregate
+#' @importFrom madrat toolAggregate
 #' @importFrom rlang .data
 
 appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
@@ -158,13 +158,14 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     healthImpacts_regional <- healthImpacts %>%
         as.magpie()
 
-    mapping <- toolGetMapping("regionmappingH12.csv")
+    gdx <- file.path(dir, "fulldata.gdx")
+    mapping <- readGDX(gdx, "i_to_iso")
     mapping <- mapping %>% mutate(GlobalCode = "World")
 
     healthImpacts_regional <- toolAggregate(x       = healthImpacts_regional,
                                             rel     = mapping,
-                                            from    = "CountryCode",
-                                            to      = "RegionCode+GlobalCode",
+                                            from    = "iso",
+                                            to      = "i+GlobalCode",
                                             partrel = TRUE)
 
     healthImpacts_regional <- as.data.frame(healthImpacts_regional) %>%

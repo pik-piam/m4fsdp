@@ -17,6 +17,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @importFrom dplyr %>% filter pull select mutate
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
+#' @importFrom ggtext element_markdown
 
 heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
@@ -36,40 +37,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
     stop("Table type does not exist")
   }
 
-  # var <- c("SDG|SDG02|Prevalence of underweight",
-  #          "SDG|SDG03|Prevalence of obesity",
-  #          "Health|Years of life lost|Risk|Diet and anthropometrics",
-  #          "Biodiversity|BII",
-  #          "Biodiversity|Shannon crop area diversity index",
-  #          "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
-  #          "Water|Environmental flow violation volume",
-  #          "Emissions|GWP100AR6|Land|Cumulative",
-  #          "Global Surface Temperature",
-  #          "Household Expenditure|Food|Expenditure",
-  #          "Income|Number of People Below 3.20$/Day",
-  #          "Agricultural employment|Crop and livestock products",
-  #          "Hourly labor costs relative to 2000",
-  #          "Hourly labor costs relative to 2020",
-  #          "Value|Bioeconomy Demand",
-  #          "Costs Without Incentives")
-  #
-  # names(var) <- c("Health|Prevalence of underweight (million people)|1",
-  #                 "Health|Prevalence of obesity (million people)|2",
-  #                 "Health|Years of life lost (million years)|3",
-  #                 "Environment|Biodiversity Intactness (Index)|1",
-  #                 "Environment|Shannon crop area diversity index (Index)|2",
-  #                 "Environment|Nitrogen surplus (Mt N/yr)|3",
-  #                 "Environment|Water environmental flow violations (km3/yr)|4",
-  #                 "Environment|Cumulative GHG emissions (Gt CO2eq since 2000)|5",
-  #                 "Environment|Global Surface Temperature (deg C)|6",
-  #                 "Inclusion|Expenditure for agric. products (USD/person)|1",
-  #                 "Inclusion|Number of People Below 3.20$/Day (million people)|2",
-  #                 "Inclusion|Agricultural employment (million people)|3",
-  #                 "Inclusion|Agricultural wages (Index)|4",
-  #                 "Inclusion|Agricultural wages (Index)|4",
-  #                 "Economy|Bioeconomy Supply (billion US$05/yr)|1",
-  #                 "Economy|Costs (billion US$05/yr)|1")
-
   var <- getVariables()
 
   if (regionSel == "GLO") {
@@ -84,7 +51,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b$variable <- factor(b$variable, levels = var, labels = names(var))
   b[, c("vargroup", "order", "variableName", "unit", "improvment", "rounding","factor") := tstrsplit(get("variable"), "|", fixed = TRUE)]
-  #b[, c("vargroup", "variable", "order") := tstrsplit(variable, "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
   b$rounding <- as.numeric(b$rounding)
   b$factor <- as.numeric(b$factor)
@@ -156,25 +122,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
-  # b[variable %in% c("Costs (billion US$05/yr)"), value := value / 1000]
-  # b[variable %in% c("Bioeconomy Supply (billion US$05/yr)"), value := value / 1000]
-  # b[variable %in% c("Biodiversity Intactness (Index)"), value := value * 100]
-
-  #b[, label := fifelse(max(value) > 100, formatC(value, 0, format = "f"),
-  #                     formatC(value, 2, format = "f")), by = .(region, model, scenario, variable, unit, period)]
-  #  b[, label := formatC(value, if (max(value) > 100) 0 else 2, format = "f"),
-  #    by = .(region, model, scenario, variable, unit, period)]
-  # b[, label := if (max(value,na.rm=T) > 100)
-  #   formatC(value, 0, format = "f")
-  #   else
-  #     formatC(value, 2, format = "f"),
-  #   by = .(region, model, scenario, variable, unit, period)]
-  #b <-  b[,"label" := round(sum(get("value")), get("rounding"))]
   b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "scenario", "model", "variable","unit", "period")]
-
-
-  #b[, label := formatC(value, 1, format = "f"), by = .(region, model, scenario, variable, unit, period)]
-
 
 if (regionSel == "IND") {
 
@@ -249,17 +197,17 @@ if (regionSel == "IND") {
 
   b[scenario == "BAU", scenario := paste("SSP2", period)]
   b$period <- factor(b$period)
+  b[!scenario %in% c(scenFirst,scenExt,scenSSPs,scenFSTs,scenCombinations,scenArchetypes), period := "FSMs"]
   b[scenario %in% scenFirst, period := "Ref"]
   b[scenario %in% c(scenDiet,scenDiet2), period := "Diet"]
   b[scenario %in% c(scenInclusion), period := "Incl."]
-  b[scenario %in% c(scenProtect), period := "Protect"]
-  b[scenario %in% c(scenMngmt), period := "Management"]
+  b[scenario %in% c(scenProtect), period := "NatureSparing"]
+  b[scenario %in% c(scenMngmt), period := "AgroMngmt"]
   b[scenario %in% scenExt, period := "Ext. Transf."]
   b[scenario %in% scenSSPs, period := "SSPs"]
   b[scenario %in% scenFSTs, period := "FSTs"]
   b[scenario %in% c(scenCombinations, scenArchetypes), period := "Food System Measure Bundles"]
 
-  b[!scenario %in% c(scenFirst,scenExt,scenSSPs,scenFSTs,scenCombinations,scenArchetypes), period := "Food System Measures"]
   b$period <- factor(b$period)
   b <- droplevels(b)
 
@@ -289,19 +237,19 @@ if (regionSel == "IND") {
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), colour = "white") +
     scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "white",
-                                     na.value = "grey95", high = "#fc8d59", breaks = c(-1, 0, 1),
-                                     labels = c("positive", "zero", "negative")) +
+                                     na.value = "grey95", high = "#fc8d59", breaks = c(-1, -0.5, 0, 0.5, 1),
+                                     labels = c("best", "better", "none", "worse", "worst")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), size = 2.5, color = "grey50") +
     #theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
     theme(axis.text.x = element_blank()) +
-    labs(y = NULL, x = NULL,
-         fill = bquote(atop(atop(textstyle("Impact"), textstyle("relative to")), textstyle(bold("SSP2 2050"))))) +
+    labs(y = NULL, x = NULL, fill = "Effect<br>comp.<br>to<br><b>SSP2<br>2050</b>") +
+         #fill = bquote(atop("Effect\nrelative to\n",bold("SSP2\n2050")))) +
     theme(legend.position = "right") +
     guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)),
-                                             reverse = FALSE, title.hjust = 0, title.vjust = 2,
-                                             title.position = "top", barwidth = 1, barheight = 20,
-                                             legend.direction = "vertical")) +
+                                             reverse = TRUE, title.hjust = 1, #title.vjust = 2,
+                                             title.position = "left", barwidth = 1, barheight = 6,
+                                             legend.direction = "horizontal")) +
     theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
           axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
           panel.grid.minor = element_blank()) +
@@ -310,7 +258,11 @@ if (regionSel == "IND") {
   m <- m + facet_nested(get("period") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
                         strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90), face=c("bold","plain")), #text_y = elem_list_text(angle = c(90, 0)),
                                                    by_layer_x = TRUE))
-    #facet_grid(vars(period), vars(vargroup), scales = "free", space = "free")# +
+  m <- m + theme(legend.position = c(-0.12, 1.15), legend.title = element_markdown(hjust = 1, size=9), legend.text.align = 0, legend.background = element_rect(colour = "black", size = 0.5))
+  if (tableType == 3) m <- m + theme(plot.margin = margin(0, 0, 0, 25, "pt"))
+  #ggsave(file, m, scale = 1.2, height = 6, width = 7, bg = "white")
+
+  #facet_grid(vars(period), vars(vargroup), scales = "free", space = "free")# +
     #scale_x_discrete(position = "top") + theme(axis.text.x = element_text(angle = 30, hjust = 0))
 
   p <- girafe(
