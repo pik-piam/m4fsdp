@@ -10,21 +10,24 @@ plotFSDP(
   iso = NULL,
   grid = NULL,
   val = NULL,
-  reg2iso = NULL
+  reg2iso = NULL,
+  rev = NULL
 )
 }
 \arguments{
 \item{outputfolder}{output folder}
 
-\item{reg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.}
+\item{reg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.}
 
-\item{iso}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.}
+\item{iso}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.}
 
-\item{grid}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.#' @details uses the most recent vXX_reg/grid/iso.rds files in the "output" folder by default}
+\item{grid}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @details uses the most recent vXX_reg/grid/iso.rds files in the "output" folder by default}
 
-\item{val}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.#' @return plots in "output" folder}
+\item{val}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @return plots in "output" folder}
 
-\item{reg2iso}{rds file or data.frame with Mapping, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.#' @author Florian Humpenoeder}
+\item{reg2iso}{rds file or data.frame with Mapping, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @author Florian Humpenoeder}
+
+\item{rev}{revision (e.g. "v28"). NULL will automatically detect the most recent version.}
 }
 \description{
 Creates all FSDP plots

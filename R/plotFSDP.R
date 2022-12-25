@@ -4,16 +4,15 @@
 #' @export
 #'
 #' @param outputfolder output folder
-#' @param reg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.
-#' @param iso rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.
-#' @param grid rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.#' @details uses the most recent vXX_reg/grid/iso.rds files in the "output" folder by default
-#' @param val rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.#' @return plots in "output" folder
-#' @param reg2iso rds file or data.frame with Mapping, produced with FSDP_collect.R output script. NULL will automatically dected the most recent version.#' @author Florian Humpenoeder
+#' @param reg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.
+#' @param iso rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.
+#' @param grid rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @details uses the most recent vXX_reg/grid/iso.rds files in the "output" folder by default
+#' @param val rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @return plots in "output" folder
+#' @param reg2iso rds file or data.frame with Mapping, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @author Florian Humpenoeder
+#' @param rev revision (e.g. "v28"). NULL will automatically detect the most recent version.
 #' @importFrom utils glob2rx
 
-plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NULL, val = NULL, reg2iso = NULL) {
-
-  rev <- NULL
+plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NULL, val = NULL, reg2iso = NULL, rev = NULL) {
 
   if(is.null(reg)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_reg.rds"))
@@ -49,8 +48,11 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   }
 
   #get revision
-  rev <- unlist(lapply(strsplit(rev,"_"),function(x) x[[1]]))
-  if (all(rev[1] == rev)) rev <- rev[1] else stop("No complete version found")
+  if(is.null(rev)) {
+    rev <- c(basename(reg),basename(iso),basename(grid),basename(val))
+    rev <- unlist(lapply(strsplit(rev,"_"),function(x) x[[1]]))
+    if (all(rev[1] == rev)) rev <- rev[1] else stop("No complete version found")
+  }
 
   message("Reading RDS files ...")
   if (!is.data.frame(reg)) reg <- readRDS(reg)
