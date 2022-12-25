@@ -28,7 +28,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    scenOrder <- c("ExternalPressures","Sufficiency","Livelihoods","NatureSparing", "AgroMngmt", "SSP2bau", "FSDP")
+    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Sufficiency","ExternalPressures", "FSDP", "SSP2bau")
     rep <- rep[get("scenario") %in% scenOrder, ]
     rep$scenario <- factor(rep$scenario, scenOrder)
     #factor(rep[!scenario %in% c("SSP2bau","FSEC"),c("scenset")])
@@ -80,8 +80,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   safe_colorblind_palette <- assignScenarioColors(scenOrder)
   names(safe_colorblind_palette) <- scenOrder
 
-  override.linetype <- c(3,3,3,3,3,1,1)
-  override.linetype <- c("dashed","dashed","dashed","dashed","dashed","solid","solid")
+  #override.linetype <- c(3,3,3,3,3,1,1)
+  override.linetype <- rev(c("dashed","dashed","dashed","dashed","dashed","solid","solid"))
   names(override.linetype) <- scenOrder
 
   themeMy <- function(baseSize = 10, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
@@ -154,7 +154,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   }
 
   # plot function
-  plotVal <- function(rep,var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, showlegend = FALSE) {
+  plotVal <- function(rep,var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, tag = NULL, showlegend = FALSE) {
     empty2null<-function(x){out<-x; if(!is.null(x)){if(any(x=="empty")){out<-NULL}}; return(out)}
     varName=empty2null(varName)
     weight=empty2null(weight)
@@ -162,6 +162,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     units=empty2null(units)
     unitName=empty2null(unitName)
     histName=empty2null(histName)
+    tag=empty2null(tag)
 
     if (var %in% rep$variable){
       if (is.null(units)) {
@@ -204,7 +205,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       if (is.null(unitName)) unitName <- units
 
       p <- ggplot(b, aes(x = get("period"), y = get("value")))
-      p <- p + labs(title = varName) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 0)
+      p <- p + labs(title = varName, tag = tag) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 0)
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050), expand = c(0,0)) +
         scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA)) + theme(plot.margin = margin(0, 20, 20, 0, "pt"))
       if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")))
@@ -214,8 +215,13 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       p <- p + scale_shape_discrete("Historical data", solid = 0)
       #p <- p + scale_color_brewer("MAgPIE scenario", palette = "Set2")
       p <- p + scale_color_manual("MAgPIE scenario", values = safe_colorblind_palette)
+      # p <- p + theme(plot.caption = element_text(hjust = 1, face= "italic"), #Default is hjust=1
+      #                plot.tag.position = "plot", #NEW parameter. Apply for subtitle too.
+      #                plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
+      #                plot.caption.position =  "plot") #NEW parameter
+      p <- p + theme(plot.tag = element_text(size = 10, margin = margin(b = -8.5, unit = "pt")))
       if (showlegend) {
-        p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype)),
+        p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype), reverse = TRUE),
                         shape = guide_legend(order = 2, title.position = "top",ncol = 1, title = "Scenario"),
                         linetype = "none")
       } else {
@@ -231,35 +237,40 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
 
   }
 
-  p1 <- plotVal(rep, var = "Underweight", varName = "a) Underweight", showlegend = TRUE)
-  p2 <- plotVal(rep, var = "Obesity", varName = "b) Obesity")
-  p3 <- plotVal(rep, var = "Years of life lost", varName = "c) Years of life lost")
+  #todo: loop over variables. use variable Names from getVariables.
+  p1 <- plotVal(rep, var = "Underweight", tag = "a)", showlegend = TRUE)
+  p2 <- plotVal(rep, var = "Obesity", tag = "b)")
+  p3 <- plotVal(rep, var = "Years of life lost", tag = "c)")
 
-  p4 <- plotVal(rep, var = "Biodiversity", varName = "d) Biodiversity")
-  p5 <- plotVal(rep, var = "Croparea diversity", varName = "e) Croparea diversity")
-  p6 <- plotVal(rep, var = "Nitrogen surplus", varName = "f) Nitrogen surplus")
-  p7 <- plotVal(rep, var = "Water flow violations", varName = "g) Water flow violations")
-  p8 <- plotVal(rep, var = "Cum CO2 emissions", varName = "h) Cum CO2 emissions")
-  p9 <- plotVal(rep, var = "Global Surface Temp", varName = "i) Global Surface Temp")
+  p4 <- plotVal(rep, var = "Biodiversity", tag = "d)")
+  p5 <- plotVal(rep, var = "Croparea diversity", tag = "e)")
+  p6 <- plotVal(rep, var = "Nitrogen surplus", tag = "f)")
+  p7 <- plotVal(rep, var = "Water flow violations", tag = "g)")
+  p8 <- plotVal(rep, var = "Greenhouse Gases", tag = "h)")
+  p9 <- plotVal(rep, var = "Global Surface Temp.", tag = "i)")
 
-  p10 <- plotVal(rep, var = "Cost agric. products", varName = "j) Cost agric. products")
-  p11 <- plotVal(rep, var = "People Below 3.20$/Day", varName = "k) People Below 3.20$/Day")
-  p12 <- plotVal(rep, var = "Agri. employment", varName = "l) Agri. employment")
-  p13 <- plotVal(rep, var = "Agri. wages", varName = "m) Agri. wages")
+  p10 <- plotVal(rep, var = "Expenditures for agri.", tag = "j)")
+  p11 <- plotVal(rep, var = "People Below 3.20$/Day", tag = "k)")
+  p12 <- plotVal(rep, var = "Agri. employment", tag = "l)")
+  p13 <- plotVal(rep, var = "Agri. wages", tag = "m)")
 
-  p14 <- plotVal(rep, var = "Bioeconomy Supply", varName = "n) Bioeconomy Supply")
-  p15 <- plotVal(rep, var = "Costs", varName = "o) Costs")
+  p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
+  p15 <- plotVal(rep, var = "Costs", tag = "o)")
 
-  group1 <- p1 + p2 + p3 + guide_area() + plot_annotation(title = "Health", theme = theme(plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom")
-  group2 <- p4 + p5 + p6 + p7 + p8 + p9 + plot_annotation(title = "Environment", theme = theme(plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
-  group3 <- p10 + p11 + p12 + p13 + plot_annotation(title = "Inclusion", theme = theme(plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
-  group4 <- p14 + p15 + plot_annotation(title = "Economy", theme = theme(plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
+  group1 <- p1 + p2 + p3 + guide_area() + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom")
+  group2 <- p4 + p5 + p6 + p7 + p8 + p9 + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
+  group3 <- p10 + p11 + p12 + p13 + plot_annotation(title = "Inclusion", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
+  group4 <- p14 + p15 + plot_annotation(title = "Economy", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
 
-  col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group3),ncol = 1,nrow=2,heights = c(0.5,0.5))
-  col2 <- wrap_plots(wrap_elements(group2),wrap_elements(group4),ncol = 1,nrow=2,heights = c(0.75,0.25))
+  col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group3),ncol = 1,nrow=2,heights = c(0.5,0.5)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
+  col2 <- wrap_plots(wrap_elements(group2),wrap_elements(group4),ncol = 1,nrow=2,heights = c(0.73,0.27 )) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
   combined <- wrap_plots(wrap_elements(col1),wrap_elements(col2))
 
-  ggsave(file, combined, scale = 1, width = 13, height = 13, bg = "white")
-  ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, scale = 1, width = 13, height = 13, bg = "white")
+  if(!is.null(file)) {
+    ggsave(file, combined, scale = 1, width = 13, height = 12, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, scale = 1, width = 13, height = 12, bg = "white")
+  } else {
+    return(combined)
+  }
 
 }
