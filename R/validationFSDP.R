@@ -226,13 +226,14 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   p1 <- plotVal(var = "Productivity|Landuse Intensity Indicator Tau",
                 varName = "Landuse Intensity Indicator Tau",
                 weight = "Resources|Land Cover|+|Cropland",
-                hist = "dietrich_et_al_2012_update",
+                hist = "dietrich_et_al_2012_updated",
                 histName = "Dietrich 2012")
   p2 <- plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer",
                 varName = "Sythetic nitrogen fertilizer", hist = "Bodirsky", histName = "Bodirsky 2015")
   p3 <- plotVal(var = "Resources|Water|Withdrawal|Agriculture",
                 varName = "Water Withdrawal Agriculture",
-                hist = c("foley_2011","shiklomanov_2000","wada_2011"))
+                hist = c("LPJmL:ipsl-cm5a-lr","MATSIRO:ipsl-cm5a-lr","MPI-HM:ipsl-cm5a-lr"),
+                histName = c("LPJmL:IPSL", "MATSIRO:IPSL", "MPI-HM:IPSL"))
 
   combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
