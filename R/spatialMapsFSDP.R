@@ -392,18 +392,18 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   }
 
   group1 <- wrap_plots(trytoplot(plotUNDERWEIGHT),trytoplot(plotOBESE),trytoplot(plotYOLL),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
-  group2 <- wrap_plots(trytoplot(plotEMPLOYMENT),trytoplot(plotWAGE),trytoplot(plotEXPENDITURE),trytoplot(plotPOVERTY),plot_spacer(),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Inclusion", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
-  group3 <- wrap_plots(trytoplot(plotBII),trytoplot(plotCROPDIV),trytoplot(plotWATER),trytoplot(plotNITROGEN),trytoplot(plotGHG),trytoplot(plotTEMP),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
+  group2 <- wrap_plots(trytoplot(plotEXPENDITURE),trytoplot(plotPOVERTY),trytoplot(plotEMPLOYMENT),trytoplot(plotWAGE),plot_spacer(),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Inclusion", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
+  group3 <- wrap_plots(trytoplot(plotBII),trytoplot(plotCROPDIV),trytoplot(plotNITROGEN),trytoplot(plotWATER),trytoplot(plotGHG),trytoplot(plotTEMP),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
   group4 <- wrap_plots(trytoplot(plotBIOECON),trytoplot(plotCOSTS),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Economy", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
 
-  col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group2),ncol = 1,nrow=2,heights = c(0.375,0.625)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  col2 <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 1,nrow=2,heights = c(0.75,0.25)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
+  col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group2),ncol = 1,nrow=2,heights = c(0.38,0.62)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
+  col2 <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 1,nrow=2,heights = c(0.74,0.26)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
   combined <- wrap_plots(wrap_elements(col1),wrap_elements(col2))
 
   if (is.null(file)) {
     return(combined)
   } else {
-    ggsave(filename = file, combined, width = unit(20, "cm"), height = unit(23, "cm"), scale = 1, bg = "white")
+    ggsave(filename = file, combined, width = unit(20, "cm"), height = unit(22, "cm"), scale = 1, bg = "white")
     ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = unit(20, "cm"), height = unit(23, "cm"), scale = 1.5, bg = "white")
   }
 }
