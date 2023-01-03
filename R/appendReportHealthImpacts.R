@@ -47,8 +47,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
             stop("healthImpacts .gdx does not contain the scenario: ", baseScenarioName)
         }
 
-        message("In appendReportHealthImpacts.R: Inconsistent version IDs. You are likely using
-                 an older version of the health impacts data than the current runs.")
+        message("Inconsistent version ID: Appending ", gdxVersionID, " to ", desiredVersionID, " scenarios")
     } else {
         gdxScenario <- scenario
     }
