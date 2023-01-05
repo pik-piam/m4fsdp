@@ -84,7 +84,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   override.linetype <- rev(c("dashed","dashed","dashed","dashed","dashed","solid","solid"))
   names(override.linetype) <- scenOrder
 
-  themeMy <- function(baseSize = 10, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
+  themeMy <- function(baseSize = 13, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
     txt <- element_text(size = baseSize, colour = "black", face = "plain")
     boldTxt <- element_text(size = baseSize, colour = "black", face = "bold")
 
@@ -102,11 +102,11 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
         panel.spacing.x = unit(panelSpacing, "mm"),
         panel.spacing.y = unit(panelSpacing, "mm"),
 
-        text = txt,
+        # text = txt,
         plot.title = txt,
-
-        axis.title = txt,
-        axis.text = txt,
+        #
+        # axis.title = txt,
+        # axis.text = txt,
 
         legend.text = element_text(margin = margin(r = 10), hjust = 0, size = baseSize,
                                    colour = "black", face = "plain"),
@@ -206,10 +206,10 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
 
       p <- ggplot(b, aes(x = get("period"), y = get("value")))
       p <- p + labs(title = varName, tag = tag) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 0)
+      p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset")), size = 1.4) #+ facet_wrap("region_class")
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050), expand = c(0,0)) +
         scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA)) + theme(plot.margin = margin(0, 20, 20, 0, "pt"))
-      if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")))
-      p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset"))) #+ facet_wrap("region_class")
+      if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")), size = 1.4)
       #p <- p + geom_line(data = b[get("scenset") == "Bundles",],aes(color = get("scenario")),linetype="dotted") #+ facet_wrap("region_class")
       #p <- p + geom_line(data = b[get("scenset") == "SSP2bau / FSDP",],aes(color = get("scenario")),linetype="solid") #+ facet_wrap("region_class")
       p <- p + scale_shape_discrete("Historical data", solid = 0)
@@ -219,7 +219,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       #                plot.tag.position = "plot", #NEW parameter. Apply for subtitle too.
       #                plot.title.position = "plot", #NEW parameter. Apply for subtitle too.
       #                plot.caption.position =  "plot") #NEW parameter
-      p <- p + theme(plot.tag = element_text(size = 10, margin = margin(b = -8.5, unit = "pt")))
+      p <- p + theme(plot.tag = element_text(size = 13, margin = margin(b = -8.5, unit = "pt")))
       if (showlegend) {
         p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype), reverse = TRUE),
                         shape = guide_legend(order = 2, title.position = "top",ncol = 1, title = "Scenario"),

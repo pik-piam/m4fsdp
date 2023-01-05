@@ -64,8 +64,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   agEmpl <- calcPolygon(agEmpl, "agEmpl")
 
   # theme for maps
-  myTheme <- theme_minimal() +
-    theme(plot.margin = grid::unit(c(5, 5, 5, 5), "pt"),
+  myTheme <- theme_minimal(base_size = 19) +
+    theme(plot.margin = grid::unit(c(5, 5, 10, 5), "pt"),
           strip.text = element_blank(), strip.background = element_blank(),
           panel.background = element_rect(fill = "black"),
           panel.grid = element_blank(), axis.title.x = element_blank(), axis.text.x = element_blank(),
@@ -74,10 +74,10 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
           legend.position="top",
           legend.justification="center",
           legend.margin=margin(0,0,0,0),
-          legend.box.margin=margin(-10,-10,-10,-10),
+          legend.box.margin=margin(-10,-10,-20,-10),
           legend.spacing.y = unit(2, 'pt'),
-          plot.title = element_text(hjust = 0,margin = unit(c(0,0,0,0), "pt"), size = 10, face = "bold"),
-          legend.title = element_text(size = 10, hjust = 1, margin = unit(c(0,0,0,0), "pt")),
+          plot.title = element_text(hjust = 0,margin = unit(c(0,0,0,0), "pt"), size = 19, face = "bold"),
+          legend.title = element_text(size = 19, hjust = 1, margin = unit(c(0,0,0,0), "pt")),
           plot.caption = element_text(hjust = 1,margin = unit(c(0,0,0,0), "pt")))
 
   ## regional/country data
@@ -86,8 +86,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
 
   ## Grid cell data
   countries2 <- st_transform(countries, crs = st_crs("+proj=moll"))
-  labelXGrid <- -11400000
-  labelYGrid <- -5600000
+  labelXGrid <- -3500000
+  labelYGrid <- -6500000
   xlimMoll   <- c(-11007870, 16007870)
   asRaster   <- function(x, countries2) {
     z <- rast()
@@ -117,7 +117,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
 
   #Health: Spatial distribution of population obese
@@ -135,7 +135,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #DUMMY Years of lost life
   title <- "c) DUMMY Years of lost life"
@@ -152,7 +152,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Inclusion: Expenditure for agr. products per capita
   title <- "d) Expenditure for agr. products per capita"
@@ -168,7 +168,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Inclusion: Share of Population with Incomes less than 3.20$/Day
   title <- "e) Share of Population with Incomes less than 3.20$/Day"
@@ -186,8 +186,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     scale_fill_gradientn(unit, colors = rev(brewer.pal(11, "RdYlGn")[-1]), na.value = "grey90", limits = c(0,1), oob = scales::squish) +
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
-    geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+    geom_text(aes(label = sub(" ","\n",scenario)), x = labelX+1000000, y = labelY,
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
 
   #Inclusion: Share of working age population employed in agriculture
@@ -206,7 +206,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     labs(title = title, caption = caption) + myTheme +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
 
   #Inclusion: Hourly labor costs in agriculture
@@ -225,7 +225,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
 
   #Environment: Biodiversity Intactness Index
@@ -242,8 +242,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
                          midpoint = 0.76, na.value = "grey90") +
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
-    geom_text(aes(label = sub(" ","\n",scenario)), x = labelXGrid, y = labelYGrid,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+    geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Environment: Croparea diversity
   title <- "i) DUMMY Croparea diversity"
@@ -259,8 +259,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
                          midpoint = 0.76, na.value = "grey90") +
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
-    geom_text(aes(label = sub(" ","\n",scenario)), x = labelXGrid, y = labelYGrid,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+    geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Environment: Nutrient Surplus
   title <- "j) Nutrient Surplus"
@@ -275,8 +275,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 400), oob = scales::squish) +
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
-    geom_text(aes(label = sub(" ","\n",scenario)), x = labelXGrid, y = labelYGrid,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+    geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Environment: Water Withdrawal to Availability Ratio
   title <- "k) Water Withdrawal to Availability Ratio"
@@ -296,8 +296,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
                       label = c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1", "EFR violation")) +
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_legend(title.position = "top",title.hjust = 1,nrow = 1)) +
-    geom_text(aes(label = sub(" ","\n",scenario)), x = labelXGrid, y = labelYGrid,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+    geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Environment: Greenhouse Gases
   title <- "l) DUMMY Greenhouse Gases"
@@ -316,7 +316,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     labs(title = title, caption = caption) + myTheme +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Environment: Global Surface Temp
   title <- "m) DUMMY Global Surface Temp"
@@ -335,7 +335,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     labs(title = title, caption = caption) + myTheme +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Cost: Bioeconomy
   title <- "n) DUMMY Bioeconomy"
@@ -354,7 +354,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     labs(title = title, caption = caption) + myTheme +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
   #Cost:Production cost agriculture per capita
   title <- "o) Production cost agriculture per capita"
@@ -373,7 +373,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     labs(title = title, caption = caption) + myTheme +
     guides(fill = guide_colorbar(title.position = "top",title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ","\n",scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color="white",size=4, lineheight=0.7)
+              hjust = 0, vjust = 0, color="white",size=18/.pt, lineheight=0.7)
 
 
 
@@ -391,11 +391,11 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     }
   }
 
-  group1 <- wrap_plots(trytoplot(plotUNDERWEIGHT),trytoplot(plotOBESE),trytoplot(plotYOLL),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
-  group2 <- wrap_plots(trytoplot(plotEXPENDITURE),trytoplot(plotPOVERTY),trytoplot(plotEMPLOYMENT),trytoplot(plotWAGE),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Inclusion", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
+  group1 <- wrap_plots(trytoplot(plotUNDERWEIGHT),trytoplot(plotOBESE),trytoplot(plotYOLL),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"),plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
+  group2 <- wrap_plots(trytoplot(plotEXPENDITURE),trytoplot(plotPOVERTY),trytoplot(plotEMPLOYMENT),trytoplot(plotWAGE),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Inclusion", theme = theme(title = element_text(face="bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
   groupEmpty <- wrap_plots(plot_spacer(),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = NULL, theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = NA, fill=NA, linewidth=0)))
-  group3 <- wrap_plots(trytoplot(plotBII),trytoplot(plotCROPDIV),trytoplot(plotNITROGEN),trytoplot(plotWATER),trytoplot(plotGHG),trytoplot(plotTEMP),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
-  group4 <- wrap_plots(trytoplot(plotBIOECON),trytoplot(plotCOSTS),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Economy", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
+  group3 <- wrap_plots(trytoplot(plotBII),trytoplot(plotCROPDIV),trytoplot(plotNITROGEN),trytoplot(plotWATER),trytoplot(plotGHG),trytoplot(plotTEMP),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "keep")
+  group4 <- wrap_plots(trytoplot(plotBIOECON),trytoplot(plotCOSTS),widths = 1,ncol = 1, heights = 1) + plot_annotation(title = "Economy", theme = theme(title = element_text(face="bold", size = 20), plot.background = element_rect(colour = "black", fill=NA, linewidth=2), plot.margin = margin(10, 5, 5, 5, "pt"))) + plot_layout(guides = "keep")
 
   col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group2),wrap_elements(groupEmpty),ncol = 1,nrow=3,heights = c(0.375,0.5,0.125)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
   col2 <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 1,nrow=2,heights = c(0.75,0.25)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
@@ -404,7 +404,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   if (is.null(file)) {
     return(combined)
   } else {
-    ggsave(filename = file, combined, width = unit(20, "cm"), height = unit(22, "cm"), scale = 1, bg = "white")
-    ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = unit(20, "cm"), height = unit(23, "cm"), scale = 1.5, bg = "white")
+    ggsave(filename = file, combined, width = unit(20, "cm"), height = unit(26.3, "cm"), scale = 1, bg = "white")
+    ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = unit(20, "cm"), height = unit(26.3, "cm"), scale = 1, bg = "white")
   }
 }
