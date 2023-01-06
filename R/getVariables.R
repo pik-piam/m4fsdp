@@ -21,7 +21,9 @@ getVariables <- function() {
            "Household Expenditure|Food|Expenditure",
            "Income|Number of People Below 3.20$/Day",
            "Agricultural employment|Crop and livestock products",
+           "Labor|Employment|Agricultural employment",
            "Hourly labor costs relative to 2000",
+           "Labor|Wages|Hourly labor costs relative to 2000",
            "Value|Bioeconomy Demand",
            "Costs Without Incentives")
 
@@ -38,6 +40,8 @@ getVariables <- function() {
                   "Inclusion|10|Expenditures for agri.|USD/person|decrease|0|1",
                   "Inclusion|11|People Below 3.20$/Day|mio people|decrease|0|1",
                   "Inclusion|12|Agri. employment|mio people|increase|0|1",
+                  "Inclusion|12|Agri. employment|mio people|increase|0|1",
+                  "Inclusion|13|Agri. wages|Index rel. to 2000|increase|2|1",
                   "Inclusion|13|Agri. wages|Index rel. to 2000|increase|2|1",
                   "Economy|14|Bioeconomy Supply|billion US$05/yr|increase|0|0.001",
                   "Economy|15|Costs|billion US$05/yr|decrease|0|0.001")

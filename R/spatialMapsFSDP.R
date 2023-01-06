@@ -57,8 +57,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   pop <- calcPolygon(pop, "pop")
 
   # calc ag. empl. polygon for cartogram maps
-  agEmpl <- repIso[variable == "Agricultural employment|Crop and livestock products", ]
-  agEmpl$unit <- NULL
+  agEmpl <- repIso[variable %in% c("Agricultural employment|Crop and livestock products", # old variable name
+                                   "Labor|Employment|Agricultural employment"), ] # new variable name  agEmpl$unit <- NULL
   names(agEmpl)[names(agEmpl) == "value"] <- "agEmpl"
   agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
   agEmpl <- calcPolygon(agEmpl, "agEmpl")
@@ -194,7 +194,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   title <- "f) Share of working age population employed in agriculture"
   unit <- "share"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repReg[, .(value = value[variable == "Share of working age population employed in agriculture|Crop and livestock products"]),
+
+  b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",
+                             "Labor|Employment|Share of working age population employed in agriculture")]), # new var name
                   by = .(model, scenario, region, period)]
   all   <- merge(reg2iso, b)
   all   <- merge(pop, all)
@@ -213,7 +215,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   title <- "g) Hourly labor costs in agriculture"
   unit <- "USD/h"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repReg[, .(value = value[variable == "Hourly labor costs"]), by = .(model, scenario, region, period)]
+  b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]), 
+                    by = .(model, scenario, region, period)]
   all   <- merge(reg2iso, b)
   all   <- merge(agEmpl, all)
   plotWAGE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +

@@ -40,9 +40,17 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
 
   var <- getVariables()
 
-  if(any(!var%in%rep$variable)){
-    warning(paste(c("The following indicators are missing: \n",var=var[!var%in%rep$variable]),collapse = "\n"))
+  missingVars <- var[!var%in%rep$variable]
+  # some variables have an old and new name, only one of them has to be inculded
+  hourlyLaborCostVars <- c("Hourly labor costs relative to 2000", "Labor|Wages|Hourly labor costs relative to 2000")
+  employmentVars <- c("Agricultural employment|Crop and livestock products", "Labor|Employment|Agricultural employment")
+  if (sum(hourlyLaborCostVars %in% missingVars) == 1) missingVars <- setdiff(missingVars, hourlyLaborCostVars)
+  if (sum(employmentVars %in% missingVars) == 1) missingVars <- setdiff(missingVars, employmentVars)
+
+  if (length(missingVars) > 0) {
+    warning(paste(c("The following indicators are missing: \n", missingVars), collapse = "\n"))
   }
+
   var <- var[var %in% rep$variable]
 
   renameRep <- function(rep,var,regionSel) {

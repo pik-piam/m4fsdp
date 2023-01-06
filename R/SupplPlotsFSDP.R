@@ -693,8 +693,7 @@ plotHealthReg <- ggplot(healthReg, aes(y = scenario)) +
 
 ## Global: Absolute change in employment - global areaplot
 
-empVar <-  setdiff(scens[grep("Agricultural employment\\|", scens$variable), ]$variable %>%  unique(),
-                        "Agricultural employment|Crop and livestock products")
+empVar <-  scens[grep("Agricultural employment\\|\\+", scens$variable), ]$variable %>%  unique()
 
 emp_df <- filter(scens,
                   period <= 2050,
@@ -703,9 +702,10 @@ emp_df <- filter(scens,
   droplevels() %>%
   mutate(Products = case_when(           # recategorize products
     variable == "Agricultural employment|+|Crop products" ~ "Crop products",
-    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products"),
+    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products",
+    variable == "Agricultural employment|+|MACCS" ~ "Mitigation measures"),
     Products = factor(Products,
-                       levels = c("Crop products", "Livestock products"))) %>%
+                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>% 
   group_by(model, scenario, region, RegionG, period, Products) %>%
   filter(region == "GLO")
 
@@ -722,8 +722,7 @@ plotEmpGlo <- ggplot(emp_df, aes(x = period)) +
 
 ## Regional: abolute change 2020 to 2050 - barplot
 
-empVar <-  setdiff(scens[grep("Agricultural employment\\|", scens$variable), ]$variable %>%  unique(),
-                        "Agricultural employment|Crop and livestock products")
+empVar <-  scens[grep("Agricultural employment\\|\\+", scens$variable), ]$variable %>%  unique()
 
 emp_df <- filter(scens,
                   period <= 2050,
@@ -732,9 +731,10 @@ emp_df <- filter(scens,
   droplevels() %>%
   mutate(Products = case_when(           # recategorize products
     variable == "Agricultural employment|+|Crop products" ~ "Crop products",
-    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products"),
+    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products",
+    variable == "Agricultural employment|+|MACCS" ~ "Mitigation measures"),
     Products = factor(Products,
-                       levels = c("Crop products", "Livestock products"))) %>%
+                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>% 
   group_by(model, scenario, region, RegionG, period, Products) %>%
   summarise(value = sum(value)) %>%
   group_by(model, scenario, region, Products) %>%
@@ -778,11 +778,12 @@ plotEmpReg <- plotEmpReg + geom_blank(data = facet_bounds, aes(x = value, y = sc
 
 ##### Hourly Labour Costs ####
 
-laborVar <-  "Hourly labor costs"
+laborVar <-  as.character(scens$variable[grep("Hourly labor costs$", scens$variable)] %>% unique())
 names(laborVar) <- "Hourly Labor Costs"
+totalHoursVar <- scens$variable[grep("Total Hours Worked", scens$variable)] %>% unique()
 
 # extract total hours worked to use as a separate column
-hoursWorked <- filter(scens, variable == "Total Hours Worked|Crop and livestock products") %>%
+hoursWorked <- filter(scens, variable == totalHoursVar) %>%
   rename("hours" = value) %>%
   select(model, scenario, region, RegionG, period, hours)
 
