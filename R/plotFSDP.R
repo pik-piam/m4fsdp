@@ -59,7 +59,7 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
 
   message("Plotting figures ...")
   try(heatmapFSDP(reg, tableType = 1,    file = file.path(outputfolder, paste0(rev, "_FSDP_heatmap1.png"))))
-  try(heatmapFSDP(reg, tableType = "2a", file = file.path(outputfolder, paste0(rev, "_FSDP_heatmap2a.png"))))
+  try(heatmapFSDP(reg, tableType = 2, file = file.path(outputfolder, paste0(rev, "_FSDP_heatmap2.png"))))
   try(heatmapFSDP(reg, tableType = 3,    file = file.path(outputfolder, paste0(rev, "_FSDP_heatmap3.png"))))
   try(bundlesFSDP(reg, file = file.path(outputfolder, paste0(rev, "_FSDP_bundle.png"))))
   try(spatialMapsFSDP(reg, iso, grid, reg2iso, file = file.path(outputfolder, paste0(rev, "_FSDP_spatialMaps.png"))))

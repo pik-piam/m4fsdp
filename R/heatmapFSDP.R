@@ -7,8 +7,10 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #'
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
 #' @param regionSel Region that should be plotted. select "IND" for India plots
-#' @param tableType options: 1 (FSECa,FSECc), 2 (FSECb,FSECc,FSECd)
+#' @param tableType options: 1, 2, 3
 #' @param file file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL
+#' @param width width
+#' @param height height
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
 #' @author Florian Humpenoeder, Vartika Singh
@@ -19,23 +21,10 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @importFrom stats reorder
 #' @importFrom ggtext element_markdown
 
-heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
+heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, width = 10.5, height = 9) {
 
   #### read in data files
-  if (tableType == 1) {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECc"), subset = FALSE, varlist = "magpie_vars.csv")
-  } else if (tableType == 2) {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE,
-                             varlist = "magpie_vars.csv")
-  } else if (tableType == "2a") {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECb", "FSECc"), subset = FALSE,
-                             varlist = "magpie_vars.csv")
-  } else if (tableType == 3) {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd", "FSECe"), subset = FALSE,
-                             varlist = "magpie_vars.csv")
-  } else {
-    stop("Table type does not exist")
-  }
+  rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc","FSECd", "FSECe"), subset = FALSE, varlist = "magpie_vars.csv")
 
   var <- getVariables()
 
@@ -45,10 +34,13 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]
   b <- droplevels(b)
 
-  bb <- rep[variable %in% var & region == regionSel & period == 2020 & scenario == "BAU", ]
-  bb <- droplevels(bb)
-  b <- rbind(bb, b)
+  if (tableType %in% c(2,"2a",3)) {
+    bb <- rep[variable %in% var & region == regionSel & period == 2020 & scenario == "BAU", ]
+    bb <- droplevels(bb)
+    b <- rbind(bb, b)
+  }
 
+  var <- var[var %in% intersect(var,levels(b$variable))]
   b$variable <- factor(b$variable, levels = var, labels = names(var))
   b[, c("vargroup", "order", "variableName", "unit", "improvment", "rounding","factor") := tstrsplit(get("variable"), "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
@@ -58,6 +50,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
   vargroupOrder <- c("Health", "Environment", "Inclusion", "Economy")
   b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
 
+  #b[,"variable" := paste0("atop(textstyle('",get("variableName"),"'),textstyle('",get("unit"),"'))")]
   b[,"variable" := paste(get("variableName"),get("unit"),sep="\n")]
   b$variable <- reorder(b$variable, b$order)
 
@@ -124,102 +117,245 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL) {
 
   b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "scenario", "model", "variable","unit", "period")]
 
-if (regionSel == "IND") {
-
-  ##Dropping scenarios not relevant for India
-  b <- b[scenario != "SSP1",]
-  b <- b[scenario != "SSP3",]
-  b <- b[scenario != "SSP4",]
-  b <- b[scenario != "SSP5",]
-  b <- b[scenario != "ExternalPressures",]
-  b <- b[scenario != "NoUnderweight",]
-  b <- b[scenario != "NoOverweight",]
-  b <- b[scenario != "HalfOverweight",]
-  b <- b[scenario != "LessFoodWaste",]
-  b <- b[scenario != "DietVegFruitsNutsSeeds",]
-  b <- b[scenario != "DietRuminants",]
-  b <- b[scenario != "DietMonogastrics",]
-  b <- b[scenario != "DietLegumes",]
-  b <- b[scenario != "DietFish",]
-  b <- b[scenario != "DietEmptyCals",]
-  b <- b[scenario != "WaterSparing",]
-  b <- b[scenario != "LandSparing",]
-  b <- b[scenario != "BiodivSparing",]
-  b <- b[scenario != "PeatlandSparing",]
-  b <- b[scenario != "REDD",]
-  b <- b[scenario != "REDDaff",]
-  b <- b[scenario != "SoilCarbon",]
-  b <- b[scenario != "CropRotations",]
-  b <- b[scenario != "NitrogenUptakeEff",]
-  b <- b[scenario != "LivestockMngmt",]
-  b <- b[scenario != "AnimalWasteMngmt",]
-  b <- b[scenario != "AirPollution",]
-  b <- b[scenario != "LiberalizedTrade",]
-  b <- b[scenario != "DietRotations",]
-  b <- b[scenario != "FullBiodiv",]
-  b <- b[scenario != "Protection",]
-  b <- b[scenario != "REDDaffDietRuminants",]
-  b <- b[scenario != "SoilMonogastric",]
-  b <- b[scenario != "SoilRotations",]
-  b <- b[scenario != "Sufficiency",]
-
-
-  scenFirst <- c("SSP2 2020", "SSP2 2050")
-  scenLast <- c("FSDP")
-
-  scenCombinations <- c("WaterSoil", "Efficiency")
-  scenArchetypes <- c("AllHealth", "AllEnvironment",
-                      "AllClimate", "AllInclusion")
-  scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-  scenMiddle <- c(scenCombinations,scenArchetypes)
-  scenOrder <- c(rev(scenLast), rev(scenMiddle), scenOrder[!scenOrder %in% c(scenFirst, scenMiddle, scenLast)], rev(scenFirst))
-  b$scenario <- factor(b$scenario, levels = scenOrder)
-  b <- droplevels(b)
-
-} else {
-
-  scenFirst <- c("SSP2 2020", "SSP2 2050")
-  scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
-  scenLast <- c("FSDP")
-  scenSSPs <- c("SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau","SSP1PLUSbau")
-  scenFSTs <- c("SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","SSP1PLUSfsdp")
-  scenDiet <- c("NoUnderweight", "HalfOverweight", "NoOverweight", "LessFoodWaste")
-  scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
-                 "DietLegumes", "DietFish", "DietEmptyCals")
-  scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing","REDD", "REDDaff")
-  scenMngmt <- c("SoilCarbon","CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
-                 "AirPollution")
-  scenInclusion <- c("LiberalizedTrade","MinWage")
-  scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
-                        "REDDaffDietRuminants", "FullBiodiv")
-  scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment",
-                      "AllClimate", "AllInclusion")
-
   b[scenario == "BAU", scenario := paste("SSP2", period)]
-  b$period <- factor(b$period)
-  b[!scenario %in% c(scenFirst,scenExt,scenSSPs,scenFSTs,scenCombinations,scenArchetypes), period := "FSMs"]
-  b[scenario %in% scenFirst, period := "Ref"]
-  b[scenario %in% c(scenDiet,scenDiet2), period := "Diet"]
-  b[scenario %in% c(scenInclusion), period := "Incl."]
-  b[scenario %in% c(scenProtect), period := "NatureSparing"]
-  b[scenario %in% c(scenMngmt), period := "AgroMngmt"]
-  b[scenario %in% scenExt, period := "Ext. Transf."]
-  b[scenario %in% scenSSPs, period := "SSPs"]
-  b[scenario %in% scenFSTs, period := "FSTs"]
-  b[scenario %in% c(scenCombinations, scenArchetypes), period := "Food System Measure Bundles"]
 
-  b$period <- factor(b$period)
+  #scneario selection, grouping and ordering
+  if (tableType == 1) {
+
+    #scennameInDataframe::scenGroup|scennameInPlot
+    #order is maintained
+    scenGrouping <-
+      c("SSP2 2050::A|<b>Ref SSP2 2050</b>",
+        "ExternalPressures::Ext. Transf.|<b>Ext. Transf.</b>",
+        "Population::Ext. Transf.|Population",
+        "EconDevelop::Ext. Transf.|EconDevelop",
+        "EnergyTrans::Ext. Transf.|EnergyTrans",
+        "Bioplastics::Ext. Transf.|Bioplastics",
+        "TimberCities::Ext. Transf.|TimberCities",
+        "Sufficiency::Diet|<b>Sufficiency</b>",
+        "DietEmptyCals::Diet|DietEmptyCals",
+        "DietFish::Diet|DietFish",
+        "DietLegumes::Diet|DietLegumes",
+        "DietMonogastrics::Diet|DietMonogastrics",
+        "DietRuminants::Diet|DietRuminants",
+        "DietVegFruitsNutsSeeds::Diet|DietVegFruitsNuts",
+        "DietNoOverweight::Diet|NoOverweight",
+        "DietHalfOverweight::Diet|HalfOverweight",
+        "NoUnderweight::Diet|NoUnderweight",
+        "LessFoodWaste::Diet|LessFoodWaste",
+        "Livelihoods::Incl.|<b>Livelihoods</b>",
+        "LiberalizedTrade::Incl.|LiberalizedTrade",
+        "MinWage::Incl.|MinWage",
+        "NatureSparing::NatureSparing|<b>NatureSparing</b>",
+        "REDDaff::NatureSparing|REDDaff",
+        "REDD::NatureSparing|REDD",
+        "LandSparing::NatureSparing|LandSparing",
+        "PeatlandSparing::NatureSparing|PeatlandSparing",
+        "WaterSparing::NatureSparing|WaterSparing",
+        "BiodivSparing::NatureSparing|BiodivSparing",
+        "AgroMngmt::AgroMngmt|<b>AgroMngmt</b>",
+        "NitrogenEff::AgroMngmt|NitrogenEff",
+        "CropRotations::AgroMngmt|CropRotations",
+        "RiceMit::AgroMngmt|RiceMit",
+        "LivestockMngmt::AgroMngmt|LivestockMngmt",
+        "ManureMngmt::AgroMngmt|ManureMngmt",
+        "SoilCarbon::AgroMngmt|SoilCarbon",
+        "FSDP::Z|<b>FSDP</b>")
+
+    legendPosition <- theme(legend.position = c(-0.08, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
+
+  } else if (tableType == 2) {
+
+    #scennameInDataframe::scenGroup|scennameInPlot
+    #order is maintained
+    scenGrouping <-
+      c("SSP2 2020::Ref|SSP2 2020",
+        "SSP2 2050::Ref|<b>SSP2 2050</b>",
+        "AgroMngmt::FSMs|AgroMngmt",
+        "AllNitrogen::FSMs|AllNitrogen",
+        "Bioeconomy::FSMs|Bioeconomy",
+        "ExternalPressures::FSMs|ExternalPressures",
+        "Livelihoods::FSMs|Livelihoods",
+        "LivelihoodsExt::FSMs|LivelihoodsExt",
+        "LivestockManureMngmt::FSMs|LivestockManureMngmt",
+        "LivestockNUEMngmt::FSMs|LivestockNUEMngmt",
+        "MonogastricsRotations::FSMs|MonogastricsRotations",
+        "MonogastricsVeggies::FSMs|MonogastricsVeggies",
+        "NatureSparing::FSMs|NatureSparing",
+        "REDDaffRuminants::FSMs|REDDaffRuminants",
+        "SoilMonogastricRuminants::FSMs|SoilMonogastricRuminants",
+        "TradeMonogastrics::FSMs|TradeMonogastrics",
+        "TradeREDDaff::FSMs|TradeREDDaff",
+        "TradeRotations::FSMs|TradeRotations",
+        "TradeRuminants::FSMs|TradeRuminants",
+        "TradeSoil::FSMs|TradeSoil",
+        "TradeVeggies::FSMs|TradeVeggies",
+        "AllInclusion::FSM Bundles|AllInclusion",
+        "AllClimate::FSM Bundles|AllClimate",
+        "AllEnvironment::FSM Bundles|AllEnvironment",
+        "AllHealth::FSM Bundles|AllHealth",
+        "Protection::FSM Bundles|Protection",
+        "Efficiency::FSM Bundles|Efficiency",
+        "Sufficiency::FSM Bundles|Sufficiency",
+        "FullBiodiv::FSM Bundles|FullBiodiv",
+        "SoilMonogastric::FSM Bundles|SoilMonogastric",
+        "SoilRotations::FSM Bundles|SoilRotations",
+        "DietRotations::FSM Bundles|DietRotations",
+        "WaterSoil::FSM Bundles|WaterSoil",
+        "FSDP::Z|<b>FSDP</b>")
+
+    legendPosition <- theme(legend.position = c(-0.10, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
+
+  } else if (tableType == 3) {
+
+    #scennameInDataframe::scenGroup|scennameInPlot
+    #order is maintained
+    scenGrouping <-
+      c("SSP2 2020::Ref|SSP2 2020",
+        "SSP2 2050::Ref|<b>SSP2 2050</b>",
+        "SSP1bau::SSPs|SSP1bau",
+        "SSP3bau::SSPs|SSP3bau",
+        "SSP4bau::SSPs|SSP4bau",
+        "SSP5bau::SSPs|SSP5bau",
+        "SSP1fsdp::FSTs|SSP1fsdp",
+        "SSP2fsdp::FSTs|SSP2fsdp",
+        "SSP3fsdp::FSTs|SSP3fsdp",
+        "SSP4fsdp::FSTs|SSP4fsdp",
+        "SSP5fsdp::FSTs|SSP5fsdp",
+        "FSDP::Z|<b>FSDP</b>")
+
+    legendPosition <- theme(legend.position = c(-0.06, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
+
+  }
+
+  a <- strsplit(scenGrouping,"\\::")
+  scenGroup <- unlist(lapply(a,function(x) x[1]))
+  names(scenGroup) <- unlist(lapply(a,function(x) x[2]))
+
+  b <- b[get("scenario") %in% scenGroup,]
   b <- droplevels(b)
+  scenGroup <- scenGroup[scenGroup %in% intersect(scenGroup,levels(b$scenario))]
+  b$scenario <- factor(b$scenario,levels = scenGroup,labels = names(scenGroup))
 
-  scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-  scenMiddle <- c(scenSSPs, scenFSTs, scenDiet2, scenDiet, scenInclusion, scenProtect, scenMngmt,
-  scenCombinations, scenArchetypes)
-  scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
-    scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
-  b$scenario <- factor(b$scenario, levels = scenOrder)
-  b <- droplevels(b)
+  b[, c("scenGroup","scenario") := tstrsplit(get("scenario"), "\\|")]
 
-}
+  scenGroupOrder <- unique(tstrsplit(names(scenGroup),"\\|")[[1]])
+  scenarioOrder <- tstrsplit(names(scenGroup),"\\|")[[2]]
+
+  stripBackground <- vector(length = length(scenGroupOrder))
+  textElement <- vector(length = length(scenGroupOrder))
+
+  for (i in 1:length(scenGroupOrder)) {
+    if (scenGroupOrder[i] %in% c("A","Z")) {
+      stripBackground[i] <- list(element_blank())
+      textElement[i] <- list(element_blank())
+    } else {
+      stripBackground[i] <- list(NULL)
+      textElement[i] <- list(element_text(angle = 90, face = "bold"))
+    }
+  }
+
+  b$scenGroup <- factor(b$scenGroup,levels = scenGroupOrder)
+  b$scenario <- factor(b$scenario,levels = scenarioOrder,ordered = TRUE)
+
+### todo: DELETE once scenario selection is approved
+
+# if (regionSel == "IND") {
+#
+#   ##Dropping scenarios not relevant for India
+#   b <- b[scenario != "SSP1",]
+#   b <- b[scenario != "SSP3",]
+#   b <- b[scenario != "SSP4",]
+#   b <- b[scenario != "SSP5",]
+#   b <- b[scenario != "ExternalPressures",]
+#   b <- b[scenario != "NoUnderweight",]
+#   b <- b[scenario != "NoOverweight",]
+#   b <- b[scenario != "HalfOverweight",]
+#   b <- b[scenario != "LessFoodWaste",]
+#   b <- b[scenario != "DietVegFruitsNutsSeeds",]
+#   b <- b[scenario != "DietRuminants",]
+#   b <- b[scenario != "DietMonogastrics",]
+#   b <- b[scenario != "DietLegumes",]
+#   b <- b[scenario != "DietFish",]
+#   b <- b[scenario != "DietEmptyCals",]
+#   b <- b[scenario != "WaterSparing",]
+#   b <- b[scenario != "LandSparing",]
+#   b <- b[scenario != "BiodivSparing",]
+#   b <- b[scenario != "PeatlandSparing",]
+#   b <- b[scenario != "REDD",]
+#   b <- b[scenario != "REDDaff",]
+#   b <- b[scenario != "SoilCarbon",]
+#   b <- b[scenario != "CropRotations",]
+#   b <- b[scenario != "NitrogenUptakeEff",]
+#   b <- b[scenario != "LivestockMngmt",]
+#   b <- b[scenario != "AnimalWasteMngmt",]
+#   b <- b[scenario != "AirPollution",]
+#   b <- b[scenario != "LiberalizedTrade",]
+#   b <- b[scenario != "DietRotations",]
+#   b <- b[scenario != "FullBiodiv",]
+#   b <- b[scenario != "Protection",]
+#   b <- b[scenario != "REDDaffDietRuminants",]
+#   b <- b[scenario != "SoilMonogastric",]
+#   b <- b[scenario != "SoilRotations",]
+#   b <- b[scenario != "Sufficiency",]
+#
+#
+#   scenFirst <- c("SSP2 2020", "SSP2 2050")
+#   scenLast <- c("FSDP")
+#
+#   scenCombinations <- c("WaterSoil", "Efficiency")
+#   scenArchetypes <- c("AllHealth", "AllEnvironment",
+#                       "AllClimate", "AllInclusion")
+#   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
+#   scenMiddle <- c(scenCombinations,scenArchetypes)
+#   scenOrder <- c(rev(scenLast), rev(scenMiddle), scenOrder[!scenOrder %in% c(scenFirst, scenMiddle, scenLast)], rev(scenFirst))
+#   b$scenario <- factor(b$scenario, levels = scenOrder)
+#   b <- droplevels(b)
+#
+# } else {
+#
+#   scenFirst <- c("SSP2 2020", "SSP2 2050")
+#   scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
+#   scenLast <- c("FSDP")
+#   scenSSPs <- c("SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau","SSP1PLUSbau")
+#   scenFSTs <- c("SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","SSP1PLUSfsdp")
+#   scenDiet <- c("NoUnderweight", "HalfOverweight", "NoOverweight", "LessFoodWaste")
+#   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
+#                  "DietLegumes", "DietFish", "DietEmptyCals")
+#   scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing","REDD", "REDDaff")
+#   scenMngmt <- c("SoilCarbon","CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
+#                  "AirPollution")
+#   scenInclusion <- c("LiberalizedTrade","MinWage")
+#   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
+#                         "REDDaffDietRuminants", "FullBiodiv")
+#   scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment",
+#                       "AllClimate", "AllInclusion")
+#
+#   b[scenario == "BAU", scenario := paste("SSP2", period)]
+#   b$period <- factor(b$period)
+#   b[!scenario %in% c(scenFirst,scenExt,scenSSPs,scenFSTs,scenCombinations,scenArchetypes), period := "FSMs"]
+#   b[scenario %in% scenFirst, period := "Ref"]
+#   b[scenario %in% c(scenDiet,scenDiet2), period := "Diet"]
+#   b[scenario %in% c(scenInclusion), period := "Incl."]
+#   b[scenario %in% c(scenProtect), period := "NatureSparing"]
+#   b[scenario %in% c(scenMngmt), period := "AgroMngmt"]
+#   b[scenario %in% scenExt, period := "Ext. Transf."]
+#   b[scenario %in% scenSSPs, period := "SSPs"]
+#   b[scenario %in% scenFSTs, period := "FSTs"]
+#   b[scenario %in% c(scenCombinations, scenArchetypes), period := "Food System Measure Bundles"]
+#
+#   b$period <- factor(b$period)
+#   b <- droplevels(b)
+#
+#   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
+#   scenMiddle <- c(scenSSPs, scenFSTs, scenDiet2, scenDiet, scenInclusion, scenProtect, scenMngmt,
+#   scenCombinations, scenArchetypes)
+#   scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
+#     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
+#   b$scenario <- factor(b$scenario, levels = scenOrder)
+#   b <- droplevels(b)
+#
+# }
 
 
   makeExp <- function(x, y) {
@@ -231,7 +367,11 @@ if (regionSel == "IND") {
     return(exp)
   }
 
-  m <- ggplot(b, aes(y = scenario, x = 1)) + theme_minimal() +
+  #https://rworkshop.uni.lu/lectures/plotting_part2.html#37
+  #https://github.com/andrewheiss/ath-hugo/blob/main/content/blog/2022-05-09_hurdle-lognormal-gaussian-brms/index.Rmarkdown
+  #https://github.com/wilkelab/ggtext/issues/82
+
+  m <- ggplot(b, aes(y = get("scenario"), x = 1)) + theme_minimal() +
     theme(panel.border = element_rect(colour = NA, fill = NA)) +
     geom_tile_interactive(aes(fill = valuefill,
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
@@ -243,7 +383,8 @@ if (regionSel == "IND") {
                               data_id = interaction(variable)), size = 2.5, color = "grey50") +
     #theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
     theme(axis.text.x = element_blank()) +
-    labs(y = NULL, x = NULL, fill = "Effect<br>comp.<br>to<br><b>SSP2<br>2050</b>") +
+    labs(y = NULL, x = NULL, fill = "Relative change") +
+#    labs(y = NULL, x = NULL, fill = "Effect<br>relative<br>to<br><b>Ref<br>SSP2<br>2050</b>") +
          #fill = bquote(atop("Effect\nrelative to\n",bold("SSP2\n2050")))) +
     theme(legend.position = "right") +
     guides(fill = guide_colorbar_interactive(mapping = aes(data_id = interaction(variable)),
@@ -252,14 +393,19 @@ if (regionSel == "IND") {
                                              legend.direction = "horizontal")) +
     theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
           axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank()) +
-    scale_y_discrete(labels = function(x) makeExp(x, "SSP2 2050"))
+          panel.grid.minor = element_blank()) + scale_y_discrete(limits=rev)
+          #scale_y_discrete(labels = function(x) makeExp(x, "SSP2 2050")))
 
-  m <- m + facet_nested(get("period") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
-                        strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90), face=c("bold","plain")), #text_y = elem_list_text(angle = c(90, 0)),
-                                                   by_layer_x = TRUE))
-  m <- m + theme(legend.position = c(-0.12, 1.15), legend.title = element_markdown(hjust = 1, size=9), legend.text.align = 0, legend.background = element_rect(colour = "black", size = 0.5))
-  if (tableType == 3) m <- m + theme(plot.margin = margin(0, 0, 0, 25, "pt"))
+  m <- m + facet_nested(get("scenGroup") ~ get("vargroup") + get("variable"), scales = "free_y", space = "free_y", switch = "y",
+                        strip = strip_nested(size = "variable", text_x = elem_list_text(angle = c(0, 90), face=c("bold","plain")),
+                                             #text_y = elem_list_text(angle = c(90), face=c("bold")),#text_y = elem_list_text(angle = c(90, 0)),
+                                             text_y = textElement,
+                                             background_y = stripBackground,
+                                             by_layer_x = TRUE, by_layer_y = FALSE))
+  m <- m + theme(axis.text.y.left = ggtext::element_markdown(),strip.placement = "outside")
+  m <- m + theme(legend.title = element_markdown(hjust = 0, size=9, angle = 90, face = "bold"), legend.text.align = 0,legend.title.align = 1)#legend.background = element_rect(colour = "black", size = 0.5)
+  m <- m + legendPosition
+  #if (tableType == 3) m <- m + theme(plot.margin = margin(0, 0, 0, 25, "pt"))
   #ggsave(file, m, scale = 1.2, height = 6, width = 7, bg = "white")
 
   #facet_grid(vars(period), vars(vargroup), scales = "free", space = "free")# +
@@ -276,9 +422,10 @@ if (regionSel == "IND") {
       opts_tooltip(css = "background-color:white;padding:5px;
                      border-radius:2px;border: black 1px solid;color:black;")
     ),
-    width_svg = 10,
-    height_svg = 10
+    width_svg = width,
+    height_svg = height
   )
+  #ggsave(file, m, scale = 1, height = height, width = width, bg = "white")
 
   if (is.null(file)) {
     x <- NULL
@@ -287,18 +434,13 @@ if (regionSel == "IND") {
     b$unit <- NULL
     b[, c("variable", "unit") := tstrsplit(get("variable"), " (", fixed = TRUE)]
     b$unit <- substring(b$unit,1,nchar(b$unit)-1)
-    setnames(b, "period", "scentype")
-    #b$period <- NULL
-    b[, c("scenario", "period") := tstrsplit(get("scenario"), " ", fixed = TRUE)]
-    b$period <- as.numeric(b$period)
-    b[is.na(get("period")), "period" := 2050]
-    b <- b[, c("scenset", "scentype", "scenario", "region", "period", "vargroup", "variable", "unit", "value")]
+    b <- b[, c("scenGroup", "scenario", "region", "period", "vargroup", "variable", "unit", "value")]
     b$vargroup <- factor(b$vargroup, levels = vargroupOrder)
     x[["data"]] <- b
     return(x)
   } else {
-    ggsave(file, m, scale = 1.2, height = 6, width = 7, bg = "white")
-    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1.2, height = 6, width = 7, bg = "white")
+    ggsave(file, m, scale = 1, height = height, width = width, bg = "white")
+    ggsave(paste0(substring(file, 1, nchar(file) - 3), "pdf"), m, scale = 1, height = height, width = width, bg = "white")
     saveWidget(p, paste0(substring(file, 1, nchar(file) - 3), "html"))
   }
 }

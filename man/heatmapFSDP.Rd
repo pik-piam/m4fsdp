@@ -4,16 +4,27 @@
 \alias{heatmapFSDP}
 \title{heatmapFSDP}
 \usage{
-heatmapFSDP(repReg, regionSel = "GLO", tableType = 1, file = NULL)
+heatmapFSDP(
+  repReg,
+  regionSel = "GLO",
+  tableType = 1,
+  file = NULL,
+  width = 10.5,
+  height = 9
+)
 }
 \arguments{
 \item{repReg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.}
 
 \item{regionSel}{Region that should be plotted. select "IND" for India plots}
 
-\item{tableType}{options: 1 (FSECa,FSECc), 2 (FSECb,FSECc,FSECd)}
+\item{tableType}{options: 1, 2, 3}
 
 \item{file}{file name (e.g. FSDP_heatmap.pdf or FSDP_heatmap.jpg) or NULL}
+
+\item{width}{width}
+
+\item{height}{height}
 }
 \value{
 if file is NULL a ggplot2 object will be return
