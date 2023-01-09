@@ -214,8 +214,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   #Inclusion: Hourly labor costs in agriculture
   title <- "g) Hourly labor costs in agriculture"
   unit <- "USD/h"
-  caption <- "Cartogram projections with areas proportional to population"
-  b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]), 
+  caption <- "Cartogram projections with areas proportional to working-age population"
+  b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
                     by = .(model, scenario, region, period)]
   all   <- merge(reg2iso, b)
   all   <- merge(agEmpl, all)
