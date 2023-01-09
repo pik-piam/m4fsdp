@@ -99,25 +99,30 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     return(x)
   }
 
-  x <- selBundle(b, "ExternalPressures", singles = c("Population", "EconDevelop", "EnergyTrans", "Bioplastics", "TimberCities"),
-                 bundleOrder = 1, colors = colors)
-
-  x <- rbind(x, selBundle(b, "Sufficiency",
+  x <- selBundle(b, "Sufficiency",
              singles = c("DietEmptyCals", "DietFish", "DietLegumes", "DietMonogastrics",
                        "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight","HalfOverweight", "NoUnderweight","LessFoodWaste"),
-             bundleOrder = 2, colors = colors))
+             bundleOrder = 1, colors = colors)
+
   x <- rbind(x, selBundle(b, "Livelihoods",
                           singles = c("LiberalizedTrade","MinWage"),
-                          bundleOrder = 3, colors = colors))
+                          bundleOrder = 2, colors = colors))
+
   x <- rbind(x, selBundle(b, "NatureSparing",
                           singles = c("REDDaff","LandSparing","PeatlandSparing","WaterSparing","BiodivSparing"),
-                          bundleOrder = 4, colors = colors))
+                          bundleOrder = 3, colors = colors))
+
   x <- rbind(x, selBundle(b, "AgroMngmt",
                           singles = c("NitrogenEff", "CropRotations",  "RiceMit", "LivestockMngmt", "ManureMngmt", "SoilCarbon"),
-                          bundleOrder = 5, colors = colors))
+                          bundleOrder = 4, colors = colors))
+
+  x <- rbind(x, selBundle(b, "Ext. Transf.", singles = c("Population", "EconDevelop", "EnergyTrans", "Bioplastics", "TimberCities"),
+                 bundleOrder = 5, colors = colors))
+
   x <- rbind(x, selBundle(b, "FSDP",
                           singles = c("ExternalPressures", "Sufficiency", "Livelihoods", "NatureSparing", "AgroMngmt"),
                           bundleOrder = 6, colors = colors))
+
   #x <- rbind(x, selBundle(b, "AllNitrogen",
   #                        singles = c("LivestockManureMngmt", "DietMonogastrics",
   #                                  "DietRuminants", "LessFoodWaste", "NitrogenEff"),
@@ -213,7 +218,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
       guides(colour = guide_legend(override.aes = list(shape = c(6, 2, 6, 2))), fill = "none", shape = "none") +
       guides(fill = "none", color = "none", shape = guide_legend(order = 1)) +
       labs(y = NULL, x = NULL) + #scale_x_continuous(limits = c(-1.25, 1.25)) +
-      theme(legend.position = c(-0.15, 1.13), legend.direction = "vertical",legend.background = element_rect(colour = "black", size = 0.5)) + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
+      theme(legend.position = c(-0.15, 1.13), legend.direction = "vertical",legend.background = element_rect(colour = "black", linewidth = 0.5)) + # scale_fill_manual(values=rev(c("grey80","grey20","black","white"))) +
       theme(plot.background = element_rect(fill = "white"), strip.background = element_rect(color = "grey50"),
             axis.line = element_blank(), axis.ticks = element_blank(), panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(), axis.text.x.bottom = element_blank()) + #axis.text.y = element_blank()#theme(plot.margin = margin(1, 35, 1, 1, "pt")) +

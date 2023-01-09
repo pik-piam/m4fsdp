@@ -126,12 +126,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
     #order is maintained
     scenGrouping <-
       c("SSP2 2050::A|<b>Ref SSP2 2050</b>",
-        "ExternalPressures::Ext. Transf.|<b>Ext. Transf.</b>",
-        "Population::Ext. Transf.|Population",
-        "EconDevelop::Ext. Transf.|EconDevelop",
-        "EnergyTrans::Ext. Transf.|EnergyTrans",
-        "Bioplastics::Ext. Transf.|Bioplastics",
-        "TimberCities::Ext. Transf.|TimberCities",
         "Sufficiency::Diet|<b>Sufficiency</b>",
         "DietEmptyCals::Diet|DietEmptyCals",
         "DietFish::Diet|DietFish",
@@ -139,8 +133,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
         "DietMonogastrics::Diet|DietMonogastrics",
         "DietRuminants::Diet|DietRuminants",
         "DietVegFruitsNutsSeeds::Diet|DietVegFruitsNuts",
-        "DietNoOverweight::Diet|NoOverweight",
-        "DietHalfOverweight::Diet|HalfOverweight",
+        "NoOverweight::Diet|NoOverweight",
+        "HalfOverweight::Diet|HalfOverweight",
         "NoUnderweight::Diet|NoUnderweight",
         "LessFoodWaste::Diet|LessFoodWaste",
         "Livelihoods::Incl.|<b>Livelihoods</b>",
@@ -160,6 +154,12 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
         "LivestockMngmt::AgroMngmt|LivestockMngmt",
         "ManureMngmt::AgroMngmt|ManureMngmt",
         "SoilCarbon::AgroMngmt|SoilCarbon",
+        "ExternalPressures::Ext. Transf.|<b>Ext. Transf.</b>",
+        "Population::Ext. Transf.|Population",
+        "EconDevelop::Ext. Transf.|EconDevelop",
+        "EnergyTrans::Ext. Transf.|EnergyTrans",
+        "Bioplastics::Ext. Transf.|Bioplastics",
+        "TimberCities::Ext. Transf.|TimberCities",
         "FSDP::Z|<b>FSDP</b>")
 
     legendPosition <- theme(legend.position = c(-0.08, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
