@@ -340,10 +340,10 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Cost: Bioeconomy
-  title <- "n) DUMMY Bioeconomy"
-  unit  <- "DUMMY"
+  title <- "n) Value of Bioeconomy Demand"
+  unit  <- "US$05/yr"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repReg[, .(value = value[variable == "Costs"] /
+  b     <- repReg[, .(value = value[variable == "Value|Bioeconomy Demand"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all)

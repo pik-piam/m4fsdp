@@ -7,7 +7,7 @@
 SupplPlotsFSDP(
   repReg,
   scenarioType = "manuscript",
-  file = NULL,
+  outFolder,
   calorieSupply = TRUE,
   caseRegion = NULL
 )
@@ -17,7 +17,7 @@ SupplPlotsFSDP(
 
 \item{scenarioType}{options: all, or one of the a-e groupings}
 
-\item{file}{file name to save to}
+\item{outFolder}{output folder to save to}
 
 \item{calorieSupply}{parameter to set if calorie figures needed for calories supply or calorie intake, set FALSE for Intake}
 

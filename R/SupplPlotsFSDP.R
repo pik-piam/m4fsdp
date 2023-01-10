@@ -8,7 +8,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #'
 #' @param repReg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script.
 #' @param scenarioType options: all, or one of the a-e groupings
-#' @param file  file name to save to
+#' @param outFolder output folder to save to
 #' @param calorieSupply parameter to set if calorie figures needed for calories supply or calorie intake, set FALSE for Intake
 #' @param caseRegion set to a particular region (i.e. "IND")
 #'                    if plots are being used for country case studies
@@ -17,11 +17,9 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @import ggplot2 data.table scales magpiesets
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>%
+#' @importFrom patchwork plot_layout
 
-SupplPlotsFSDP <- function(repReg, scenarioType = "manuscript", file = NULL, calorieSupply = TRUE, caseRegion = NULL) {
-
-#repReg <- "C:/Users/IIMA/Dropbox (IFPRI)/PhD/FSEC/Data/v26_FSDP_reg.rds"
- # repReg <- "C:/PIK/SDPplot/v17_FSDP_reg.rds"
+SupplPlotsFSDP <- function(repReg, scenarioType = "manuscript", outFolder, calorieSupply = TRUE, caseRegion = NULL) {
 
 if (scenarioType == "all") {
   rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = NULL)
@@ -43,13 +41,24 @@ if (scenarioType == "all") {
    rep <- rbind(repBau, rep, repFSDP)
 }  else if (scenarioType == "manuscript") {
    rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = NULL)
-   rep <- filter(rep, scenario %in% c("SSP2bau","ExternalPressures",
-                                      "Sufficiency","Livelihoods","NatureSparing", "AgroMngmt", "FSDP"))
+   rep <- filter(rep, scenario %in% c("BAU",
+                                      "Sufficiency","Livelihoods","NatureSparing", "AgroMngmt", "ExternalPressures", "FSDP"))
    } else {
   stop("Scenario type does not exist")
 }
 
-plots <- list()
+if(!file.exists(file.path(outFolder, "supplPlots"))){
+  dir.create(file.path(outFolder, "supplPlots"))
+}
+
+# trytoplot <- function(tryplot) {
+#   if (inherits(try(ggplot_build(tryplot)), "try-error")) {
+#     warning("One of the map plot scripts failed")
+#     return(NULL)
+#   } else {
+#     return(tryplot)
+#   }
+# }
 
 LIR <- c("SSA", "IND")
 HIR <- c("USA", "CAZ", "ANZ", "EUR", "JKO", "NEU")
@@ -75,10 +84,12 @@ mutate(RegionG =  case_when( # add region groupings
 scens <- filter(scens, !is.na(RegionG))
 
 scenarios <- as.character(unique(scens$scenario)) # re-order scenario factors to put BAU first
-scenarios <- c(scenarios[which(scenarios == "SSP2bau")], scenarios[-which(scenarios == "SSP2bau")])
+scenarios <- c(scenarios[which(scenarios == "BAU")], scenarios[-which(scenarios == "BAU")])
 
 scens$scenario <- factor(scens$scenario,
-                        levels = scenarios)
+                        levels = c("BAU",
+                                   "Sufficiency","Livelihoods","NatureSparing",
+                                   "AgroMngmt", "ExternalPressures", "FSDP"))
 
 # extract population to use as a separate column
 pop <- filter(scens, variable == "Population") %>%
@@ -200,9 +211,9 @@ width = filter(food_df[order(food_df$FoodGroup), ],
   scale_fill_manual(values = c("#fcba03", "#a11523", "#66407a", "#40945a"),
                     guide = guide_legend(reverse = TRUE)) +
   if (calorieSupply) {
-    labs(title = "Calorie Supply")
+    labs(title = "a) Calorie Supply")
   } else {
-    labs(title = "Calorie Intake")
+    labs(title = "a) Calorie Intake")
   }
 
 }
@@ -263,12 +274,26 @@ plotAgDem <- ggplot() +
                           RegionG == "Low-Income Regions")$pop_barwidth) +
   themeSupplFood(base_size = 24) +
   theme(strip.text.x = element_text(size = 20))+
-  labs(title = "Crop-Based Product Demand") +
+  labs(title = "b) Crop-Based Product Demand") +
   facet_grid(cols = vars(period), scales = "free_x", space = "free_x",   switch = "x") +
   ylab("Mt dm") +
   scale_fill_manual(values = c("#FCE900", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"),
                     guide = guide_legend(reverse = TRUE, title = "Product"))
 }
+
+calAg <- plotCalSupply + plotAgDem +
+         plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "caloriesAgDemand.png"),
+                                          calAg, width = 6, height = 8, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "caloriesAgDemand.pdf"),
+         calAg, width = 6, height = 8, scale = 1.5, bg = "white")
+}
+
+
 
 ###### emissions
 
@@ -310,8 +335,9 @@ plotEmissGlo <- ggplot(emiss_glo, aes(x = period)) +
   stat_summary(fun = "sum", colour = "black", size = 1,
                geom = "line", mapping = aes(group = scenario, y = value)) +
   theme(legend.position = "bottom", axis.text = element_text(size = 16)) +
-  guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = TRUE)) +
-  xlab(NULL)
+  guides(fill = guide_legend(ncol = 3, title.position = "left", byrow = TRUE, reverse = TRUE)) +
+  xlab(NULL) +
+  labs(title = "a) Global GHG Emissions")
 
 
 # emis reg CUMULATIVE
@@ -333,7 +359,7 @@ emissReg$positive <- ifelse(emissReg$value >= 0, emissReg$value, 0)
 emissReg$negative <- ifelse(emissReg$value < 0, emissReg$value, -1e-36)
 
 # emiss_reg <- emiss_reg[-which(emiss_reg$period == 2020 & emiss_reg$scenario!= "BAU"),] #remove nonBAU 2010 values
-unit <- expression(bold("Gt CO"[2] ~ "since 2020")) # "Gt CO2eq since 2020"
+unit <- expression(bold("Gt CO"[2])) # "Gt CO2eq since 2020"
 
 if (!is.null(caseRegion)) {
   emissReg <- emissReg %>% filter(RegionG == selRegion)
@@ -352,7 +378,22 @@ plotEmissReg <- ggplot(emissReg, aes(y = scenario)) +
   theme(strip.text.y = element_text(size = 14), axis.text.y= element_text(size = 12)) +
   guides(fill = guide_legend("AFOLU emission type", ncol = 4, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab(unit) + scale_x_continuous(guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = c(0.05, 0.1)),
-                                  breaks = pretty_breaks()) # breaks= function(x) seq(round(min(x)/0.5)*0.5, round(max(x)/0.5)*0.5, by = 1)#+scale_x_continuous(breaks = c(-2,0,2,4))# + labs(caption = paste(Sys.Date()))
+                                  breaks = pretty_breaks()) +
+  labs(title = "b) Cumulative GHG Emissions 2050")
+
+plotEmiss <- plotEmissGlo + plotEmissReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotEmiss.png"),
+         plotEmiss, width = 8, height = 12, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotEmiss.pdf"),
+         plotEmiss, width = 8, height = 12, scale = 1.5, bg = "white")
+}
+
+
 
 ########## Land Use
 landVar <- c("Resources|Land Cover|+|Cropland",
@@ -396,7 +437,10 @@ plotLandGlo <- ggplot(landGlo, aes(x = period)) +
   geom_area(aes(y = negative, fill = variable), position = "stack") +
   scale_fill_manual("Land type", values = rev(c( "#FCED0F", "#E6AB02","darkgreen", "#99cc00", "lightgreen",
                                                "brown3", "#785318", "#9e9ac8", "#ae017e","#08589e"))) +
-  theme(legend.position = "bottom", legend.text = element_text(size=16)) + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
+  theme(legend.position = "bottom", legend.text = element_text(size=16)) +
+  guides(fill = guide_legend(ncol = 3, title.position = "left", byrow = TRUE, reverse = TRUE)) +
+  xlab(NULL) +
+  labs(title = "a) Global Land-Use Change")
 
 
 landReg <- filter(land_df, region != "GLO", period == 2050) %>%
@@ -418,11 +462,25 @@ plotLandReg <- ggplot(landReg, aes(y = scenario)) +
    theme(legend.position = "bottom", legend.text = element_text(size=16),
         strip.text.y = element_text(size = 14), axis.text.y= element_text(size = 18),
         axis.text.x = element_text(size = 12)) +
-  guides(fill = guide_legend("Land type", ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) +
+  guides(fill = guide_legend("Land type", ncol = 3, title.position = "left", byrow = TRUE, reverse = TRUE)) +
   xlab("Change in Mha compared to 2020") +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
-  theme(panel.spacing=unit(100,"lines"))
+  theme(panel.spacing=unit(100,"lines")) +
+  labs(title = "b) Regional Land-Use Change 2050")
 # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+
+
+plotLand <- plotLandGlo + plotLandReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotLand.png"),
+         plotLand, width = 9, height = 13.5, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotLand.pdf"),
+         plotLand, width = 9, height = 13.5, scale = 1.5, bg = "white")
+}
 
 
 ### Crop Area ##########
@@ -483,10 +541,12 @@ plotCropGlo <- ggplot(cropGlo, aes(x = period)) +
                geom = "line", mapping = aes(group = scenario, y = value)) +
   scale_fill_manual("Cropland type", values = rev(c(
     "#E6AB02", "lightblue", "#9e9ac8", "#ACC3A6", "#4b6fb8", "darkgreen", "#fcba03"))) +
-  theme(legend.position = "bottom", legend.text = element_text(size=16),
-      strip.text.y = element_text(size = 14), axis.text.y= element_text(size = 16)) +
-  guides(fill = guide_legend(ncol = 3, title.position = "left", byrow = TRUE, reverse = FALSE)) +
-  xlab(NULL)
+               theme(legend.position = "bottom", legend.text = element_text(size=14),
+                     strip.text.y = element_text(size = 16), axis.text.y= element_text(size = 16),
+                     axis.text.x= element_text(size = 16)) +
+  guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+  xlab(NULL) +
+  labs(title = "a) Global Cropland Distribution")
 
 cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
   group_by(model, scenario, CropGroup, period, RegionG) %>%
@@ -510,9 +570,22 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
   theme(legend.position = "bottom", legend.text = element_text(size=14),
         strip.text.y = element_text(size = 16), axis.text.y= element_text(size = 16),
         axis.text.x= element_text(size = 16)) +
-  guides(fill = guide_legend("Land type", ncol = 3, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+  guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab("Change in Mha compared to 2020") +
-  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
+   labs(title = "b) Regional Cropland Distribution 2050")
+
+ plotCrop <- plotCropGlo + plotCropReg +
+   plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+ if(!is.null(outFolder)){
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotCrop.png"),
+          plotCrop, width = 8, height = 12, scale = 1.5, bg = "white")
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotCrop.pdf"),
+          plotCrop, width = 8, height = 12, scale = 1.5, bg = "white")
+ }
 
 
 ####### Nitrogen##############
@@ -548,7 +621,10 @@ plotNitrGlo <- ggplot(nitrGlo, aes(x = period)) +
   geom_area(aes(y = negative, fill = variable), position = "stack") +
   scale_fill_manual("Land type", values = rev(c(
     "#E6AB02", "lightblue", "#9e9ac8", "#ACC3A6", "purple", "darkgreen", "yellow3"))) +
-  theme(legend.position = "bottom") + guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) +
+  xlab(NULL) +
+  labs(title = "a) Global Nitrogen Surplus")
 
 nitrReg <- filter(nitr_df, region != "GLO", period %in% c(2020, 2050)) %>%
   group_by(model, scenario, variable, period, RegionG) %>%
@@ -562,19 +638,32 @@ if (!is.null(caseRegion)) {
   nitrReg <- nitrReg %>% filter(RegionG == selRegion)
 }
 
-plotnitrReg <- ggplot(nitrReg, aes(y = scenario)) +
+plotNitrReg <- ggplot(nitrReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 18, rotate_x = FALSE) + ylab(NULL) +
   geom_bar(aes(x = positive, fill = variable), position = "stack", stat = "identity", width = 0.75) +
   geom_bar(aes(x = negative, fill = variable, ), position = "stack", stat = "identity", width = 0.75) +
   geom_vline(xintercept = 0, linetype = "dotted") +
-  scale_fill_manual("nitrland type", values = rev(c(
+  scale_fill_manual("Land type", values = rev(c(
     "#E6AB02", "lightblue", "#9e9ac8", "#ACC3A6", "purple", "darkgreen", "yellow3"))) +
   theme(legend.position = "bottom", strip.text.y = element_text(angle = 0, size = 14),
          axis.text= element_text(size = 16)) +
  guides(fill = guide_legend("Land type", ncol = 3, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab("Nitrogen Surplus (Mt Nr/yr)") +
-  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
+  labs(title = "b) Regional Nitrogen Surplus 2050")# breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+
+plotNitr <- plotNitrGlo + plotNitrReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotNitr.png"),
+         plotNitr, width = 8, height = 12, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotNitr.pdf"),
+         plotNitr, width = 8, height = 12, scale = 1.5, bg = "white")
+}
 
 
 ############ Water #######
@@ -589,11 +678,11 @@ water_df <- filter(scens,
   droplevels() %>%
   group_by(model, scenario, region, period) %>%
   mutate(variable = factor(variable, levels = rev(waterVar),
-                           labels = names(rev(waterVar))),
-         scenario = factor(scenario, levels = c(
-                                     "SSP2bau", "AgroMngmt", "NatureSparing",
-                                     "ExternalPressures", "Livelihoods", "Sufficiency",
-                                     "FSDP"))) %>%
+                           labels = names(rev(waterVar)))) %>%
+         # scenario = factor(scenario, levels = c(
+         #                             "BAU", "AgroMngmt", "NatureSparing",
+         #                             "ExternalPressures", "Livelihoods", "Sufficiency",
+         #                             "FSDP"))) %>%
   group_by(model, scenario, region, variable) %>%
   mutate(value = cumsum(c(0, diff(value)))) # get diff wrt to 2020, based on above grouping
 
@@ -607,9 +696,10 @@ plotWaterGlo <- ggplot(waterGlo, aes(x = period)) +
   themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
   ylab("Change in Water withdrawals \n from 2020 value, in km3") +
   geom_line(aes(y = value, color = scenario), position = "stack", size = 1.3) +
-  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#008607", "#6A0213", "#9400E6", "#00DCB5", "#008169")) +
+  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#EB4D2A", "#6A0213", "#9400E6", "#00DCB5", "#008169")) +
   theme(legend.position = "bottom") +
-  guides(fill = guide_legend(ncol = 3, title.position = "left", byrow = FALSE)) + xlab(NULL)
+  guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE)) + xlab(NULL) +
+  labs(title = "a) Global Water Withdrawals")
 
 
 waterReg <- filter(water_df, region != "GLO", period == 2050) %>%
@@ -629,12 +719,25 @@ plotWaterReg <- ggplot(waterReg, aes(y = scenario)) +
   geom_vline(xintercept = 0, linetype = "dotted") +
   stat_summary(fun = "sum", colour = "black", size = 1, geom = "point", mapping = aes(group = scenario, x = value)) +
   scale_fill_manual(" ", values = rev(c("purple", "#2080EC", "lightblue"))) +
-  theme(legend.position = "bottom", strip.text = element_text(angle = 0, size = 12),
-        axis.text= element_text(size = 14)) +  guides(fill = element_blank()) +
+  theme(legend.position = "bottom", strip.text.y = element_text(angle = 0, size = 14),
+        axis.text= element_text(size = 16)) +
+  guides(fill = element_blank()) +
   # guide_legend("Cropland type",ncol=5,title.position = "left", byrow = TRUE,reverse=FALSE)) +
   xlab("Change in Water withdrawals from 2020 value, in km3") +
-  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
+ labs(title = "b) Regional Water Withdrawals 2050")# breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
+plotWater <- plotWaterGlo + plotWaterReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotWater.png"),
+         plotWater, width = 9, height = 13.5, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotWater.pdf"),
+         plotWater, width = 9, height = 13.5, scale = 1.5, bg = "white")
+}
 
 ### Health
 
@@ -684,10 +787,21 @@ plotHealthReg <- ggplot(healthReg, aes(y = scenario)) +
                     values = rev(c("#2080EC", "lightblue", "blue", "purple"))) +
   theme(legend.position = "bottom", strip.text.y = element_text(angle = 0, size = 14),
         axis.text = element_text(size = 14)) +
-  guides(fill = guide_legend("Indicator", ncol = 3, title.position = "left", byrow = TRUE, reverse = TRUE)) +
+  guides(fill = guide_legend("Indicator", ncol = 4, title.position = "left", byrow = TRUE, reverse = TRUE)) +
   xlab("Million People") +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
+plotHealth <- plotHealthGlo + plotHealthReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotHealth.png"),
+         plotHealth, width = 9, height = 13.5, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotHealth.pdf"),
+         plotHealth, width = 9, height = 13.5, scale = 1.5, bg = "white")
+}
 
 ######## EMPLOYMENT ##########
 
@@ -705,7 +819,7 @@ emp_df <- filter(scens,
     variable == "Agricultural employment|+|Livestock products" ~ "Livestock products",
     variable == "Agricultural employment|+|MACCS" ~ "Mitigation measures"),
     Products = factor(Products,
-                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>% 
+                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>%
   group_by(model, scenario, region, RegionG, period, Products) %>%
   filter(region == "GLO")
 
@@ -734,7 +848,7 @@ emp_df <- filter(scens,
     variable == "Agricultural employment|+|Livestock products" ~ "Livestock products",
     variable == "Agricultural employment|+|MACCS" ~ "Mitigation measures"),
     Products = factor(Products,
-                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>% 
+                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>%
   group_by(model, scenario, region, RegionG, period, Products) %>%
   summarise(value = sum(value)) %>%
   group_by(model, scenario, region, Products) %>%
@@ -776,6 +890,19 @@ plotEmpReg <- ggplot(empReg, aes(y = scenario)) +
 plotEmpReg <- plotEmpReg + geom_blank(data = facet_bounds, aes(x = value, y = scenario))
 
 
+plotEmp <- plotEmpGlo + plotEmpReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotEmp.png"),
+         plotEmp, width = 9, height = 13.5, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotEmp.pdf"),
+         plotEmp, width = 9, height = 13.5, scale = 1.5, bg = "white")
+}
+
+
 ##### Hourly Labour Costs ####
 
 laborVar <-  as.character(scens$variable[grep("Hourly labor costs$", scens$variable)] %>% unique())
@@ -801,10 +928,10 @@ labor_df <- filter(scens,
 labReg <- filter(labor_df, region != "GLO") %>%
   group_by(model, scenario, variable, period, RegionG) %>%
   summarise(value = weighted.mean(value, w = hours)) %>%
-  mutate(scenario = factor(scenario, levels = c(
-    "SSP2bau", "AgroMngmt", "NatureSparing",
-    "ExternalPressures", "Livelihoods", "Sufficiency",
-    "FSDP"))) %>%
+  #mutate(scenario = factor(scenario, levels = c(
+  #  "BAU", "AgroMngmt", "NatureSparing",
+  #  "ExternalPressures", "Livelihoods", "Sufficiency",
+  #  "FSDP"))) %>%
   group_by(model, scenario, RegionG, variable)
 
 if (!is.null(caseRegion)) {
@@ -819,7 +946,18 @@ plotLabReg <- ggplot(labReg,
   geom_line(aes(y = jitter(value), color = scenario),  lwd = 1.1) +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL) +
-  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#008607", "#6A0213", "#9400E6", "#00DCB5", "#008169"))
+  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#008607", "#6A0213", "#9400E6", "#00DCB5", "#008169")) +
+  labs(title = "Regional Labour Costs")
+
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotLabReg.png"),
+         plotLabReg, width = 9, height = 6, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotLabReg.pdf"),
+         plotLabReg, width = 9, height = 6, scale = 1.5, bg = "white")
+}
 
 
 ######## INEQUALITY INDICATORS ##########
@@ -838,12 +976,12 @@ ineq_df <- filter(scens,
                    variable %in% ineqVar) %>%
   droplevels() %>%
   group_by(model, scenario, region, period) %>%
-  mutate(variable = factor(variable, levels = rev(ineqVar),
-                           labels = names(rev(ineqVar))),
-         scenario = factor(scenario, levels = c(
-           "SSP2bau", "AgroMngmt", "NatureSparing",
-           "ExternalPressures", "Livelihoods", "Sufficiency",
-           "FSDP"))) %>%
+  # mutate(variable = factor(variable, levels = rev(ineqVar),
+  #                          labels = names(rev(ineqVar))),
+  #        scenario = factor(scenario, levels = c(
+  #          "SSP2bau", "AgroMngmt", "NatureSparing",
+  #          "ExternalPressures", "Livelihoods", "Sufficiency",
+  #          "FSDP"))) %>%
   group_by(model, scenario, region, variable)
 
 ineqGlo <- filter(ineq_df, region == "GLO")
@@ -855,7 +993,8 @@ plotGiniGlo <- ggplot(filter(ineqGlo, variable == "Income|Gini Coefficient"),
   geom_line(aes(y = value, color = scenario), lwd = 1.1) +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL) +
-  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#008607", "#6A0213", "#9400E6", "#00DCB5", "#008169"))
+  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#EB4D2A", "#6A0213", "#9400E6", "#00DCB5", "#008169")) +
+  labs(title = "Global Gini Coefficient")
 
 
  # scale_colour_manual(values = c("#1f78b4", "#33a02c", "#b2df8a", "#d95f02", "#7570b3", "#e7298a"))
@@ -880,25 +1019,40 @@ if (!is.null(caseRegion)) {
 plotGiniReg <- ggplot(ineqGini, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 18, rotate_x = FALSE) + ylab(NULL) +
-  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#A455CF") +
+  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#1E7CAF") +
   theme(legend.position = "bottom", legend.text = element_text(size=16),
         strip.text = element_text(size = 14), axis.text= element_text(size = 16))+
   guides(fill = guide_legend("Indicator", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab("Gini Coefficient") +
-  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
+  labs(title = "Regional Gini Coefficient 2050") # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+
+
+plotGini <- plotGiniGlo + plotGiniReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotGini.png"),
+         plotGini, width = 9, height = 13.5, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotGini.pdf"),
+         plotGini, width = 9, height = 13.5, scale = 1.5, bg = "white")
+}
 
 
 plotBelowPovGlo <- ggplot(
                   filter(ineqGlo, variable == "Income|Number of People Below 3.20$/Day"),
                    aes(x = period)) +
   themeSupplReg(base_size = 16, panel.spacing = 3, rotate_x = 90) +
-  ylab("Million People below 3.20$/Day Poverty Line") +
+  ylab("Million People") +
   geom_line(aes(y = value, color = scenario), lwd = 1.1) +
   theme(legend.position = "bottom", legend.text = element_text(size=16),
         strip.text = element_text(size = 14), axis.text= element_text(size = 12)) +
   guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) +
   xlab(NULL) +
-  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#008607", "#6A0213", "#9400E6", "#00DCB5", "#008169"))
+  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#EB4D2A", "#6A0213", "#9400E6", "#00DCB5", "#008169")) +
+  labs(title = "Number of People Below 3.20$/Day Poverty Line")
 
 
 plotBelowPovReg <- ggplot(filter(ineqReg, variable == "Income|Number of People Below 3.20$/Day",
@@ -906,52 +1060,25 @@ plotBelowPovReg <- ggplot(filter(ineqReg, variable == "Income|Number of People B
                           aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 22, rotate_x = FALSE) + ylab(NULL) +
-  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#A455CF") +
+  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#1E7CAF") +
   theme(legend.position = "bottom", legend.text = element_text(size=16),
         strip.text = element_text(size = 14), axis.text= element_text(size = 14))  +
   guides(fill = guide_legend("Indicator", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
-  xlab("Million People below 3.20$/Day Poverty Line") +
+  xlab("Million People") +
+  labs(title = "Number of People Below 3.20$/Day Poverty Line")+
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 
-trytoplot <- function(tryplot) {
-  if (inherits(try(ggplot_build(tryplot)), "try-error")) {
-    warning("One of the map plot scripts failed")
-    return(NULL)
-  } else {
-    return(tryplot)
-  }
+plotBelowPov <- plotBelowPovGlo + plotBelowPovReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+
+if(!is.null(outFolder)){
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotBelowPov.png"),
+         plotBelowPov, width = 9, height = 13.5, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotBelowPov.pdf"),
+         plotBelowPov, width = 9, height = 13.5, scale = 1.5, bg = "white")
 }
-combined <- (trytoplot(plotCalSupply)
-             + trytoplot(plotAgDem)
-             + trytoplot(plotEmissGlo)
-             + trytoplot(plotEmissReg)
-             + trytoplot(plotLandGlo)
-             + trytoplot(plotLandReg)
-             + trytoplot(plotCropGlo)
-             + trytoplot(plotCropReg)
-             + trytoplot(plotNitrGlo)
-             + trytoplot(plotnitrReg)
-             + trytoplot(plotWaterGlo)
-             + trytoplot(plotWaterReg)
-             + trytoplot(plotHealthGlo)
-             + trytoplot(plotHealthReg)
-             + trytoplot(plotEmpGlo)
-             + trytoplot(plotEmpReg)
-             + trytoplot(plotLabReg)
-             + trytoplot(plotGiniGlo)
-             + trytoplot(plotGiniReg)
-             + trytoplot(plotBelowPovGlo)
-             + trytoplot(plotBelowPovReg)
-    )
-
-combined <- combined + plot_layout(guides = "keep", ncol = 2, byrow = FALSE)
-
-if (is.null(file)) {
-  return(combined)
-} else {
-  ggsave(filename = file, combined, width = 12, height = 7, scale = 1.5, bg = "white")
-}
-
 
 }
