@@ -223,7 +223,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
         "SSP5bau::SSPs|SSP5bau",
         "FSDP::Z|<b>FSDP</b>")
 
-    legendPosition <- theme(legend.position = c(-0.06, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
+    legendPosition <- theme(legend.position = c(-0.05, 1.35), plot.margin = margin(5, 5, 5, 5, "pt"))
 
   }
 
@@ -379,7 +379,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
                                      na.value = "grey95", high = "#fc8d59", breaks = c(-1, -0.5, 0, 0.5, 1),
                                      labels = c("best", "better", "none", "worse", "worst")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
-                              data_id = interaction(variable)), size = 2.5, color = "grey50") +
+                              data_id = interaction(variable)), size = 3, color = "grey50") +
     #theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
     theme(axis.text.x = element_blank()) +
     labs(y = NULL, x = NULL, fill = "Relative change") +

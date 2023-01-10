@@ -8,7 +8,7 @@
 #' @return named vector
 #' @author Florian Humpenoeder
 
-getVariables <- function(reportVariables) {
+getVariables <- function(reportVariables = NULL) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
@@ -47,27 +47,28 @@ getVariables <- function(reportVariables) {
                   "Economy|14|Bioeconomy Supply|billion US$05/yr|increase|0|0.001",
                   "Economy|15|Costs|billion US$05/yr|decrease|0|0.001")
 
-  missingVars <- NULL
-  keepVars <- NULL
+  if (is.null(reportVariables)) {
+    return(var)
+  } else {
+    missingVars <- NULL
+    keepVars <- NULL
 
-  for (i in unique(names(var))) {
-    tmp <- var[names(var) == i]
-    tmp2 <- tmp[tmp==intersect(tmp,reportVariables)]
-    if(length(tmp2) == 0) {
-      missingVars <- c(tmp,missingVars)
-    } else if (length(tmp2) == 1) {
-      keepVars <- c(tmp2,keepVars)
-      colnames(keepVars)
-    } else if (length(tmp2) > 1) {
-      keepVars <- c(tmp2[tmp2 == tmp[1]],keepVars)
+    for (i in unique(names(var))) {
+      tmp <- var[names(var) == i]
+      tmp2 <- tmp[tmp==intersect(tmp,reportVariables)]
+      if(length(tmp2) == 0) {
+        missingVars <- c(tmp,missingVars)
+      } else if (length(tmp2) == 1) {
+        keepVars <- c(tmp2,keepVars)
+        colnames(keepVars)
+      } else if (length(tmp2) > 1) {
+        keepVars <- c(tmp2[tmp2 == tmp[1]],keepVars)
+      }
     }
+    if (length(missingVars) > 0) {
+      warning(paste(c("The following indicators are missing: \n", missingVars), collapse = "\n"))
+    }
+    return(keepVars)
   }
-
-  if (length(missingVars) > 0) {
-    warning(paste(c("The following indicators are missing: \n", missingVars), collapse = "\n"))
-  }
-
-  return(keepVars)
-
 }
 

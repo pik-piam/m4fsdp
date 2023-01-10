@@ -4,7 +4,7 @@
 \alias{getVariables}
 \title{getVariables}
 \usage{
-getVariables(reportVariables)
+getVariables(reportVariables = NULL)
 }
 \arguments{
 \item{reportVariables}{Variables in report file}
