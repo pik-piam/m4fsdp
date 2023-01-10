@@ -112,10 +112,10 @@ HeatMap 2a
 Column {data-width=700}
 -----------------------------------------------------------------------
 
-### HeatMap TableType = 2a
+### HeatMap TableType = 2
 
 ```{r echo=FALSE, fig.width = 11, fig.height = 13}
-x <- heatmapFSDP(repReg = repReg, regionSel = regionSel, tableType = "2a")
+x <- heatmapFSDP(repReg = repReg, regionSel = regionSel, tableType = 2)
 x[["plot"]]
 ```
 
