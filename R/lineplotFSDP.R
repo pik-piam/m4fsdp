@@ -220,6 +220,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       #                plot.caption.position =  "plot") #NEW parameter
       p <- p + theme(plot.tag = element_text(size = 13, margin = margin(b = -8.5, unit = "pt")))
       if (showlegend) {
+        p <- p + theme(legend.key.width = unit(1.9,"cm"))
         p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype,size = 1), reverse = TRUE),
                         shape = guide_legend(order = 2, title.position = "top",ncol = 1, title = "Scenario"),
                         linetype = "none")
