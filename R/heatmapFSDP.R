@@ -26,21 +26,23 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   #### read in data files
   rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc","FSECd", "FSECe"), subset = FALSE, varlist = "magpie_vars.csv")
 
-  var <- getVariables()
+  #needed for some nitrogen variables
+  levels(rep$region)[levels(rep$region) == "World"] <- "GLO"
 
-  if (regionSel == "GLO") {
-  rep[region == "World", region := "GLO"]
-  }
+  #get variable list
+  var <- getVariables(levels(rep$variable))
+
+  #sub-setting variables, regions and years
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]
   b <- droplevels(b)
 
-  if (tableType %in% c(2,"2a",3)) {
+  if (tableType %in% c(2,3)) {
     bb <- rep[variable %in% var & region == regionSel & period == 2020 & scenario == "BAU", ]
     bb <- droplevels(bb)
     b <- rbind(bb, b)
   }
 
-  var <- var[var %in% intersect(var,levels(b$variable))]
+  #rename variables
   b$variable <- factor(b$variable, levels = var, labels = names(var))
   b[, c("vargroup", "order", "variableName", "unit", "improvment", "rounding","factor") := tstrsplit(get("variable"), "|", fixed = TRUE)]
   b$order <- as.numeric(b$order)
@@ -56,8 +58,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
 
   b[,"value" := get("value") * get("factor")]
 
-  b[get("improvment") == "increase", "value" := -get("value")]
   b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
+  b[get("improvment") == "increase", "valuefill" := -get("valuefill")]
 
 
   # greying out non-nutrition scenarios
@@ -143,7 +145,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
         "MinWage::Livelihoods|CapitalSubst",
         "NatureSparing::NatureSparing|<b>NatureSparing</b>",
         "REDDaff::NatureSparing|REDDaff",
-        "REDD::NatureSparing|REDD",
+#        "REDD::NatureSparing|REDD",
         "LandSparing::NatureSparing|LandSparing",
         "PeatlandSparing::NatureSparing|PeatlandSparing",
         "WaterSparing::NatureSparing|WaterSparing",

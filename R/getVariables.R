@@ -3,11 +3,12 @@
 #'
 #' @export
 #'
+#' @param reportVariables Variables in report file
 #' @details includes information about unit, variable group, rounding etc
 #' @return named vector
 #' @author Florian Humpenoeder
 
-getVariables <- function() {
+getVariables <- function(reportVariables) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
@@ -20,10 +21,10 @@ getVariables <- function() {
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
            "Income|Number of People Below 3.20$/Day",
-           "Agricultural employment|Crop and livestock products",
            "Labor|Employment|Agricultural employment",
-           "Hourly labor costs relative to 2000",
+           "Agricultural employment|Crop and livestock products",
            "Labor|Wages|Hourly labor costs relative to 2000",
+           "Hourly labor costs relative to 2000",
            "Value|Bioeconomy Demand",
            "Costs Without Incentives")
 
@@ -46,5 +47,27 @@ getVariables <- function() {
                   "Economy|14|Bioeconomy Supply|billion US$05/yr|increase|0|0.001",
                   "Economy|15|Costs|billion US$05/yr|decrease|0|0.001")
 
-  return(var)
+  missingVars <- NULL
+  keepVars <- NULL
+
+  for (i in unique(names(var))) {
+    tmp <- var[names(var) == i]
+    tmp2 <- tmp[tmp==intersect(tmp,reportVariables)]
+    if(length(tmp2) == 0) {
+      missingVars <- c(tmp,missingVars)
+    } else if (length(tmp2) == 1) {
+      keepVars <- c(tmp2,keepVars)
+      colnames(keepVars)
+    } else if (length(tmp2) > 1) {
+      keepVars <- c(tmp2[tmp2 == tmp[1]],keepVars)
+    }
+  }
+
+  if (length(missingVars) > 0) {
+    warning(paste(c("The following indicators are missing: \n", missingVars), collapse = "\n"))
+  }
+
+  return(keepVars)
+
 }
+

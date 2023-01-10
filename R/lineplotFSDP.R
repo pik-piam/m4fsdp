@@ -38,20 +38,11 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   val[region == "World", region := "GLO"]
   val <- droplevels(val)
 
-  var <- getVariables()
+  #needed for some nitrogen variables
+  levels(rep$region)[levels(rep$region) == "World"] <- "GLO"
 
-  missingVars <- var[!var%in%rep$variable]
-  # some variables have an old and new name, only one of them has to be inculded
-  hourlyLaborCostVars <- c("Hourly labor costs relative to 2000", "Labor|Wages|Hourly labor costs relative to 2000")
-  employmentVars <- c("Agricultural employment|Crop and livestock products", "Labor|Employment|Agricultural employment")
-  if (sum(hourlyLaborCostVars %in% missingVars) == 1) missingVars <- setdiff(missingVars, hourlyLaborCostVars)
-  if (sum(employmentVars %in% missingVars) == 1) missingVars <- setdiff(missingVars, employmentVars)
-
-  if (length(missingVars) > 0) {
-    warning(paste(c("The following indicators are missing: \n", missingVars), collapse = "\n"))
-  }
-
-  var <- var[var %in% rep$variable]
+  #get variable list
+  var <- getVariables(levels(rep$variable))
 
   renameRep <- function(rep,var,regionSel) {
     levels(rep$region)[levels(rep$region) == "World"] <- "GLO"
@@ -214,10 +205,10 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
 
       p <- ggplot(b, aes(x = get("period"), y = get("value")))
       p <- p + labs(title = varName, tag = tag) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 0)
-      p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset")), size = 1.4) #+ facet_wrap("region_class")
+      p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050), expand = c(0,0)) +
         scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA)) + theme(plot.margin = margin(0, 20, 20, 0, "pt"))
-      if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")), size = 1.4)
+      if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")), size = 1)
       #p <- p + geom_line(data = b[get("scenset") == "Bundles",],aes(color = get("scenario")),linetype="dotted") #+ facet_wrap("region_class")
       #p <- p + geom_line(data = b[get("scenset") == "SSP2bau / FSDP",],aes(color = get("scenario")),linetype="solid") #+ facet_wrap("region_class")
       p <- p + scale_shape_discrete("Historical data", solid = 0)
@@ -229,7 +220,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       #                plot.caption.position =  "plot") #NEW parameter
       p <- p + theme(plot.tag = element_text(size = 13, margin = margin(b = -8.5, unit = "pt")))
       if (showlegend) {
-        p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype), reverse = TRUE),
+        p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype,size = 1), reverse = TRUE),
                         shape = guide_legend(order = 2, title.position = "top",ncol = 1, title = "Scenario"),
                         linetype = "none")
       } else {

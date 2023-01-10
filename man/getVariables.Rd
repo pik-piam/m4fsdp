@@ -4,7 +4,10 @@
 \alias{getVariables}
 \title{getVariables}
 \usage{
-getVariables()
+getVariables(reportVariables)
+}
+\arguments{
+\item{reportVariables}{Variables in report file}
 }
 \value{
 named vector

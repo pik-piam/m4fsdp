@@ -15,21 +15,22 @@
 assignScenarioColors <- function(scenario_names) {
   # Create a mapping from potential names to colors
   name_to_color <- c(
-    "AgroMngmt" = "#FFDC3D",
-    "emptycolorblind1" = "#FF71FD" ,
-    "SSP2bau" = "#009FFA",
-    "NatureSparing" = "#008607",
-    "SSP3" = "#F60239",
+    "AgroMngmt" = "#009FFA",##FFDC3D
+    "SSP2bau" = "#F60239",
+    "NatureSparing" = "#00E307",
+#    "SSP3" = "#F60239",
     "AllInclusion" = "#9400E6",
     "emptycolorblind2" = "#68023F",
     "FSDP" = "#008169",
     "SSP5bau" = "#EF0096",
+    "Diet" = "#00DCB5",
     "Sufficiency" = "#00DCB5",
+    "Livelihoods" = "#FF71FD",
     "emptycolorblind3" = "#FFCFE2",
     "emptycolorblind4" = "#003C86",
     "emptycolorblind5" = "#7CFFFA",
-    "ExternalPressures"="#6A0213",
-    "SSP1bau"="#00E307")
+    "ExternalPressures"="#6A0213"
+  )
   # Initialize an empty vector to store the colors for the scenario names
   scenario_colors <- character(length(scenario_names))
   # Iterate over the scenario names
