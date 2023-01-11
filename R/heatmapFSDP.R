@@ -142,7 +142,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
         "Livelihoods::Livelihoods|<b>Livelihoods</b>",
         "LiberalizedTrade::Livelihoods|LibTrade",
         "MinWage::Livelihoods|MinWage",
-        "MinWage::Livelihoods|CapitalSubst",
+        "CapitalSubst::Livelihoods|CapitalSubst",
         "NatureSparing::NatureSparing|<b>NatureSparing</b>",
         "REDDaff::NatureSparing|REDDaff",
 #        "REDD::NatureSparing|REDD",
