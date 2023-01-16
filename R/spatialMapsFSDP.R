@@ -136,18 +136,18 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
-  # DUMMY Years of lost life
-  title <- "c) DUMMY Years of lost life"
-  unit <- "DUMMY"
+  # Years of lost life
+  title <- "c) Years of life lost"
+  unit <- "Years per person"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
+  b     <- repIso[, .(value = (value[variable == "Health|Years of life lost|Risk|Diet and anthropometrics"]) /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all     <- merge(pop, b)
   plotYOLL <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4), oob = scales::squish) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(-0.00128821, 0.1518272), oob = scales::squish) +
     myTheme + labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
@@ -301,42 +301,41 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
-  # Environment: Greenhouse Gases
-  title <- "l) DUMMY Greenhouse Gases"
-  unit  <- "DUMMY"
-  caption <- "Cartogram projections with areas proportional to population"
-  b     <- repReg[, .(value = value[variable == "Costs"] /
-                        value[variable == "Population"]), by = .(model, scenario, region, period)]
+  # Environment: Greenhouse Gases --- IS THIS INCORRECT?!
+  title <- "l) Greenhouse Gas Emissions"
+  unit  <- "Gt CO2eq"
+  caption <- "Projection: Mollweide"
+  b   <- droplevels(repReg[variable == "Emissions|GWP100AR6|Land|Cumulative", ]) # Will become ISO level, eventually
   all <- merge(reg2iso, b)
-  all <- merge(pop, all)
+  all <- merge(countries2, all)
 
-  plotGHG <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
-    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) + # coord_sf(xlim = xlimMoll) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
-                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Blues")[-1], na.value = "grey90", limits = c(0, 2000), oob = scales::squish) +
-    labs(title = title, caption = caption) + myTheme +
+  plotGHG <- ggplot(all) +
+    facet_wrap(vars(scenario), ncol = 3) +
+    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) + coord_sf(xlim = xlimMoll) +
+    # geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
+    #                  color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
+    scale_fill_gradient2(unit, low = "darkgreen", high = "darkred", mid = "white", midpoint = 0, na.value = "grey90") +
+    myTheme +
+    labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Global Surface Temp
-  title <- "m) DUMMY Global Surface Temp"
-  unit  <- "DUMMY"
-  caption <- "Cartogram projections with areas proportional to population"
-  b     <- repReg[, .(value = value[variable == "Costs"] /
-                        value[variable == "Population"]), by = .(model, scenario, region, period)]
-  all <- merge(reg2iso, b)
-  all <- merge(pop, all)
+  title <- "m) Global Surface Temp"
+  unit  <- "deg C"
+  caption <- "Projection: Mollweide"
+  b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
+  bb    <- asRaster(b, countries2)
 
-  plotTEMP <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
-    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) + # coord_sf(xlim = xlimMoll) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
-                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Blues")[-1], na.value = "grey90", limits = c(0, 2000), oob = scales::squish) +
-    labs(title = title, caption = caption) + myTheme +
+  plotTEMP <- ggplot(bb) +
+    geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
+    geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
+    scale_fill_gradient2(unit, low = "darkgreen", high = "darkred", mid = "yellow", midpoint = 0, na.value = "grey90") +
+    myTheme +
+    labs(title = title, caption = caption) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
-    geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
+    geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Cost: Bioeconomy
