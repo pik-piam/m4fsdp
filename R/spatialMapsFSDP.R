@@ -57,7 +57,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
 
   # calc ag. empl. polygon for cartogram maps
   agEmpl <- repIso[variable %in% c("Agricultural employment|Crop and livestock products", # old variable name
-                                   "Labor|Employment|Agricultural employment"), ] # new variable name  agEmpl$unit <- NULL
+                                   "Labor|Employment|Agricultural employment"), ] # new variable name
+  agEmpl$unit <- NULL
   names(agEmpl)[names(agEmpl) == "value"] <- "agEmpl"
   agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
   agEmpl <- calcPolygon(agEmpl, "agEmpl")
@@ -213,7 +214,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
   # Inclusion: Hourly labor costs in agriculture
   title <- "g) Hourly labor costs in agriculture"
   unit <- "USD/h"
-  caption <- "Cartogram projections with areas proportional to working-age population"
+  caption <- "Cartogram projections with areas proportional to agricultural employment"
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
                     by = .(model, scenario, region, period)]
   all   <- merge(reg2iso, b)
