@@ -1,5 +1,5 @@
 globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive",
-                  "hours", "Products", "RegionG_f", "selRegion"))
+                  "hours", "Products", "RegionG_f", "selRegion", "perCap"))
 
 #' @title SupplPlotsFSDP
 #' @description creates supplementary plots for FSDP MAgPIE runs
@@ -161,7 +161,7 @@ food_df <- filter(scens, variable %in% c(cereals, oilCrops, otherCrops,
   group_by(scenario, period, FoodGroup, RegionG) %>%  # weighted mean across regions w/ above grouping
   summarise(CalorieSupply = weighted.mean(CalorieSupply, w = pop), pop = sum(pop))
 
-food_df <- food_df[-which(food_df$period == 2020 & food_df$scenario != "SSP2bau"), ] # remove nonBAU 2010 values
+food_df <- food_df[-which(food_df$period == 2020 & food_df$scenario != "BAU"), ] # remove nonBAU 2010 values
 food_df$pop_barwidth <- rescale(food_df$pop, c(0.05, 0.45))   # scale pop for barwidths
 
 if (!is.null(caseRegion)) {
@@ -236,10 +236,10 @@ agDem <- filter(scens, variable %in% demandCats,
                                       "Processing", "Agricultural Supply Chain Loss",  "Seed")),
          perCap = value / pop) %>%
   group_by(scenario, period, variable, RegionG) %>%  # weighted mean across regions w/ above grouping
-  summarise(value = weighted.mean(value, w = pop),
+  summarise(value = weighted.mean(perCap, w = pop),
             pop = sum(pop))
 
-agDem <- agDem[-which(agDem$period == 2020 & agDem$scenario != "SSP2bau"), ] # remove nonBAU 2010 values
+agDem <- agDem[-which(agDem$period == 2020 & agDem$scenario != "BAU"), ] # remove nonBAU 2010 values
 agDem$pop_barwidth <- rescale(agDem$pop, c(0.2, 0.8))   # scale pop for barwidths
 
 if (!is.null(caseRegion)) {
@@ -252,7 +252,7 @@ if (!is.null(caseRegion)) {
     themeSupplFood(base_size = 25) +
     labs(title = "Crop-Based Product Demand") +
     facet_grid(cols = vars(period), scales = "free_x", space = "free_x",   switch = "x") +
-    ylab("Mt dm") +
+    ylab("Mt dm/capita") +
     scale_fill_manual(values = c("#FCE900", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"),
                       guide = guide_legend(reverse = TRUE))
   } else {
@@ -276,7 +276,7 @@ plotAgDem <- ggplot() +
   theme(strip.text.x = element_text(size = 20))+
   labs(title = "b) Crop-Based Product Demand") +
   facet_grid(cols = vars(period), scales = "free_x", space = "free_x",   switch = "x") +
-  ylab("Mt dm") +
+  ylab("Mt dm/capita") +
   scale_fill_manual(values = c("#FCE900", "#c7e9b4", "#7fcdbb", "#41b6c4", "#1d91c0", "#225ea8", "#0c2c84"),
                     guide = guide_legend(reverse = TRUE, title = "Product"))
 }
@@ -540,7 +540,7 @@ plotCropGlo <- ggplot(cropGlo, aes(x = period)) +
   stat_summary(fun = "sum", colour = "black", size = 1,
                geom = "line", mapping = aes(group = scenario, y = value)) +
   scale_fill_manual("Cropland type", values = rev(c(
-    "#E6AB02", "lightblue", "#9e9ac8", "#ACC3A6", "#4b6fb8", "darkgreen", "#fcba03"))) +
+    "#E6AB02", "lightblue", "#9e9ac8", "pink", "#4b6fb8", "darkgreen", "#fcba03"))) +
                theme(legend.position = "bottom", legend.text = element_text(size=14),
                      strip.text.y = element_text(size = 16), axis.text.y= element_text(size = 16),
                      axis.text.x= element_text(size = 16)) +
@@ -566,7 +566,7 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
   geom_vline(xintercept = 0, linetype = "dotted") +
   stat_summary(fun = "sum", colour = "black", size = 1, geom = "point", mapping = aes(group = scenario, x = value)) +
   scale_fill_manual("Cropland type", values = rev(c(
-    "#E6AB02", "lightblue", "#9e9ac8", "#ACC3A6", "#4b6fb8", "darkgreen", "#fcba03"))) +
+    "#E6AB02", "lightblue", "#9e9ac8", "pink", "#4b6fb8", "darkgreen", "#fcba03"))) +
   theme(legend.position = "bottom", legend.text = element_text(size=14),
         strip.text.y = element_text(size = 16), axis.text.y= element_text(size = 16),
         axis.text.x= element_text(size = 16)) +
@@ -591,6 +591,8 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
 ####### Nitrogen##############
 
 nitrVar <- scens[grep("Nutrient Surplus", scens$variable), ]$variable %>%  unique()
+ scens[grep("Nitrogen", scens$variable), ]$variable %>%  unique()
+
 # scens[grep("Nitrogen", scens$variable),]$variable %>%  unique()
 names(nitrVar) <- c("Cropland", "Pasture")
 
@@ -753,7 +755,7 @@ health_df <- filter(scens,
   group_by(model, scenario, region, period) %>%
   mutate(variable = factor(variable, levels = rev(healthVar),
                            labels = names(rev(healthVar))),
-         variable = factor(variable, levels = rev(c("Normal weight", "Obese", "Overweight", "Underweight"))))
+         variable = factor(variable, levels = rev(c("Underweight", "Normal weight", "Obese", "Overweight"))))
 
 
 healthGlo <- filter(health_df, region == "GLO")
@@ -763,7 +765,7 @@ plotHealthGlo <- ggplot(healthGlo, aes(x = period)) +
   ylab("Million People") +
   geom_area(aes(y = value, fill = variable), position = "stack") +
   scale_fill_manual("Nutrition Indicators",
-                    values = rev(c("#2080EC", "lightblue", "blue", "purple"))) +
+                    values = rev(c( "lightblue","#2080EC", "blue", "purple"))) +
   theme(legend.position = "bottom", strip.text.y = element_text(angle = 0, size = 14),
         axis.text= element_text(size = 14)) +
   guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
@@ -784,7 +786,7 @@ plotHealthReg <- ggplot(healthReg, aes(y = scenario)) +
   geom_bar(aes(x = value, fill = variable), position = "stack", stat = "identity", width = 0.75) +
   geom_vline(xintercept = 0, linetype = "dotted") +
   scale_fill_manual(element_blank(),
-                    values = rev(c("#2080EC", "lightblue", "blue", "purple"))) +
+                    values = rev(c("lightblue","#2080EC", "blue", "purple"))) +
   theme(legend.position = "bottom", strip.text.y = element_text(angle = 0, size = 14),
         axis.text = element_text(size = 14)) +
   guides(fill = guide_legend("Indicator", ncol = 4, title.position = "left", byrow = TRUE, reverse = TRUE)) +
@@ -1002,8 +1004,9 @@ plotGiniGlo <- ggplot(filter(ineqGlo, variable == "Income|Gini Coefficient"),
 ineqReg <- filter(ineq_df, region != "GLO") %>%
   group_by(model, scenario, variable, period, RegionG) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario)))) %>%
-  group_by(model, scenario, RegionG, variable) %>%
-  filter(period == 2050)
+  group_by(model, scenario, RegionG, variable)
+#%>%
+ # filter(period == 2050)
 
 
 if (!is.null(caseRegion)) {
@@ -1016,15 +1019,16 @@ if (!is.null(caseRegion)) {
               summarise(value = weighted.mean(value, w = pop))
 }
 
-plotGiniReg <- ggplot(ineqGini, aes(y = scenario)) +
-  facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
+plotGiniReg <- ggplot(ineqGini, aes(color = scenario )) +
+  facet_wrap(~RegionG, scales = "free") +
   themeSupplReg(base_size = 18, rotate_x = FALSE) + ylab(NULL) +
-  geom_bar(aes(x = value), stat = "identity", width = 0.75, fill = "#1E7CAF") +
+  geom_line(aes(y = value, x = period), size = 1.5) +
   theme(legend.position = "bottom", legend.text = element_text(size=16),
         strip.text = element_text(size = 14), axis.text= element_text(size = 16))+
-  guides(fill = guide_legend("Indicator", ncol = 5, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+  guides(fill = guide_legend("Indicator", ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab("Gini Coefficient") +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
+  scale_color_manual(values = c("#009FFA", "#FFDC3D", "#EB4D2A", "#6A0213", "#9400E6", "#00DCB5", "#008169")) +
   labs(title = "Regional Gini Coefficient 2050") # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 
