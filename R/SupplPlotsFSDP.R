@@ -382,15 +382,15 @@ plotEmissReg <- ggplot(emissReg, aes(y = scenario)) +
   labs(title = "b) Cumulative GHG Emissions 2050")
 
 plotEmiss <- plotEmissGlo + plotEmissReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.6))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotEmiss.png"),
-         plotEmiss, width = 8, height = 12, scale = 1.5, bg = "white")
+         plotEmiss, width = 8, height = 11, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotEmiss.pdf"),
-         plotEmiss, width = 8, height = 12, scale = 1.5, bg = "white")
+         plotEmiss, width = 8, height = 11, scale = 1.5, bg = "white")
 }
 
 
@@ -471,15 +471,15 @@ plotLandReg <- ggplot(landReg, aes(y = scenario)) +
 
 
 plotLand <- plotLandGlo + plotLandReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotLand.png"),
-         plotLand, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotLand, width = 9, height = 13, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotLand.pdf"),
-         plotLand, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotLand, width = 9, height = 13, scale = 1.5, bg = "white")
 }
 
 
@@ -576,15 +576,15 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
    labs(title = "b) Regional Cropland Distribution 2050")
 
  plotCrop <- plotCropGlo + plotCropReg +
-   plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+   plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
  if(!is.null(outFolder)){
    ggsave(filename = file.path(outFolder, "supplPlots",
                                "plotCrop.png"),
-          plotCrop, width = 8, height = 12, scale = 1.5, bg = "white")
+          plotCrop, width = 8, height = 10, scale = 1.5, bg = "white")
    ggsave(filename = file.path(outFolder, "supplPlots",
                                "plotCrop.pdf"),
-          plotCrop, width = 8, height = 12, scale = 1.5, bg = "white")
+          plotCrop, width = 8, height = 10, scale = 1.5, bg = "white")
  }
 
 
@@ -656,15 +656,15 @@ plotNitrReg <- ggplot(nitrReg, aes(y = scenario)) +
   labs(title = "b) Regional Nitrogen Surplus 2050")# breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 plotNitr <- plotNitrGlo + plotNitrReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotNitr.png"),
-         plotNitr, width = 8, height = 12, scale = 1.5, bg = "white")
+         plotNitr, width = 8, height = 10, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotNitr.pdf"),
-         plotNitr, width = 8, height = 12, scale = 1.5, bg = "white")
+         plotNitr, width = 8, height = 10, scale = 1.5, bg = "white")
 }
 
 
@@ -713,6 +713,9 @@ if (!is.null(caseRegion)) {
   waterReg <- waterReg %>% filter(RegionG == selRegion)
 }
 
+facet_bounds <- data.frame("RegionG" = rep(c("High-Income \n Regions", "Rest of World", "Low-Income Regions"), 2),
+                           "value" = c(-100, NA, NA, 150, NA, NA), "scenario" = waterReg$scenario[1])
+
 plotWaterReg <- ggplot(waterReg, aes(y = scenario)) +
   facet_grid(vars(period), vars(RegionG), scales = "free", space = "free") +
   themeSupplReg(base_size = 18, rotate_x = FALSE) + ylab(NULL) +
@@ -729,16 +732,18 @@ plotWaterReg <- ggplot(waterReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
  labs(title = "b) Regional Water Withdrawals 2050")# breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
+plotWaterReg <- plotWaterReg + geom_blank(data = facet_bounds, aes(x = value, y = scenario))
+
 plotWater <- plotWaterGlo + plotWaterReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotWater.png"),
-         plotWater, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotWater, width = 9, height = 10, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotWater.pdf"),
-         plotWater, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotWater, width = 9, height = 10, scale = 1.5, bg = "white")
 }
 
 ### Health
@@ -794,79 +799,72 @@ plotHealthReg <- ggplot(healthReg, aes(y = scenario)) +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
 
 plotHealth <- plotHealthGlo + plotHealthReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotHealth.png"),
-         plotHealth, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotHealth, width = 9, height = 10, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotHealth.pdf"),
-         plotHealth, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotHealth, width = 9, height = 10, scale = 1.5, bg = "white")
 }
 
 ######## EMPLOYMENT ##########
 
-## Global: Absolute change in employment - global areaplot
+## Global: Absolute change in employment - global lineplot
 
-empVar <-  scens[grep("Agricultural employment\\|\\+", scens$variable), ]$variable %>%  unique()
+empVars <- c("Agricultural employment|Crop and livestock products", # old variable name
+             "Labor|Employment|Agricultural employment") # new variable name
 
 emp_df <- filter(scens,
                   period <= 2050,
                   period > 2015,
-                  variable %in% empVar) %>%
+                  variable %in% empVars) %>%
   droplevels() %>%
-  mutate(Products = case_when(           # recategorize products
-    variable == "Agricultural employment|+|Crop products" ~ "Crop products",
-    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products",
-    variable == "Agricultural employment|+|MACCS" ~ "Mitigation measures"),
-    Products = factor(Products,
-                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>%
-  group_by(model, scenario, region, RegionG, period, Products) %>%
+  group_by(model, scenario, region, RegionG, period) %>%
   filter(region == "GLO")
 
+colors <- assignScenarioColors(unique(emp_df$scenario))
+names(colors) <- unique(emp_df$scenario)
+
 plotEmpGlo <- ggplot(emp_df, aes(x = period)) +
-  facet_wrap(~scenario, nrow = 2) +
-  themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
-  ylab("Number of People Employed in Agriculture \n (millions)") +
-  # geom_hline(yintercept = 0, linetype = "dotted") +
-  geom_area(aes(y = value, fill = Products), position = "stack") +
-  scale_fill_manual("Production", values = rev(c("#ffd256", "#489448"))) +
+  themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
+  ylab("Million people") +
+  geom_line(aes(y = value, color = scenario), linewidth = 1.1) +
   theme(legend.position = "bottom") +
-  guides(fill = guide_legend("Production", ncol = 3, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
+  guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL) +
+  scale_color_manual(values = colors) +
+  labs(title = "a) Number of People Employed in Agriculture")
 
 
 ## Regional: abolute change 2020 to 2050 - barplot
 
-empVar <-  scens[grep("Agricultural employment\\|\\+", scens$variable), ]$variable %>%  unique()
+empVar <- intersect(unique(scens$variable), c("Agricultural employment|Crop and livestock products", # old variable name
+             "Labor|Employment|Agricultural employment")) # new variable name
+names(empVar) <- c("Agricultural employment")
 
 emp_df <- filter(scens,
                   period <= 2050,
                   period > 2015,
                   variable %in% empVar) %>%
   droplevels() %>%
-  mutate(Products = case_when(           # recategorize products
-    variable == "Agricultural employment|+|Crop products" ~ "Crop products",
-    variable == "Agricultural employment|+|Livestock products" ~ "Livestock products",
-    variable == "Agricultural employment|+|MACCS" ~ "Mitigation measures"),
-    Products = factor(Products,
-                       levels = c("Crop products", "Livestock products", "Mitigation measures"))) %>%
-  group_by(model, scenario, region, RegionG, period, Products) %>%
-  summarise(value = sum(value)) %>%
-  group_by(model, scenario, region, Products) %>%
+  group_by(model, scenario, region, period) %>%
+  mutate(variable = factor(variable, levels = rev(empVar),
+                           labels = names(rev(empVar)))) %>%
+  group_by(model, scenario, region, variable) %>%
   mutate(value = cumsum(c(0, diff(value)))) # get diff wrt to 2020, based on above grouping
 
 emp_df$positive <- ifelse(emp_df$value >= 0, emp_df$value, 0)
 emp_df$negative <- ifelse(emp_df$value < 0, emp_df$value, -1e-36)
 
 facet_bounds <- data.frame("RegionG" = rep(c("High-Income \n Regions", "Rest of World", "Low-Income Regions"), 2),
-                           "value" = c(-70, NA, NA, 7, NA, NA), "scenario" = "SSP2bau")
+                           "value" = c(-100, NA, NA, 7, NA, NA), "scenario" = emp_df$scenario[1])
 
 empReg <- filter(emp_df, region != "GLO", period == 2050) %>%
-  group_by(model, scenario, Products, period, RegionG) %>%
+  group_by(model, scenario, variable, period, RegionG) %>%
   summarise(value = sum(value), positive = sum(positive), negative = sum(negative)) %>%
   mutate(scenario = factor(scenario, levels = rev(levels(scenario))))
-
 
 if (!is.null(caseRegion)) {
   empReg <- empReg %>% filter(RegionG == selRegion) %>% mutate(RegionG_f = selRegion)
@@ -874,34 +872,34 @@ if (!is.null(caseRegion)) {
   empReg$RegionG_f <- factor(empReg$RegionG, levels = c("High-Income \n Regions", "Rest of World", "Low-Income Regions"))
 }
 
-
 plotEmpReg <- ggplot(empReg, aes(y = scenario)) +
-  facet_grid(vars(period), vars(RegionG_f), scales = "free_y", space = "free") +
+  facet_grid(vars(period), vars(RegionG_f), scales = "free", space = "free") +
   themeSupplReg(base_size = 20, rotate_x = FALSE) + ylab(NULL) +
-  geom_bar(aes(x = positive, fill = Products), position = "stack", stat = "identity", width = 0.75) +
-  geom_bar(aes(x = negative, fill = Products, ), position = "stack", stat = "identity", width = 0.75) +
+  geom_bar(aes(x = positive, fill = variable), position = "stack", stat = "identity", width = 0.75, alpha = 0.75) +
+  geom_bar(aes(x = negative, fill = variable), position = "stack", stat = "identity", width = 0.75, alpha = 0.75) +
   geom_vline(xintercept = 0, linetype = "dotted") +
-  stat_summary(fun = "sum", colour = "black", size = 1, geom = "point", mapping = aes(group = scenario, x = value)) +
-  scale_fill_manual("Production", values = rev(c("#ffd256", "#489448"))) +
+  # stat_summary(fun = "sum", colour = "black", size = 1, geom = "point", mapping = aes(group = scenario, x = value)) +
+  scale_fill_manual(" ", values = "#89c783") +
   theme(legend.position = "bottom", strip.text = element_text(angle = 0, size = 14),
         axis.text= element_text(size = 14)) +
-  guides(fill = guide_legend("Production", ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
-  xlab("Change in agricultural employment compared to 2020 (mio. people)") +
-  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) # breaks = c(-400,-200,0,200,400) + labs(caption = paste(Sys.Date()))
+  guides(fill = element_blank()) +
+  xlab("Regional agricultural employment compared to 2020 in mio. people") +
+  scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) + 
+  labs(title = "b) Regional agricultural employment 2050")
 
 plotEmpReg <- plotEmpReg + geom_blank(data = facet_bounds, aes(x = value, y = scenario))
 
 
 plotEmp <- plotEmpGlo + plotEmpReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotEmp.png"),
-         plotEmp, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotEmp, width = 9, height = 10, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotEmp.pdf"),
-         plotEmp, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotEmp, width = 9, height = 10, scale = 1.5, bg = "white")
 }
 
 
@@ -1033,15 +1031,15 @@ plotGiniReg <- ggplot(ineqGini, aes(color = scenario )) +
 
 
 plotGini <- plotGiniGlo + plotGiniReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotGini.png"),
-         plotGini, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotGini, width = 9, height = 10, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotGini.pdf"),
-         plotGini, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotGini, width = 9, height = 10, scale = 1.5, bg = "white")
 }
 
 
@@ -1074,15 +1072,15 @@ plotBelowPovReg <- ggplot(filter(ineqReg, variable == "Income|Number of People B
 
 
 plotBelowPov <- plotBelowPovGlo + plotBelowPovReg +
-  plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
 if(!is.null(outFolder)){
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotBelowPov.png"),
-         plotBelowPov, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotBelowPov, width = 9, height = 10, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotBelowPov.pdf"),
-         plotBelowPov, width = 9, height = 13.5, scale = 1.5, bg = "white")
+         plotBelowPov, width = 9, height = 10, scale = 1.5, bg = "white")
 }
 
 }
