@@ -102,6 +102,24 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     return(z)
   }
 
+  # plotDUMMY:
+  title <- "DUMMY - data seems missing"
+  unit <- "DUMMY"
+  caption <- "Cartogram projections with areas proportional to population"
+  b     <- repIso[, .(value = value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  b[,value := 0]
+  all   <- merge(pop, b)
+  plotDUMMY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
+                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4), oob = scales::squish) +
+    myTheme + labs(title = title, caption = caption) +
+    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
+    geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
+              hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
+
+
   # Health: Spatial distribution of population underweight
   title <- "a) Spatial distribution of population underweight"
   unit <- "Share"
@@ -383,13 +401,13 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     if (!is.null(tryplot)) {
       if (inherits(try(ggplot_build(tryplot)), "try-error")) {
         warning(paste0(bquote(tryplot), " failed"))
-        return(NULL)
+        return(plotDUMMY)
       } else {
         return(tryplot)
       }
     } else {
       warning(paste0(bquote(tryplot), " is NULL"))
-      return(NULL)
+      return(plotDUMMY)
     }
   }
 
