@@ -10,6 +10,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @param repGrid reporting .rds file or data.frame with grid level results (produced by FDSP_collect.R output script)
 #' @param reg2iso mapping file or data.frame with regions and countries (produced by FDSP_collect.R output script)
 #' @param file file name (e.g. FSDP_spatialmaps.pdf or FSDP_spatialmaps.pdf) or NULL
+#' @param recalcPolygons recalculate polygons for cartogram projections (FALSE / TRUE)
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
 #' @author Florian Humpenoeder
@@ -17,7 +18,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @importFrom utils write.csv read.csv
 #' @importFrom terra project rast
 
-spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
+spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recalcPolygons = FALSE) {
   ### projections
   # https://semba-blog.netlify.app/01/26/2020/world-map-and-map-projections/
 
@@ -41,27 +42,32 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
     for (i in levels(pop$scenario)) {
       x <- subset(pop, scenario == i)
       x <- st_transform(x, crs = 3857)
-      x <- cartogram_cont(x, name, itermax = 7)
+      x <- cartogram_cont(x, name, itermax = 15)
       z <- rbind(z, x)
     }
     z$variable <- NULL
     return(z)
   }
 
-  ### calc pop polygon for cartogram maps
-  pop <- repIso[variable == "Population", ]
-  pop$unit <- NULL
-  names(pop)[names(pop) == "value"] <- "pop"
-  pop <- merge(countries[, c("iso_a3", "geometry")], pop)
-  pop <- calcPolygon(pop, "pop")
+  if (recalcPolygons) {
+    ### calc pop polygon for cartogram maps
+    pop <- repIso[variable == "Population", ]
+    pop$unit <- NULL
+    names(pop)[names(pop) == "value"] <- "pop"
+    pop <- merge(countries[, c("iso_a3", "geometry")], pop)
+    pop <- calcPolygon(pop, "pop")
 
-  # calc ag. empl. polygon for cartogram maps
-  agEmpl <- repIso[variable %in% c("Agricultural employment|Crop and livestock products", # old variable name
-                                   "Labor|Employment|Agricultural employment"), ] # new variable name
-  agEmpl$unit <- NULL
-  names(agEmpl)[names(agEmpl) == "value"] <- "agEmpl"
-  agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
-  agEmpl <- calcPolygon(agEmpl, "agEmpl")
+    # calc ag. empl. polygon for cartogram maps
+    agEmpl <- repIso[variable %in% c("Agricultural employment|Crop and livestock products", # old variable name
+                                     "Labor|Employment|Agricultural employment"), ] # new variable name
+    agEmpl$unit <- NULL
+    names(agEmpl)[names(agEmpl) == "value"] <- "agEmpl"
+    agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
+    agEmpl <- calcPolygon(agEmpl, "agEmpl")
+  } else {
+    pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"),)
+    agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"),)
+  }
 
   # theme for maps
   myTheme <- theme_minimal(base_size = 19) +
