@@ -43,7 +43,7 @@ appendReportNutrientSurplus <- function(scenario, dir = ".") {
     colnames(NSregWorld) <- c("cell", "region", "year", "variable", "value")
 
     NSregWorld <- NSregWorld %>%
-        mutate(variable = "Resources|Nitrogen|Nutrient surplus incl natural vegetation") %>%
+        mutate(variable = "Resources|Nitrogen|Nutrient surplus from land and manure management") %>%
         mutate(model    = "MAgPIE",
                scenario = scenario,
                unit     = "Mt N") %>%

@@ -15,7 +15,7 @@ getVariables <- function(reportVariables = NULL) {
            "Health|Years of life lost|Risk|Diet and anthropometrics",
            "Biodiversity|BII",
            "Biodiversity|Shannon crop area diversity index",
-           "Resources|Nitrogen|Nutrient surplus incl natural vegetation",
+           "Resources|Nitrogen|Nutrient surplus from land and manure management",
            "Water|Environmental flow violation volume",
            "Emissions|GWP100AR6|Land|Cumulative",
            "Global Surface Temperature",
