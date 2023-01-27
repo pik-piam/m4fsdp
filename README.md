@@ -1,7 +1,7 @@
 # MAgPIE outputs R package for MAgPIE version 4.x to create outputs
     for FSDP project
 
-R package **m4fsdp**, version **0.33.1**
+R package **m4fsdp**, version **0.33.2**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/m4fsdp)](https://cran.r-project.org/package=m4fsdp)  [![R build status](https://github.com/pik-piam/m4fsdp/workflows/check/badge.svg)](https://github.com/pik-piam/m4fsdp/actions) [![codecov](https://codecov.io/gh/pik-piam/m4fsdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/m4fsdp) [![r-universe](https://pik-piam.r-universe.dev/badges/m4fsdp)](https://pik-piam.r-universe.dev/builds)
 
@@ -40,7 +40,7 @@ In case of questions / problems please contact Benjamin Leon Bodirsky <bodirsky@
 
 To cite package **m4fsdp** in publications use:
 
-Bodirsky B, Dietrich J, Humpenoeder F (2023). _m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi: ? (URL: https://doi.org/?), R package version 0.33.1, <URL: https://github.com/pik-piam/m4fsdp>.
+Bodirsky B, Dietrich J, Humpenoeder F (2023). _m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi: ? (URL: https://doi.org/?), R package version 0.33.2, <URL: https://github.com/pik-piam/m4fsdp>.
 
 A BibTeX entry for LaTeX users is
 
@@ -50,7 +50,7 @@ A BibTeX entry for LaTeX users is
 for FSDP project},
   author = {Benjamin Leon Bodirsky and Jan Philipp Dietrich and Florian Humpenoeder},
   year = {2023},
-  note = {R package version 0.33.1},
+  note = {R package version 0.33.2},
   doi = {?},
   url = {https://github.com/pik-piam/m4fsdp},
 }
