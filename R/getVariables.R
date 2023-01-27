@@ -20,14 +20,14 @@ getVariables <- function(reportVariables = NULL) {
            "Emissions|GWP100AR6|Land|Cumulative",
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
-           "Income|Number of People Below 3.20$/Day",
+           "Income|Number of People Below 3p20 USDppp11",
            "Labor|Employment|Agricultural employment",
            "Agricultural employment|Crop and livestock products",
            "Labor|Wages|Hourly labor costs relative to 2010",
            "Value|Bioeconomy Demand",
            "Costs Without Incentives")
 
-  #vargroup|var#|variableName|variableUnit|DirectionImprovment|rounding|factor
+  # vargroup|var#|variableName|variableUnit|DirectionImprovment|rounding|factor
   names(var) <- c("Health|1|Underweight|mio people|decrease|0|1",
                   "Health|2|Obesity|mio people|decrease|0|1",
                   "Health|3|Years of life lost|million years|decrease|0|1",
@@ -53,14 +53,14 @@ getVariables <- function(reportVariables = NULL) {
 
     for (i in unique(names(var))) {
       tmp <- var[names(var) == i]
-      tmp2 <- tmp[tmp==intersect(tmp,reportVariables)]
-      if(length(tmp2) == 0) {
-        missingVars <- c(tmp,missingVars)
+      tmp2 <- tmp[tmp == intersect(tmp, reportVariables)]
+      if (length(tmp2) == 0) {
+        missingVars <- c(tmp, missingVars)
       } else if (length(tmp2) == 1) {
-        keepVars <- c(tmp2,keepVars)
+        keepVars <- c(tmp2, keepVars)
         colnames(keepVars)
       } else if (length(tmp2) > 1) {
-        keepVars <- c(tmp2[tmp2 == tmp[1]],keepVars)
+        keepVars <- c(tmp2[tmp2 == tmp[1]], keepVars)
       }
     }
     if (length(missingVars) > 0) {
@@ -69,4 +69,3 @@ getVariables <- function(reportVariables = NULL) {
     return(keepVars)
   }
 }
-

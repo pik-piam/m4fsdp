@@ -65,8 +65,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
     agEmpl <- calcPolygon(agEmpl, "agEmpl")
   } else {
-    pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"),)
-    agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"),)
+    pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"), )
+    agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"), )
   }
 
   # theme for maps
@@ -113,7 +113,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   unit <- "DUMMY"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
-  b[,value := 0]
+  b[, value := 0]
   all   <- merge(pop, b)
   plotDUMMY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
@@ -198,7 +198,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   title <- "e) Share of Population with Incomes less than 3.20$/Day"
   unit <- "Share"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3.20$/Day"] /
+  b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
   plotPOVERTY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
@@ -214,8 +214,28 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
 
+  # Inclusion: Gini Coefficient
+  title <- "f) Gini Coefficient"
+  unit <- "(0-1) Gini Coefficient between 0 and 1"
+  caption <- "Cartogram projections with areas proportional to population"
+  b     <- repIso[, .(value = value[variable == "Income|Gini Coefficient"] /
+                        value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  all <- merge(pop, b)
+  plotPOVERTY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
+    geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
+                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
+    # scale_fill_manual(values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
+    #                  breaks = seq(0, 0.4, by = 0.1)) +
+    scale_fill_gradientn(unit, colors = rev(brewer.pal(11, "RdYlGn")[-1]), na.value = "grey90", limits = c(0, 1), oob = scales::squish) +
+    myTheme + labs(title = title, caption = caption) +
+    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
+    geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX + 1000000, y = labelY,
+              hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
+
+
   # Inclusion: Share of working age population employed in agriculture
-  title <- "f) Share of working age population employed in agriculture"
+  title <- "g) Share of working age population employed in agriculture"
   unit <- "share"
   caption <- "Cartogram projections with areas proportional to population"
 
@@ -236,7 +256,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
 
   # Inclusion: Hourly labor costs in agriculture
-  title <- "g) Hourly labor costs in agriculture"
+  title <- "h) Hourly labor costs in agriculture"
   unit <- "USD/h"
   caption <- "Cartogram projections with areas proportional to agricultural employment"
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
@@ -256,7 +276,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
 
   # Environment: Biodiversity Intactness Index
-  title <- "h) Biodiversity Intactness Index"
+  title <- "i) Biodiversity Intactness Index"
   unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
@@ -273,7 +293,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Croparea diversity
-  title <- "i) DUMMY Croparea diversity"
+  title <- "j) DUMMY Croparea diversity"
   unit  <- "DUMMY"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
@@ -290,7 +310,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Nutrient Surplus
-  title <- "j) Nutrient Surplus"
+  title <- "k) Nutrient Surplus"
   unit  <- "kg N per ha"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
@@ -306,7 +326,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Water Withdrawal to Availability Ratio
-  title <- "k) Water Withdrawal to Availability Ratio"
+  title <- "l) Water Withdrawal to Availability Ratio"
   unit  <- "ratio"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "water stress and violations", ])
@@ -327,7 +347,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "l) Greenhouse Gas Emissions"
+  title <- "m) Greenhouse Gas Emissions"
   unit  <- "Gt CO2eq"
   caption <- "Projection: Mollweide"
   b   <- droplevels(repReg[variable == "Emissions|GWP100AR6|Land|Cumulative", ]) # Will become ISO level, eventually
@@ -347,7 +367,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Global Surface Temp
-  title <- "m) Global Surface Temp"
+  title <- "n) Global Surface Temp"
   unit  <- "deg C"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
@@ -364,7 +384,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Cost: Bioeconomy
-  title <- "n) Value of Bioeconomy Demand"
+  title <- "o) Value of Bioeconomy Demand"
   unit  <- "US$05/yr"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repReg[, .(value = value[variable == "Value|Bioeconomy Demand"] /
@@ -383,7 +403,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Cost:Production cost agriculture per capita
-  title <- "o) Production cost agriculture per capita"
+  title <- "p) Production cost agriculture per capita"
   unit  <- "USD/cap/yr"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repReg[, .(value = value[variable == "Costs"] /
