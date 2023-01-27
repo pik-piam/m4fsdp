@@ -89,7 +89,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     return(x)
   }
 
-  x <- selBundle(b, "Sufficiency",
+  x <- selBundle(b, "Diet",
              singles = c("DietEmptyCals", "DietFish", "DietLegumes", "DietMonogastrics",
                        "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight","HalfOverweight", "NoUnderweight","LessFoodWaste"),
              bundleOrder = 1, colors = colors)
@@ -110,7 +110,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                  bundleOrder = 5, colors = colors))
 
   x <- rbind(x, selBundle(b, "FSDP",
-                          singles = c("ExternalPressures", "Sufficiency", "Livelihoods", "NatureSparing", "AgroMngmt"),
+                          singles = c("ExternalPressures", "Diet", "Livelihoods", "NatureSparing", "AgroMngmt"),
                           bundleOrder = 6, colors = colors))
 
   #x <- rbind(x, selBundle(b, "AllNitrogen",

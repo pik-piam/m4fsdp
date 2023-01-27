@@ -28,7 +28,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Sufficiency","ExternalPressures", "FSDP", "SSP2bau")
+    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "SSP2bau")
     rep <- rep[get("scenario") %in% scenOrder, ]
     rep$scenario <- factor(rep$scenario, scenOrder)
     #factor(rep[!scenario %in% c("SSP2bau","FSEC"),c("scenset")])

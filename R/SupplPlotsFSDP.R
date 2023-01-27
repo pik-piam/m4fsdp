@@ -42,7 +42,7 @@ if (scenarioType == "all") {
 } else if (scenarioType == "manuscript") {
    rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = NULL)
    rep <- filter(rep, scenario %in% c("BAU",
-                                      "Sufficiency", "Livelihoods", "NatureSparing", "AgroMngmt", "ExternalPressures", "FSDP"))
+                                      "Diet", "Livelihoods", "NatureSparing", "AgroMngmt", "ExternalPressures", "FSDP"))
    } else {
   stop("Scenario type does not exist")
 }
@@ -88,7 +88,7 @@ scenarios <- c(scenarios[which(scenarios == "BAU")], scenarios[-which(scenarios 
 
 scens$scenario <- factor(scens$scenario,
                         levels = c("BAU",
-                                   "Sufficiency", "Livelihoods", "NatureSparing",
+                                   "Diet", "Livelihoods", "NatureSparing",
                                    "AgroMngmt", "ExternalPressures", "FSDP"))
 
 # extract population to use as a separate column
@@ -683,7 +683,7 @@ water_df <- filter(scens,
                            labels = names(rev(waterVar)))) %>%
          # scenario = factor(scenario, levels = c(
          #                             "BAU", "AgroMngmt", "NatureSparing",
-         #                             "ExternalPressures", "Livelihoods", "Sufficiency",
+         #                             "ExternalPressures", "Livelihoods", "Diet",
          #                             "FSDP"))) %>%
   group_by(model, scenario, region, variable) %>%
   mutate(value = cumsum(c(0, diff(value)))) # get diff wrt to 2020, based on above grouping
@@ -930,7 +930,7 @@ labReg <- filter(labor_df, region != "GLO") %>%
   summarise(value = weighted.mean(value, w = hours)) %>%
   # mutate(scenario = factor(scenario, levels = c(
   #  "BAU", "AgroMngmt", "NatureSparing",
-  #  "ExternalPressures", "Livelihoods", "Sufficiency",
+  #  "ExternalPressures", "Livelihoods", "Diet",
   #  "FSDP"))) %>%
   group_by(model, scenario, RegionG, variable)
 
@@ -980,7 +980,7 @@ ineq_df <- filter(scens,
   #                          labels = names(rev(ineqVar))),
   #        scenario = factor(scenario, levels = c(
   #          "SSP2bau", "AgroMngmt", "NatureSparing",
-  #          "ExternalPressures", "Livelihoods", "Sufficiency",
+  #          "ExternalPressures", "Livelihoods", "Diet",
   #          "FSDP"))) %>%
   group_by(model, scenario, region, variable)
 
