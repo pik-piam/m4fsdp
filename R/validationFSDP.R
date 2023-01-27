@@ -193,6 +193,9 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
                 weight = "Population", hist = "FAOmassbalance")
   p5 <- plotVal(var = "Demand|++|Crops", varName = "Total crop demand including feed and feed")
   p6 <- plotVal(var = "Demand|++|Livestock products", varName = "Total livestock product demand")
+  #p7 <- plotVal(var = "Income|Number of People Below 3p20 USDppp11/day", varName = "Number of people under 3.20 USDppp11/day poverty line")
+  #p8 <- plotVal(var = "Income|Gini Coefficient", varName = "Gini Coefficient", weight = "Population")
+  #poverty validation requires new input data validation
 
   combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
   combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
