@@ -106,7 +106,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
                           singles = c("NitrogenEff", "CropRotations",  "RiceMit", "LivestockMngmt", "ManureMngmt", "SoilCarbon"),
                           bundleOrder = 4, colors = colors))
 
-  x <- rbind(x, selBundle(b, "Ext. Transf.", singles = c("Population", "EconDevelop", "EnergyTrans", "Bioplastics", "TimberCities"),
+  x <- rbind(x, selBundle(b, "ExternalPressures", singles = c("Population", "EconDevelop", "EnergyTrans", "Bioplastics", "TimberCities"),
                  bundleOrder = 5, colors = colors))
 
   x <- rbind(x, selBundle(b, "FSDP",
