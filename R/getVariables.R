@@ -20,7 +20,7 @@ getVariables <- function(reportVariables = NULL) {
            "Emissions|GWP100AR6|Land|Cumulative",
            "Global Surface Temperature",
            "Household Expenditure|Food|Expenditure",
-           "Income|Number of People Below 3p20 USDppp11",
+           "Income|Number of People Below 3p20 USDppp11/day",
            "Labor|Employment|Agricultural employment",
            "Agricultural employment|Crop and livestock products",
            "Labor|Wages|Hourly labor costs relative to 2010",
