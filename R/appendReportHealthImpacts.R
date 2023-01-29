@@ -26,7 +26,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     # Format Marco's health impacts dataset
 
     gdx <- suppressWarnings(readGDX(healthImpacts_gdx, "report_health_s"))
-    getSets(gdx) <- c("region", "year", "scenario", "unit",
+    getSets(gdx) <- c("region", "year", "scenario", "metric",
                       "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
 
     # IMPORTANT NOTE: The variables are misnamed within Marco's datasets. Rather than "deaths avoided" (deaths_avd),
@@ -53,10 +53,10 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     }
 
     # This script is run on a per-scenario basis, and so therefore we filter here (also keeping only the mean value).
-    healthImpacts <- gdx[, , list(gdxScenario, "mean", c("deaths_avd", "YLL_avd"))] %>%
+    healthImpacts <- gdx[, , list(gdxScenario, "mean")] %>%
         as.data.frame()
 
-    colnames(healthImpacts) <- c("cell", "region", "year", "scenario", "unit",
+    colnames(healthImpacts) <- c("cell", "region", "year", "scenario", "metric",
                                  "TMREL", "riskFactor", "causeOfDeath", "sex", "stat", "value")
 
     healthImpacts <- healthImpacts %>%
@@ -65,7 +65,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
                riskFactor   = as.factor(.data$riskFactor),
                causeOfDeath = as.factor(.data$causeOfDeath),
                sex          = as.factor(.data$sex)) %>%
-        select(.data$model, .data$scenario, .data$region, .data$unit, .data$year,
+        select(.data$model, .data$scenario, .data$region, .data$metric, .data$year,
                .data$sex, .data$riskFactor, .data$causeOfDeath, .data$value)
 
     # Remove Marco's regional aggregations
@@ -84,9 +84,11 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
                                 "Both sexes" = "BTH",
                                 "Male"       = "MLE",
                                 "Female"     = "FML"),
-               unit = fct_recode(.data$unit,
-                                 "mio persons" = "deaths_avd",
-                                 "mio years" = "YLL_avd"),
+               metric = fct_recode(.data$metric,
+                                 "Attributable deaths"                   = "deaths_avd",
+                                 "Years of life lost"                    = "YLL_avd",
+                                 "Percent change in Attributable deaths" = "%deaths_avd/all",
+                                 "Percent change in Years of life lost"  = "%YLL_avd/all"),
                riskFactor = fct_recode(.data$riskFactor,
                                        "All risk factors" = "all-rf",
                                        Diet               = "diet",
@@ -114,8 +116,13 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
 
     healthImpacts <- healthImpacts %>%
         mutate(variable = ifelse(.data$sex == "Both sexes",
-                                 yes = paste0("Health|", .data$unit, "|Risk|Diet and anthropometrics"),
-                                 no  = paste0("Health|", .data$unit, "|Risk|Diet and anthropometrics", "|+|", .data$sex)))
+                                 yes = paste0("Health|", .data$metric, "|Risk|Diet and anthropometrics"),
+                                 no  = paste0("Health|", .data$metric, "|Risk|Diet and anthropometrics|+|", .data$sex)))
+
+    healthImpacts <- healthImpacts %>%
+        mutate(unit = ifelse(.data$metric == "Attributable deaths",
+                             yes = "mio deaths",
+                             no  = "mio years"))
 
     healthImpacts <- healthImpacts %>%
         select(.data$model, .data$scenario, .data$region, .data$unit, .data$year, .data$variable, .data$value) %>%
