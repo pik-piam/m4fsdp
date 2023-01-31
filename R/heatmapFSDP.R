@@ -59,6 +59,9 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b[,"value" := get("value") * get("factor")]
 
   b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
+  b[get("variableName") == "People Below 3.20$/Day", "valuefill" := ifelse(get("valuefill") < -100,-100,get("valuefill"))]
+  b[get("variableName") == "People Below 3.20$/Day", "valuefill" := ifelse(get("valuefill") > 100,100,get("valuefill"))]
+
   b[get("improvment") == "increase", "valuefill" := -get("valuefill")]
 
 
@@ -99,7 +102,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
     filter(.data$scenario == "BAU",
            .data$period == "2050",
            .data$variableName %in% "Years of life lost") %>%
-    select(-.data$scenario)
+    select(-"scenario")
 
   tb <- tidyr::expand_grid(tb, scenario = nonDietaryScenarios) %>%
     mutate(valuefill = NA, value = NA)
@@ -114,8 +117,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
                      "ExternalPressures") &
       get("variableName") %in% c("Global Surface Temp"),
     c("value", "valuefill") := list(NA, NA)]
-
-  b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
 
   b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "scenario", "model", "variable","unit", "period")]
 
@@ -258,6 +259,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b$scenGroup <- factor(b$scenGroup,levels = scenGroupOrder)
   b$scenario <- factor(b$scenario,levels = scenarioOrder,ordered = TRUE)
 
+  b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
+
 ### todo: DELETE once scenario selection is approved
 
 # if (regionSel == "IND") {
@@ -377,7 +380,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), colour = "white") +
     scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "white",
-                                     na.value = "grey95", high = "#fc8d59", breaks = c(-1, -0.5, 0, 0.5, 1),
+                                     na.value = "grey95", high = "#fc8d59", breaks = c(-1, -0.5, 0, 0.5, 1), limit = c(-1, 1),
                                      labels = c("best", "better", "none", "worse", "worst")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), size = 3, color = "grey50") +
