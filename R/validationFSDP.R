@@ -28,7 +28,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    rep <- rep[rep$scenario %in%c("SSP2bau","ExternalPressures","Sufficiency","Livelihoods","NatureSparing", "AgroMngmt", "FSDP"), ]
+    rep <- rep[rep$scenario %in%c("SSP2bau","ExternalPressures","Diet","Livelihoods","NatureSparing", "AgroMngmt", "FSDP"), ]
   } else {stop("unknown scens")}
 
   rev <- tail(levels(rep$version),n=1)
@@ -232,7 +232,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
                 hist = "dietrich_et_al_2012_updated",
                 histName = "Dietrich 2012")
   p2 <- plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer",
-                varName = "Sythetic nitrogen fertilizer", hist = "Bodirsky", histName = "Bodirsky 2015")
+                varName = "Synthetic nitrogen fertilizer", hist = "Bodirsky", histName = "Bodirsky 2015")
   p3 <- plotVal(var = "Resources|Water|Withdrawal|Agriculture",
                 varName = "Water Withdrawal Agriculture",
                 hist = c("LPJmL:ipsl-cm5a-lr","MATSIRO:ipsl-cm5a-lr","MPI-HM:ipsl-cm5a-lr"),
