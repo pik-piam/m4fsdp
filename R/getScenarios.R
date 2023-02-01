@@ -16,14 +16,16 @@ getScenarios <- function(tableType="1", oldformat=FALSE) {
   pathX=system.file("extdata",mapping= paste0("figure_",tableType,".csv"),package = "m4fsdp")
   scenario_select <- read.csv(pathX, sep = ";")
 
+  scenario_select$names <- scenario_names[match(scenario_select[,1],table = scenario_names[,1]),2]
+
   if(oldformat){
     #"EnergyTrans::ExtTransformation|EnergyTrans"
-    scenario_select <- paste0(scenario_select$modelrun,"::",scenario_select$bundle,"|",scenario_select$names)
-
     makebold <- which(scenario_select$bold==1)
     scenario_select$names[makebold] <- paste("<b>",scenario_select$names[makebold],"</b>",sep = "")
 
+    scenario_select <- paste0(scenario_select$modelrun,"::",scenario_select$bundle,"|",scenario_select$names)
   }
 
   return(scenario_select)
 }
+
