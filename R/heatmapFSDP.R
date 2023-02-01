@@ -123,110 +123,13 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b[scenario == "BAU", scenario := paste("SSP2", period)]
 
   #scneario selection, grouping and ordering
+  scenGrouping = getScenarios(tableType = tableType,oldformat = TRUE)
   if (tableType == 1) {
-
-    #scennameInDataframe::scenGroup|scennameInPlot
-    #order is maintained
-    scenGrouping <-
-      c("SSP2 2050::A|<b>Ref SSP2 2050</b>",
-        "Diet::Diets|<b>Diets</b>",
-        "DietEmptyCals::Diets|LowEmptyCals",
-        "DietFish::Diets|BalancedFish",
-        "DietLegumes::Diets|HighLegumes",
-        "DietMonogastrics::Diets|LowMonogastrics",
-        "DietRuminants::Diets|LowRuminants",
-        "DietVegFruitsNutsSeeds::Diets|HighVegFruitsNuts",
-        "NoOverweight::Diets|NoOverweight",
-        "HalfOverweight::Diets|HalfOverweight",
-        "NoUnderweight::Diets|NoUnderweight",
-        "LessFoodWaste::Diets|LowFoodWaste",
-        "Livelihoods::Livelihoods|<b>Livelihoods</b>",
-        "LiberalizedTrade::Livelihoods|LibTrade",
-        "MinWage::Livelihoods|MinWage",
-        "CapitalSubst::Livelihoods|CapitalSubst",
-        "NatureSparing::Biosphere|<b>Biosphere</b>",
-        "REDDaff::Biosphere|REDD+",
-#        "REDD::NatureSparing|REDD",
-        "LandSparing::Biosphere|LandSparing",
-        "PeatlandSparing::Biosphere|PeatlandSparing",
-        "WaterSparing::Biosphere|WaterSparing",
-        "BiodivSparing::Biosphere|BiodivSparing",
-        "AgroMngmt::Agriculture|<b>Agriculture</b>",
-        "NitrogenEff::Agriculture|NitrogenEff",
-        "CropRotations::Agriculture|CropRotations",
-        "LandscapeElements::Agriculture|LandscapeElements",
-        "RiceMit::Agriculture|RiceMitigation",
-        "LivestockMngmt::Agriculture|LivestockMngmt",
-        "ManureMngmt::Agriculture|ManureMngmt",
-        "SoilCarbon::Agriculture|SoilCarbon",
-        "ExternalPressures::ExtTransformation|<b>ExtTransformation</b>",
-        "Population::ExtTransformation|Population",
-        "EconDevelop::ExtTransformation|EconDevelop",
-        "EnergyTrans::ExtTransformation|EnergyTrans",
-        "Bioplastics::ExtTransformation|Bioplastics",
-        "TimberCities::ExtTransformation|TimberCities",
-        "SSP2fsdp::Z|allFSMs",
-        "FSDP::Z|<b>FSDP</b>")
-
     legendPosition <- theme(legend.position = c(-0.08, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
-
   } else if (tableType == 2) {
-
-    #scennameInDataframe::scenGroup|scennameInPlot
-    #order is maintained
-    scenGrouping <-
-      c("SSP2 2020::Ref|SSP2 2020",
-        "SSP2 2050::Ref|<b>SSP2 2050</b>",
-        "AgroMngmt::FSMs|Agriculture",
-        "AllNitrogen::FSMs|AllNitrogen",
-        "Bioeconomy::FSMs|Bioeconomy",
-        "ExternalPressures::FSMs|ExternalPressures",
-        "Livelihoods::FSMs|Livelihoods",
-        "LivelihoodsExt::FSMs|LivelihoodsExt",
-        "LivestockManureMngmt::FSMs|LivestockManureMngmt",
-        "LivestockNUEMngmt::FSMs|LivestockNUEMngmt",
-        "MonogastricsRotations::FSMs|MonogastricsRotations",
-        "MonogastricsVeggies::FSMs|MonogastricsVeggies",
-        "NatureSparing::FSMs|NatureSparing",
-        "REDDaffRuminants::FSMs|REDDaffRuminants",
-        "SoilMonogastricRuminants::FSMs|SoilMonogastricRuminants",
-        "TradeMonogastrics::FSMs|TradeMonogastrics",
-        "TradeREDDaff::FSMs|TradeREDDaff",
-        "TradeRotations::FSMs|TradeRotations",
-        "TradeRuminants::FSMs|TradeRuminants",
-        "TradeSoil::FSMs|TradeSoil",
-        "TradeVeggies::FSMs|TradeVeggies",
-        "AllInclusion::FSM Bundles|AllInclusion",
-        "AllClimate::FSM Bundles|AllClimate",
-        "AllEnvironment::FSM Bundles|AllEnvironment",
-        "AllHealth::FSM Bundles|AllHealth",
-        "Protection::FSM Bundles|Protection",
-        "Efficiency::FSM Bundles|Efficiency",
-        "Diet::FSM Bundles|Diets",
-        "FullBiodiv::FSM Bundles|FullBiodiv",
-        "SoilMonogastric::FSM Bundles|SoilMonogastric",
-        "SoilRotations::FSM Bundles|SoilRotations",
-        "DietRotations::FSM Bundles|DietRotations",
-        "WaterSoil::FSM Bundles|WaterSoil",
-        "FSDP::Z|<b>FSDP</b>")
-
     legendPosition <- theme(legend.position = c(-0.10, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
-
   } else if (tableType == 3) {
-
-    #scennameInDataframe::scenGroup|scennameInPlot
-    #order is maintained
-    scenGrouping <-
-      c("SSP2 2020::Ref|SSP2 2020",
-        "SSP2 2050::Ref|<b>SSP2 2050</b>",
-        "SSP1bau::SSPs|SSP1bau",
-        "SSP3bau::SSPs|SSP3bau",
-        "SSP4bau::SSPs|SSP4bau",
-        "SSP5bau::SSPs|SSP5bau",
-        "FSDP::Z|<b>FSDP</b>")
-
     legendPosition <- theme(legend.position = c(-0.05, 1.35), plot.margin = margin(5, 5, 5, 5, "pt"))
-
   }
 
   a <- strsplit(scenGrouping,"\\::")
