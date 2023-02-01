@@ -89,6 +89,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     return(x)
   }
 
+  scens = getScenarios()
+
   x <- selBundle(b, "Diet",
              singles = c("DietEmptyCals", "DietLegumes", "DietMonogastrics",
                        "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight","HalfOverweight", "NoUnderweight","LessFoodWaste"),
