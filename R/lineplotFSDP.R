@@ -29,7 +29,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
     scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "SSP2bau")
-    scenNames <- as.data.table(getScenarios())
+    scenNames <- as.data.table(m4fsdp::getScenarios())
     scenNames <- scenNames[get("modelrun") %in% scenOrder,]
     scenNames <- scenNames[match(scenOrder,get("modelrun")),]
     names(scenOrder) <- unlist(scenNames[,"scenarioname"])

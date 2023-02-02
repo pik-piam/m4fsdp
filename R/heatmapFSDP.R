@@ -123,7 +123,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b[scenario == "BAU", scenario := paste("SSP2", period)]
 
   #scneario selection, grouping and ordering
-  scenGrouping = getScenarios(tableType = tableType,oldformat = TRUE)
+  scenGrouping = m4fsdp::getScenarios(tableType = tableType,oldformat = TRUE)
   if (tableType == 1) {
     legendPosition <- theme(legend.position = c(-0.08, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
   } else if (tableType == 2) {
