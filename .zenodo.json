@@ -1,6 +1,6 @@
 {
   "title": "m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs\n    for FSDP project",
-  "version": "0.34.9",
+  "version": "0.34.10",
   "description": "<p>Output routines for extracting results from the MAgPIE\n    framework (versions 4.x) for the FSDP project.<\/p>",
   "creators": [
     {

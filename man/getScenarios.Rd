@@ -4,10 +4,10 @@
 \alias{getScenarios}
 \title{getScenarios}
 \usage{
-getScenarios(tableType = "1", oldformat = FALSE)
+getScenarios(tableType = NULL, oldformat = FALSE)
 }
 \arguments{
-\item{tableType}{select the scenarios based on csv file figureTableType.csv in inst/extdata folder}
+\item{tableType}{select the scenarios based on csv file figureTableType.csv in inst/extdata folder. NULL (default) returns scenario names.}
 
 \item{oldformat}{return in format modelrun::bundle|scenarioname}
 }

@@ -1,4 +1,5 @@
-modelrun;scenario name
+modelrun;scenarioname
+SSP2 2020;Ref SSP2 2020
 SSP2 2050;Ref SSP2 2050
 Diet;Diets
 DietEmptyCals;LowEmptyCals
@@ -37,9 +38,8 @@ Bioplastics;Bioplastics
 TimberCities;TimberCities
 SSP2fsdp;allFSMs
 FSDP;FSDP
-SSP2 2020;Ref
-SSP1bau;SSPs
-SSP2 2050;SSPs
-SSP3bau;SSPs
-SSP4bau;SSPs
-SSP5bau;SSPs
+SSP1bau;SSP1 BAU
+SSP2bau;SSP2 BAU
+SSP3bau;SSP3 BAU
+SSP4bau;SSP4 BAU
+SSP5bau;SSP5 BAU

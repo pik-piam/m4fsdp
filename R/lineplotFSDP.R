@@ -29,8 +29,12 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
     scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "SSP2bau")
+    scenNames <- as.data.table(getScenarios())
+    scenNames <- scenNames[get("modelrun") %in% scenOrder,]
+    scenNames <- scenNames[match(scenOrder,get("modelrun")),]
+    names(scenOrder) <- unlist(scenNames[,"scenarioname"])
     rep <- rep[get("scenario") %in% scenOrder, ]
-    rep$scenario <- factor(rep$scenario, scenOrder)
+    rep$scenario <- factor(rep$scenario, levels = scenOrder, labels = names(scenOrder))
     #factor(rep[!scenario %in% c("SSP2bau","FSEC"),c("scenset")])
   } else {stop("unknown scens")}
 
@@ -77,11 +81,11 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   val <- renameRep(val,var,regionSel)
 
   safe_colorblind_palette <- assignScenarioColors(scenOrder)
-  names(safe_colorblind_palette) <- scenOrder
+  names(safe_colorblind_palette) <- names(scenOrder)
 
   #override.linetype <- c(3,3,3,3,3,1,1)
   override.linetype <- rev(c("dashed","dashed","dashed","dashed","dashed","solid","solid"))
-  names(override.linetype) <- scenOrder
+  names(override.linetype) <- names(scenOrder)
 
   themeMy <- function(baseSize = 13, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
     txt <- element_text(size = baseSize, colour = "black", face = "plain")
@@ -248,7 +252,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p13 <- plotVal(rep, var = "Agri. wages", tag = "g)")
 
   p4 <- plotVal(rep, var = "Biodiversity", tag = "h)")
-  p5 <- plotVal(rep, var = "Croparea diversity", tag = "i)")
+  p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)")
   p6 <- plotVal(rep, var = "Nitrogen surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Water flow violations", tag = "k)")
   p8 <- plotVal(rep, var = "Greenhouse Gases", tag = "l)")
