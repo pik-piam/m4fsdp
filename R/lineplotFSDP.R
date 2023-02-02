@@ -157,7 +157,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   }
 
   # plot function
-  plotVal <- function(rep,var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, tag = NULL, showlegend = FALSE) {
+  plotVal <- function(rep, var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, tag = NULL, showlegend = FALSE, lowLimit = 0) {
     empty2null<-function(x){out<-x; if(!is.null(x)){if(any(x=="empty")){out<-NULL}}; return(out)}
     varName=empty2null(varName)
     weight=empty2null(weight)
@@ -167,19 +167,19 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     histName=empty2null(histName)
     tag=empty2null(tag)
 
-    if (var %in% rep$variable){
+    if (all(var %in% rep$variable)) {
       if (is.null(units)) {
         units <- levels(rep$unit)
       }
-      b <- rep[rep$variable == var & rep$unit %in% units & rep$period >= 2000 & rep$period <= 2050, ]
+      b <- rep[rep$variable %in% var & rep$unit %in% units & rep$period >= 2000 & rep$period <= 2050, ]
       b <- droplevels(b)
       units <- levels(b$unit)
       unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
       if (is.null(hist)) {
-        h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
+        h <- val[val$variable %in% var & val$unit == unitHist & val$scenario == "historical" &
                    val$period >= 2000 & val$period <= 2020, ]
       } else {
-        h <- val[val$variable == var & val$unit == unitHist & val$scenario == "historical" &
+        h <- val[val$variable %in% var & val$unit == unitHist & val$scenario == "historical" &
                    val$period >= 2000 & val$period <= 2020 & val$model %in% hist, ]
         h <- droplevels(h)
         if (!is.null(histName)) {
@@ -204,14 +204,21 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
                by = c("region_class", "model", "scenario", "variable", "unit", "period")]
       }
 
-      if (is.null(varName)) varName <- var
+      if (is.null(varName)) varName <- var[1]
       if (is.null(unitName)) unitName <- units
 
       p <- ggplot(b, aes(x = get("period"), y = get("value")))
       p <- p + labs(title = varName, tag = tag) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 0)
-      p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
+      if (length(levels(b$variable)) == 1) {
+        p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
+      } else {
+        for(v in levels(b$variable)) {
+          p <- p + geom_line(data = b[get("variable") == v,],aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
+          p <- p + geom_label(data = b[get("variable") == v & period == 2010,],aes(label = stringr::str_wrap(get("variable"), 10)), size = 2) #+ facet_wrap("region_class")
+        }
+      }
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050), expand = c(0,0)) +
-        scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(0, NA)) + theme(plot.margin = margin(0, 20, 20, 0, "pt"))
+        scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(lowLimit, NA)) + theme(plot.margin = margin(0, 20, 20, 0, "pt"))
       if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")), size = 1)
       #p <- p + geom_line(data = b[get("scenset") == "Bundles",],aes(color = get("scenario")),linetype="dotted") #+ facet_wrap("region_class")
       #p <- p + geom_line(data = b[get("scenset") == "SSP2bau / FSDP",],aes(color = get("scenario")),linetype="solid") #+ facet_wrap("region_class")
@@ -251,8 +258,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p12 <- plotVal(rep, var = "Agri. employment", tag = "f)")
   p13 <- plotVal(rep, var = "Agri. wages", tag = "g)")
 
-  p4 <- plotVal(rep, var = "Biodiversity", tag = "h)")
-  p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)")
+  p4 <- plotVal(rep, var = c("Biodiversity","Ag Landscape Intactness","Biodiversity Hotspots"), tag = "h)", lowLimit = 65)
+  p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 1.5)
   p6 <- plotVal(rep, var = "Nitrogen surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Water flow violations", tag = "k)")
   p8 <- plotVal(rep, var = "Greenhouse Gases", tag = "l)")
