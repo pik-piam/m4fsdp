@@ -1,7 +1,7 @@
 modelrun;scenario name
 SSP2 2050;Ref SSP2 2050
 Diet;Diets
-DietEmptyCals;LowEmptyCals
+DietEmptyCals;LowProcessed
 DietFish;BalancedFish
 DietLegumes;HighLegumes
 DietMonogastrics;LowMonogastrics
