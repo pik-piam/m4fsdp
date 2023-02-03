@@ -1,7 +1,8 @@
 modelrun;bundle;bold
-SSP2 2020;A;
+SSP2 2020;A;1
+SSP2 2050;A;1
 SSP1bau;SSPs;
-SSP2 2050;SSPs;1
 SSP3bau;SSPs;
 SSP4bau;SSPs;
 SSP5bau;SSPs;
+FSDP;Z;1

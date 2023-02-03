@@ -58,30 +58,35 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   # colors <- setNames(c("#C29511", "#4499FF", "#BD36FF", "#FC8014", "#26AD4C"),
   #                   c("single1", "single2", "single3", "single4", "bundle"))
 
-  selBundle <- function(b, bundleScen, singles, bundleOrder = "A", colors) {
+  selBundle <- function(b, bundleScen, singles, bundleOrder = "A", colors, scenNames = as.data.table(m4fsdp::getScenarios()))  {
+    names(bundleScen) <- unlist(scenNames[get("modelrun") == bundleScen,c("scenarioname"),])
+    x <- scenNames[get("modelrun") %in% singles,]
+    x <- x[match(singles,get("modelrun")),]
+    names(singles) <- unlist(x[,"scenarioname"])
+
     if(!(all(c(bundleScen, singles)%in%unique(b$scenario)))){
       warning(
         paste0("bundle ", bundleScen, " is not including all scenarios necessary. The following are missing: ", paste(setdiff(c(bundleScen, singles), unique(b$scenario)),collapse = ", "))
         )}
     x <- b[get("scenario") %in% c(bundleScen, singles), ]
     single_label <- NULL
-    if(length(singles) >= 6) {
+    if(length(names(singles)) >= 6) {
       sep <- ", "
     } else {
       sep <- "<br>"
     }
-    for (count in 1:length(singles)) {
+    for (count in seq_along(singles)) {
       if (count < length(singles)) {
-        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>", sep))
+        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", names(singles)[count], "</span>", sep))
       } else {
-        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", singles[count], "</span>"))
+        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", names(singles)[count], "</span>"))
       }
       x[, "bundle" := single_label]
       x[get("scenario") %in% singles[count], "scenCol" := paste0("single", count)]
     }
 
     x[, "bundleOrder" := bundleOrder]
-    x[, "bundleName" := bundleScen]
+    x[, "bundleName" := names(bundleScen)]
     x[get("scenario") %in% bundleScen, "scenCol" := "bundle"]
     x[get("scenario") %in% singles, "scenset" := "FSECa"]
     x[get("scenario") %in% bundleScen, "scenset" := "FSECb"]
@@ -89,11 +94,11 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     return(x)
   }
 
-  scens = getScenarios()
+
 
   x <- selBundle(b, "Diet",
              singles = c("DietEmptyCals", "DietLegumes", "DietMonogastrics",
-                       "DietRuminants", "DietVegFruitsNutsSeeds", "NoOverweight","HalfOverweight", "NoUnderweight","LessFoodWaste"),
+                       "DietRuminants", "DietVegFruitsNutsSeeds","HalfOverweight", "NoUnderweight","LessFoodWaste"),
              bundleOrder = 1, colors = colors)
 
   x <- rbind(x, selBundle(b, "Livelihoods",

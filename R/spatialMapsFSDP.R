@@ -293,10 +293,10 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Croparea diversity
-  title <- "i) DUMMY Croparea diversity"
-  unit  <- "DUMMY"
+  title <- "i) Shannon crop diversity"
+  unit  <- "index"
   caption <- "Projection: Mollweide"
-  b     <- droplevels(repGrid[variable == "BII (index)", ])
+  b     <- droplevels(repGrid[variable == "Shannon crop diversity (index)", ])
   bb    <- asRaster(b, countries2)
 
   plotCROPDIV <- ggplot(bb) +
