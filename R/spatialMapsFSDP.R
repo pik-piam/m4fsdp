@@ -32,7 +32,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
   # get country layer
   countries <- ne_countries(returnclass = "sf", scale = "small")
-  countries <- subset(countries, iso_a3 %in% levels(repIso$iso_a3))
+  #countries <- subset(countries, iso_a3 %in% levels(repIso$iso_a3))
   countries <- countries[-grep("Antarctica", countries$name), ]
   countries <- countries[-grep("Fr. S. Antarctic Lands", countries$name), ]
 
@@ -65,8 +65,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
     agEmpl <- calcPolygon(agEmpl, "agEmpl")
   } else {
-    pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"), )
-    agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"), )
+    pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"))
+    agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"))
   }
 
   # theme for maps
@@ -127,8 +127,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
 
   # Health: Spatial distribution of population underweight
-  title <- "a) Spatial distribution of population underweight"
-  unit <- "Share"
+  title <- "a) Underweight"
+  unit <- "Population share per country"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
@@ -137,16 +137,17 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4), oob = scales::squish) +
-    myTheme + labs(title = title, caption = caption) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "BuPu")[-1], na.value = "grey90", limits = c(0, 0.2), oob = scales::squish, breaks = c(0,0.05,0.1,0.15,0.2), labels = c(0,0.05,0.1,0.15,">0.2")) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
 
   # Health: Spatial distribution of population obese
-  title <- "b) Spatial distribution of population obese"
-  unit <- "Share"
+  title <- "b) Obesity"
+  unit <- "Population share per country"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
@@ -155,8 +156,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(0, 0.4), oob = scales::squish) +
-    myTheme + labs(title = title, caption = caption) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBu")[-1], na.value = "grey90", limits = c(0, 0.2), oob = scales::squish, breaks = c(0,0.05,0.1,0.15,0.2), labels = c(0,0.05,0.1,0.15,">0.2")) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
@@ -172,15 +174,16 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBuGn")[-1], na.value = "grey90", limits = c(-0.00128821, 0.1518272), oob = scales::squish) +
-    myTheme + labs(title = title, caption = caption) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "YlOrBr")[-1], na.value = "grey90", limits = c(0, 0.10), oob = scales::squish) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "d) Expenditure for agr. products per capita"
-  unit <- "USD/capita"
+  title <- "d) Expenditure for agricultural products"
+  unit <- "USD per capita"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b)
@@ -188,15 +191,16 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Reds")[-1], na.value = "grey90", limits = c(0, 1000), oob = scales::squish) +
-    myTheme + labs(title = title, caption = caption) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "YlOrRd")[-1], na.value = "grey90", limits = c(0, 1000), oob = scales::squish) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE))," to ",round(max(b$value,na.rm = TRUE))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
-  title <- "e) Share of Population with Incomes less than 3.20$/Day"
-  unit <- "Share"
+  title <- "e) Income below 3.20$ per day"
+  unit <- "Population share per country"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
@@ -208,7 +212,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     # scale_fill_manual(values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
     #                  breaks = seq(0, 0.4, by = 0.1)) +
     scale_fill_gradientn(unit, colors = rev(brewer.pal(11, "RdYlGn")[-1]), na.value = "grey90", limits = c(0, 1), oob = scales::squish) +
-    myTheme + labs(title = title, caption = caption) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX + 1000000, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
@@ -235,12 +240,12 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title <- "f) Share of working age population employed in agriculture"
-  unit <- "share"
+  title <- "f) Agricultural employment"
+  unit <- "Population share per country"
   caption <- "Cartogram projections with areas proportional to population"
 
   b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",
-                             "Labor|Employment|Share of working age population employed in agriculture")]), # new var name
+                             "Labor|Employment|Share of working age population employed in agriculture")]/100), # new var name
                   by = .(model, scenario, region, period)]
   all   <- merge(reg2iso, b)
   all   <- merge(pop, all)
@@ -248,16 +253,17 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Purples")[-1], na.value = "grey90", limits = c(0, 30), oob = scales::squish) +
-    labs(title = title, caption = caption) + myTheme +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "Purples")[-1], na.value = "grey90", limits = c(0, 0.3), oob = scales::squish, breaks = c(0,0.1,0.2,0.3)) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
 
   # Inclusion: Hourly labor costs in agriculture
-  title <- "g) Hourly labor costs in agriculture"
-  unit <- "USD/h"
+  title <- "g) Agricultural wages"
+  unit <- "USD per hour"
   caption <- "Cartogram projections with areas proportional to agricultural employment"
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
                     by = .(model, scenario, region, period)]
@@ -268,8 +274,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "Purples")[-c(1, 3, 4, 6)], na.value = "grey90",
-                         limits = c(0, 30), oob = scales::squish, trans = "log1p", breaks = c(0, 1.5, 5, 13, 30)) +
-    myTheme + labs(title = title, caption = caption) +
+                         limits = c(0, 30), oob = scales::squish, trans = "log1p", breaks = c(0, 1.5, 5, 13, 30), labels = c(0, 1.5, 5, 13, ">30")) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE))," to ",round(max(b$value,na.rm = TRUE))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
@@ -285,9 +292,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   plotBII <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
-    scale_fill_gradient2(unit, low = "darkred", high = "darkgreen", mid = "yellow",
-                         midpoint = 0.76, na.value = "grey90") +
-    myTheme + labs(title = title, caption = caption) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "RdYlGn"), na.value = "grey90", oob = scales::squish, limits = c(0.4,1)) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value,na.rm = TRUE),2)," to ",round(max(b$.value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
@@ -302,9 +309,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   plotCROPDIV <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
-    scale_fill_gradient2(unit, low = "darkred", high = "darkgreen", mid = "yellow",
-                         midpoint = 0.76, na.value = "grey90") +
-    myTheme + labs(title = title, caption = caption) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "YlGn")[-1], na.value = "grey90") +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value),2)," to ",round(max(b$.value),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
@@ -319,15 +326,16 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   plotNITROGEN <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 400), oob = scales::squish) +
-    myTheme + labs(title = title, caption = caption) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "RdPu")[-1], na.value = "grey90", limits = c(0, 100), oob = scales::squish, breaks = c(0,25,50,75,100), labels = c(0,25,50,75,">100")) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value))," to ",round(max(b$.value))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Water Withdrawal to Availability Ratio
   title <- "k) Water Withdrawal to Availability Ratio"
-  unit  <- "ratio"
+  unit  <- ""
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "water stress and violations", ])
   bb    <- asRaster(b, countries2)
@@ -336,12 +344,13 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_raster(aes(x = x, y = y, fill = cut(value,
                                              breaks = c(0.0, 0.2, 0.4, 0.6, 0.8, 1.0, 100)))) +
     facet_wrap(~scenario) +
-    geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) +
+    geom_sf(data = countries2, color = "grey90", fill = NA, size = 0.2) +
     coord_sf(xlim = xlimMoll) +
     scale_fill_manual(unit,
-                      values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
-                      label = c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1", "EFR violation")) +
-    myTheme + labs(title = title, caption = caption) +
+                      values = c("#ffffd4", "#fee391", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
+                      label = c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1", "EFR violation"),na.value = "grey50") +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value))," to ",round(max(b$.value))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_legend(title.position = "top", title.hjust = 1, nrow = 1)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
@@ -361,7 +370,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     #                  color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradient2(unit, low = "darkgreen", high = "darkred", mid = "white", midpoint = 0, na.value = "grey90") +
     myTheme +
-    labs(title = title, caption = caption) +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value))," to ",round(max(b$.value))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
@@ -376,16 +385,16 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   plotTEMP <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
-    scale_fill_gradient2(unit, low = "darkgreen", high = "darkred", mid = "yellow", midpoint = 0, na.value = "grey90") +
+    scale_fill_gradient2(unit, low = "darkgreen", high = "darkred", mid = "yellow", midpoint = 0, na.value = "grey90", limits = c(-1, 4), oob = scales::squish, breaks = c(-1,0,1,2,3,4), labels = c(-1,0,1,2,3,">4")) +
     myTheme +
-    labs(title = title, caption = caption) +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value),2)," to ",round(max(b$.value),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Cost: Bioeconomy
   title <- "n) Value of Bioeconomy Demand"
-  unit  <- "US$05/yr"
+  unit  <- "US$05/capita/yr"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repReg[, .(value = value[variable == "Value|Bioeconomy Demand"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
@@ -396,15 +405,16 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) + # coord_sf(xlim = xlimMoll) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Blues")[-1], na.value = "grey90", limits = c(0, 2000), oob = scales::squish) +
-    labs(title = title, caption = caption) + myTheme +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "YlGnBu")[-1], na.value = "grey90", limits = c(0, 500), oob = scales::squish, breaks = c(0,100,200,300,400,500), labels = c(0,100,200,300,400,">500")) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value))," to ",round(max(b$value))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Cost:Production cost agriculture per capita
-  title <- "o) Production cost agriculture per capita"
-  unit  <- "USD/cap/yr"
+  title <- "o) Production cost agriculture"
+  unit  <- "US$05/capita/yr"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repReg[, .(value = value[variable == "Costs"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
@@ -415,8 +425,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) + # coord_sf(xlim = xlimMoll) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Blues")[-1], na.value = "grey90", limits = c(0, 2000), oob = scales::squish) +
-    labs(title = title, caption = caption) + myTheme +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "YlOrBr")[-1], na.value = "grey90", limits = c(0, 2000), oob = scales::squish) +
+    myTheme +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value))," to ",round(max(b$value))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
