@@ -31,10 +31,14 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   }
 
   # get country layer
-  countries <- ne_countries(returnclass = "sf", scale = "small")
-  #countries <- subset(countries, iso_a3 %in% levels(repIso$iso_a3))
+  countries <- ne_countries(returnclass = "sf", scale = "medium")
+  #setdiff(b$iso_a3,countries$gu_a3)
+  #countries <- subset(countries, gu_a3 %in% levels(repIso$iso_a3))
   countries <- countries[-grep("Antarctica", countries$name), ]
   countries <- countries[-grep("Fr. S. Antarctic Lands", countries$name), ]
+  #iso_a3 does not include all countries: FRA and NOR are missing!
+  countries <- countries[, c("gu_a3", "name", "geometry")]
+  names(countries)[names(countries) == "gu_a3"] <- "iso_a3"
 
   # function to calc polygons for cartogram
   calcPolygon <- function(pop, name) {
@@ -64,6 +68,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     names(agEmpl)[names(agEmpl) == "value"] <- "agEmpl"
     agEmpl <- merge(countries[, c("iso_a3", "geometry")], agEmpl)
     agEmpl <- calcPolygon(agEmpl, "agEmpl")
+
+    #saveRDS(pop, "/Users/flo/OneDrive/Dokumente/PIK/Development/R/pik-piam/m4fsdp/inst/extdata/pop.rds", compress = "xz")
+    #saveRDS(agEmpl, "/Users/flo/OneDrive/Dokumente/PIK/Development/R/pik-piam/m4fsdp/inst/extdata/agEmpl.rds", compress = "xz")
   } else {
     pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"))
     agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"))
