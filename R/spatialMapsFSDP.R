@@ -174,7 +174,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "BuPu")[-1], na.value = "grey90", limits = c(0, 0.2), oob = scales::squish, breaks = c(0,0.05,0.1,0.15,0.2), labels = c(0,0.05,0.1,0.15,">0.2")) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBu")[-1], na.value = "grey90", limits = c(0, 0.2), oob = scales::squish, breaks = c(0,0.05,0.1,0.15,0.2), labels = c(0,0.05,0.1,0.15,">0.2")) +
     myTheme +
     labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
@@ -196,7 +196,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBu")[-1], na.value = "grey90", limits = c(0, 0.2), oob = scales::squish, breaks = c(0,0.05,0.1,0.15,0.2), labels = c(0,0.05,0.1,0.15,">0.2")) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "BuPu")[-1], na.value = "grey90", limits = c(0, 0.2), oob = scales::squish, breaks = c(0,0.05,0.1,0.15,0.2), labels = c(0,0.05,0.1,0.15,">0.2")) +
     myTheme +
     labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
@@ -244,7 +244,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
   title <- "e) Income below 3.20$ per day"
-  unit <- "Population share per country"
+  unit <- "Population share per world region"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
@@ -257,7 +257,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
     # scale_fill_manual(values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
     #                  breaks = seq(0, 0.4, by = 0.1)) +
-    scale_fill_gradientn(unit, colors = rev(brewer.pal(11, "RdYlGn")[-1]), na.value = "grey90", limits = c(0, 1), oob = scales::squish) +
+    scale_fill_gradientn(unit, colors = rev(brewer.pal(11, "PuBu")[-c(1,2,9)]), na.value = "grey90", limits = c(0, 1), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
@@ -323,7 +323,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Purples")[-c(1, 3, 4, 6)], na.value = "grey90",
+    scale_fill_gradientn(unit, colors = c("#a3b8a6","#e7e3b8","#edde7d", "#f6da3c", "#f8d228", "#f6c514", "#eab702"), na.value = "grey90",
                          limits = c(0, 30), oob = scales::squish, trans = "log1p", breaks = c(0, 1.5, 5, 13, 30), labels = c(0, 1.5, 5, 13, ">30")) +
     myTheme +
     labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE))," to ",round(max(b$value,na.rm = TRUE))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
