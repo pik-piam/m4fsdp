@@ -115,7 +115,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   }
 
   # plot function
-  plotVal <- function(var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL) {
+  plotVal <- function(var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, histweight = NULL) {
     empty2null<-function(x){out<-x; if(!is.null(x)){if(any(x=="empty")){out<-NULL}}; return(out)}
     varName=empty2null(varName)
     weight=empty2null(weight)
@@ -123,6 +123,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     units=empty2null(units)
     unitName=empty2null(unitName)
     histName=empty2null(histName)
+    histweight=empty2null(histweight)
 
     if (var %in% rep$variable){
       if (is.null(units)) {
@@ -146,7 +147,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
       if (!is.null(weight)) {
         w1 <- rep[rep$variable == weight & rep$period >= 2000 & rep$period <= 2050, ]
-        w2 <- val[val$variable == weight & val$scenario == "historical" &
+        w2 <- val[val$variable == weight & val$scenario == "historical" & val$model == histweight &
                     val$period >= 2000 & val$period <= 2020, ]
         b <- cbind(b, w1$value)
         h <- cbind(h, w2$value)
@@ -185,12 +186,12 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
   # Validation assumptions
   p1 <- plotVal(var = "Population")
-  p2 <- plotVal(var = "Income", units = "US$05 PPP/cap/yr", varName = "Per-capita income", weight = "Population")
-  p3 <- plotVal(var = "Nutrition|Calorie Supply|+|Crops", weight = "Population",
+  p2 <- plotVal(var = "Income", units = "US$05 PPP/cap/yr", varName = "Per-capita income", weight = "Population", histweight = "WDI-UN_PopDiv-MI")
+  p3 <- plotVal(var = "Nutrition|Calorie Supply|+|Crops", weight = "Population", histweight = "WDI-UN_PopDiv-MI",
                 varName = "Per-capita calorie supply from crops", hist = "FAOmassbalance")
   p4 <- plotVal(var = "Nutrition|Calorie Supply|+|Livestock products",
                 varName = "Per-capita calorie supply from livestock products",
-                weight = "Population", hist = "FAOmassbalance")
+                weight = "Population", histweight = "WDI-UN_PopDiv-MI", hist = "FAOmassbalance")
   p5 <- plotVal(var = "Demand|++|Crops", varName = "Total crop demand including feed and feed")
   p6 <- plotVal(var = "Demand|++|Livestock products", varName = "Total livestock product demand")
   #p7 <- plotVal(var = "Income|Number of People Below 3p20 USDppp11/day", varName = "Number of people under 3.20 USDppp11/day poverty line")
@@ -229,6 +230,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   p1 <- plotVal(var = "Productivity|Landuse Intensity Indicator Tau",
                 varName = "Landuse Intensity Indicator Tau",
                 weight = "Resources|Land Cover|+|Cropland",
+                histweight = "FAO_crop_past",
                 hist = "dietrich_et_al_2012_updated",
                 histName = "Dietrich 2012")
   p2 <- plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer",
