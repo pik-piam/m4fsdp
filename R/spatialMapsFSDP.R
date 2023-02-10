@@ -42,7 +42,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   # https://gist.github.com/rCarto/34c7599d7d89a379db02c663c2e333ee
   # Only keep the largest polygons of multipart polygons for a few countries
   # (e.g. display only continental US)
-  #countries <- st_transform(countries, crs = st_crs("+proj=moll"))
+  # countries <- st_transform(countries, crs = st_crs("+proj=moll"))
   # frag_ctry <- c("US", "RU", "FR", "IN", "ES", "NL", "CL", "NZ", "ZA")
   # largest_ring = function(x) {
   #   x$ids <- 1:nrow(x)
@@ -119,7 +119,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   labelX <- -5000000
   labelY <- -6500000
   cropAll <- function(all) {
-    all <- st_crop(all, xmin = -12500000, xmax = 17796780,ymin = -6990985, ymax = 16296170)
+    all <- st_crop(all, xmin = -13500000, xmax = 18796780,ymin = -6990985, ymax = 13296170)
     return(all)
   }
 
