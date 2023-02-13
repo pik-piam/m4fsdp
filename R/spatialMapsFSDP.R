@@ -301,7 +301,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
     geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "Purples")[-1], na.value = "grey90", limits = c(0, 0.3), oob = scales::squish, breaks = c(0,0.1,0.2,0.3)) +
+    scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBu")[-c(1,2,9)], na.value = "grey90", limits = c(0, 0.3), oob = scales::squish, breaks = c(0,0.1,0.2,0.3)) +
     myTheme +
     labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
