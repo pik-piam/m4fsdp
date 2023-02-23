@@ -31,6 +31,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
 
   #get variable list
   var <- getVariables(levels(rep$variable))
+  var <- var[var != "Biodiversity|BII"]
 
   #sub-setting variables, regions and years
   b <- rep[variable %in% var & region == regionSel & period == 2050, ]

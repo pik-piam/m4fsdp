@@ -157,7 +157,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   }
 
   # plot function
-  plotVal <- function(rep, var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, tag = NULL, showlegend = FALSE, lowLimit = 0) {
+  plotVal <- function(rep, var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, histweight = NULL, tag = NULL, showlegend = FALSE, lowLimit = 0) {
     empty2null<-function(x){out<-x; if(!is.null(x)){if(any(x=="empty")){out<-NULL}}; return(out)}
     varName=empty2null(varName)
     weight=empty2null(weight)
@@ -165,6 +165,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     units=empty2null(units)
     unitName=empty2null(unitName)
     histName=empty2null(histName)
+    histweight=empty2null(histweight)
     tag=empty2null(tag)
 
     if (all(var %in% rep$variable)) {
@@ -189,13 +190,21 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
 
       if (!is.null(weight)) {
         w1 <- rep[rep$variable == weight & rep$period >= 2000 & rep$period <= 2050, ]
-        w2 <- val[val$variable == weight & val$scenario == "historical" &
+        w1 <- droplevels(w1)
+        w1 <- w1[,c("region","scenario","period","value","region_class")]
+        names(w1)[names(w1)=="value"] <- "weight"
+        b <- merge(b,w1,by = c("region","scenario","period","region_class"))
+
+        w2 <- val[val$variable == weight & val$scenario == "historical" & val$model == histweight &
                     val$period >= 2000 & val$period <= 2020, ]
-        b <- cbind(b, w1$value)
-        h <- cbind(h, w2$value)
-        b <- b[, list(value = weighted.mean(get("value"), get("V2"))),
+        w2 <- droplevels(w2)
+        w2 <- w2[,c("region","scenario","period","value","region_class")]
+        names(w2)[names(w2)=="value"] <- "weight"
+        h <- merge(h,w2,by = c("region","scenario","period","region_class"))
+
+        b <- b[, list(value = weighted.mean(get("value"), get("weight"))),
                by = c("region_class", "model", "scenset", "scenario", "variable", "unit", "period")]
-        h <- h[, list(value = weighted.mean(get("value"), get("V2"))),
+        h <- h[, list(value = weighted.mean(get("value"), get("weight"))),
                by = c("region_class", "model", "scenario", "variable", "unit", "period")]
       } else {
         b <- b[, list(value = sum(get("value"))),
@@ -253,17 +262,17 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p2 <- plotVal(rep, var = "Obesity", tag = "b)")
   p3 <- plotVal(rep, var = "Years of life lost", tag = "c)")
 
-  p10 <- plotVal(rep, var = "Expenditures for agri.", tag = "d)")
+  p10 <- plotVal(rep, var = "Expenditures for agric.", tag = "d)")
   p11 <- plotVal(rep, var = "People Below 3.20$/Day", tag = "e)")
-  p12 <- plotVal(rep, var = "Agri. employment", tag = "f)")
-  p13 <- plotVal(rep, var = "Agri. wages", tag = "g)")
+  p12 <- plotVal(rep, var = "Agric. employment", tag = "f)")
+  p13 <- plotVal(rep, var = "Agric. wages", tag = "g)")
 
-  p4 <- plotVal(rep, var = c("Biodiversity","Ag Landscape Intactness","Biodiversity Hotspots"), tag = "h)", lowLimit = 65)
+  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Biodiversity Hotspots"), tag = "h)", lowLimit = 65, varName = "Biodiversity")
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 1.5)
   p6 <- plotVal(rep, var = "Nitrogen surplus", tag = "j)")
-  p7 <- plotVal(rep, var = "Water flow violations", tag = "k)")
-  p8 <- plotVal(rep, var = "Greenhouse Gases", tag = "l)")
-  p9 <- plotVal(rep, var = "Global Surface Temp.", tag = "m)")
+  p7 <- plotVal(rep, var = "Water env. flow violations", tag = "k)")
+  p8 <- plotVal(rep, var = "Cumul. GHG emissions", tag = "l)")
+  p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
 
   p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
   p15 <- plotVal(rep, var = "Costs", tag = "o)")

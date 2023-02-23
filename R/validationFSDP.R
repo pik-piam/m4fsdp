@@ -147,13 +147,21 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
       if (!is.null(weight)) {
         w1 <- rep[rep$variable == weight & rep$period >= 2000 & rep$period <= 2050, ]
+        w1 <- droplevels(w1)
+        w1 <- w1[,c("region","scenario","period","value","region_class")]
+        names(w1)[names(w1)=="value"] <- "weight"
+        b <- merge(b,w1,by = c("region","scenario","period","region_class"))
+
         w2 <- val[val$variable == weight & val$scenario == "historical" & val$model == histweight &
                     val$period >= 2000 & val$period <= 2020, ]
-        b <- cbind(b, w1$value)
-        h <- cbind(h, w2$value)
-        b <- b[, list(value = weighted.mean(get("value"), get("V2"))),
+        w2 <- droplevels(w2)
+        w2 <- w2[,c("region","scenario","period","value","region_class")]
+        names(w2)[names(w2)=="value"] <- "weight"
+        h <- merge(h,w2,by = c("region","scenario","period","region_class"))
+
+        b <- b[, list(value = weighted.mean(get("value"), get("weight"))),
                by = c("region_class", "model", "scenario", "variable", "unit", "period")]
-        h <- h[, list(value = weighted.mean(get("value"), get("V2"))),
+        h <- h[, list(value = weighted.mean(get("value"), get("weight"))),
                by = c("region_class", "model", "scenario", "variable", "unit", "period")]
       } else {
         b <- b[, list(value = sum(get("value"))),
