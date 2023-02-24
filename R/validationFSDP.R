@@ -8,6 +8,7 @@
 #' @param regionSel Region that should be plotted (e.g. c("IND","EUR","GLO")). Aggregate will return LIR, MIR and HIR.
 #' @param folder output folder
 #' @param scens if "BAU_FSEC", BAU and FSEC scenarios are plotted, with "central" plots the core scenarios, "extended" plot the core scenarios and all ssps.
+#' @param showHistLegend show legend for historic data sets. TRUE / FALSE
 #' @details creates validation for FSDP MAgPIE runs
 #' @return NULL
 #' @author Florian Humpenoeder
@@ -15,34 +16,59 @@
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 
-validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "output", scens="BAU_FSEC") {
+validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "output", scens="BAU_FSEC", showHistLegend = TRUE) {
 
   #### read in data files
   if(scens=="central"){
     rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd","FSECe"), subset = FALSE)
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="BAU_FSEC") {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECc","FSECe"), subset = FALSE)
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
+    scenOrder <- c("FSDP", "SSP2bau")
+    scenNames <- as.data.table(m4fsdp::getScenarios())
+    scenNames <- scenNames[get("modelrun") %in% scenOrder,]
+    scenNames <- scenNames[match(scenOrder,get("modelrun")),]
+    names(scenOrder) <- unlist(scenNames[,"scenarioname"])
+    rep <- rep[get("scenario") %in% scenOrder, ]
+    rep$scenario <- factor(rep$scenario, levels = scenOrder, labels = names(scenOrder))
+    override.linetype <- rev(c("solid","solid"))
+    names(override.linetype) <- names(scenOrder)
+    rep[get("scenset") %in% c("FSECd","FSECe"), "scenset" := "SSP2bau / FSDP"]
+    rep$scenset <- factor(rep$scenset, c("SSP2bau / FSDP"))
   } else if (scens=="extended") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd","FSECe"), subset = FALSE)
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    rep <- rep[rep$scenario %in%c("SSP2bau","ExternalPressures","Diet","Livelihoods","NatureSparing", "AgroMngmt", "FSDP"), ]
+    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "SSP2bau")
+    scenNames <- as.data.table(m4fsdp::getScenarios())
+    scenNames <- scenNames[get("modelrun") %in% scenOrder,]
+    scenNames <- scenNames[match(scenOrder,get("modelrun")),]
+    names(scenOrder) <- unlist(scenNames[,"scenarioname"])
+    rep <- rep[get("scenario") %in% scenOrder, ]
+    rep$scenario <- factor(rep$scenario, levels = scenOrder, labels = names(scenOrder))
+    override.linetype <- rev(c("dashed","dashed","dashed","dashed","dashed","solid","solid"))
+    names(override.linetype) <- names(scenOrder)
+    rep[get("scenset") %in% c("FSECd","FSECe"), "scenset" := "SSP2bau / FSDP"]
+    rep[get("scenset") %in% c("FSECb"), "scenset" := "Bundles"]
+    rep$scenset <- factor(rep$scenset, c("SSP2bau / FSDP", "Bundles"))
   } else {stop("unknown scens")}
 
   rev <- tail(levels(rep$version),n=1)
-  rep$scenset <- NULL
   if (!is.data.frame(val)) val <- readRDS(val)
   val[region == "World", region := "GLO"]
+
 
   #safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#332288", "#AA4499",
   #                             "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
 
-  safe_colorblind_palette <- c("#68023F","#008169","#EF0096","#00DCB5","#FFCFE2",
-    "#003C86","#9400E6","#009FFA","#FF71FD","#7CFFFA","#6A0213","#008607","#F60239","#00E307","#FFDC3D")
-  order=safe_colorblind_palette[c(15,9,8,12,13,7,c(1:15)[!(1:15%in%c(15,9,8,12,13,7))])]
-  # alternative colors in this order"#00463C","#C00B6F","#00A090","#FF95BA","#5FFFDE","#590A87","#0063E5","#ED0DFD","#00C7F9","#FFD5FD","#3D3C04","#C80B2A","#00A51C","#FFA035","#9BFF2D"
+  # safe_colorblind_palette <- c("#68023F","#008169","#EF0096","#00DCB5","#FFCFE2",
+  #   "#003C86","#9400E6","#009FFA","#FF71FD","#7CFFFA","#6A0213","#008607","#F60239","#00E307","#FFDC3D")
+  # order=safe_colorblind_palette[c(15,9,8,12,13,7,c(1:15)[!(1:15%in%c(15,9,8,12,13,7))])]
+  # # alternative colors in this order"#00463C","#C00B6F","#00A090","#FF95BA","#5FFFDE","#590A87","#0063E5","#ED0DFD","#00C7F9","#FFD5FD","#3D3C04","#C80B2A","#00A51C","#FFA035","#9BFF2D"
+
+  safe_colorblind_palette <- assignScenarioColors(scenOrder)
+  names(safe_colorblind_palette) <- names(scenOrder)
 
 
   themeMy <- function(baseSize = 11, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
@@ -148,9 +174,9 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       if (!is.null(weight)) {
         w1 <- rep[rep$variable == weight & rep$period >= 2000 & rep$period <= 2050, ]
         w1 <- droplevels(w1)
-        w1 <- w1[,c("region","scenario","period","value","region_class")]
+        w1 <- w1[,c("region","scenario", "scenset","period","value","region_class")]
         names(w1)[names(w1)=="value"] <- "weight"
-        b <- merge(b,w1,by = c("region","scenario","period","region_class"))
+        b <- merge(b,w1,by = c("region","scenario", "scenset","period","region_class"))
 
         w2 <- val[val$variable == weight & val$scenario == "historical" & val$model == histweight &
                     val$period >= 2000 & val$period <= 2020, ]
@@ -160,12 +186,12 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
         h <- merge(h,w2,by = c("region","scenario","period","region_class"))
 
         b <- b[, list(value = weighted.mean(get("value"), get("weight"))),
-               by = c("region_class", "model", "scenario", "variable", "unit", "period")]
+               by = c("region_class", "model", "scenario", "scenset", "variable", "unit", "period")]
         h <- h[, list(value = weighted.mean(get("value"), get("weight"))),
                by = c("region_class", "model", "scenario", "variable", "unit", "period")]
       } else {
         b <- b[, list(value = sum(get("value"))),
-               by = c("region_class", "model", "scenario", "variable", "unit", "period")]
+               by = c("region_class", "model", "scenario", "scenset", "variable", "unit", "period")]
         h <- h[, list(value = sum(get("value"))),
                by = c("region_class", "model", "scenario", "variable", "unit", "period")]
       }
@@ -177,13 +203,14 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       p <- p + labs(title = varName) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 90)
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050)) +
         scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
-      if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")))
-      p <- p + geom_line(aes(color = get("scenario"))) + facet_wrap("region_class")
+      if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")),show.legend = showHistLegend)
+      p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset"))) + facet_wrap("region_class")
       p <- p + scale_shape_discrete("Historical data", solid = 0)
       #p <- p + scale_color_brewer("MAgPIE scenario", palette = "Set2")
       p <- p + scale_color_manual("MAgPIE scenario", values = safe_colorblind_palette)
-      p <- p + guides(color = guide_legend(order = 1, title.position = "top"),
-                      shape = guide_legend(order = 2, title.position = "top"))
+      p <- p + guides(color = guide_legend(order = 1, title.position = "top", override.aes = list(linetype = override.linetype,size = 1,shape=NA), reverse = TRUE),
+                      shape = guide_legend(order = 2, title.position = "top"),
+                      linetype = "none")
       return(p)
     } else {
       warning(paste0("Missing Variable: ",var))
@@ -207,7 +234,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   #poverty validation requires new input data validation
 
   combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
-  combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
+  combined <- combined + plot_layout(guides = ifelse(showHistLegend,"keep","collect"), ncol = 2) & theme(legend.position = "bottom", legend.box = ifelse(scens == "BAU_FSEC","horizontal","vertical"))
   ggsave(filename = file.path(folder, paste(rev, "valAssumptions.png", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
   ggsave(filename = file.path(folder, paste(rev, "valAssumptions.pdf", sep = "_")), combined,
@@ -228,7 +255,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
                 varName = "Urban land", hist = c("MAgPIEown","LUH2v2"), histName = c("mod. LUH2v2", "orig. LUH2v2"))
 
   combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
-  combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
+  combined <- combined + plot_layout(guides = ifelse(showHistLegend,"keep","collect"), ncol = 2) & theme(legend.position = "bottom", legend.box = ifelse(scens == "BAU_FSEC","horizontal","vertical"))
   ggsave(filename = file.path(folder, paste(rev, "valLand.png", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
   ggsave(filename = file.path(folder, paste(rev, "valLand.pdf", sep = "_")), combined,
@@ -249,10 +276,35 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
                 histName = c("LPJmL:IPSL", "MATSIRO:IPSL", "MPI-HM:IPSL"))
 
   combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
-  combined <- combined + plot_layout(guides = "keep", ncol = 2) & theme(legend.position = "bottom")
+  combined <- combined + plot_layout(guides = ifelse(showHistLegend,"keep","collect"), ncol = 2) & theme(legend.position = "bottom", legend.box = ifelse(scens == "BAU_FSEC","horizontal","vertical"))
   ggsave(filename = file.path(folder, paste(rev, "valManagement.png", sep = "_")), combined,
          width = 10, height = 6, scale = 1.3)
   ggsave(filename = file.path(folder, paste(rev, "valManagement.pdf", sep = "_")), combined,
          width = 10, height = 6, scale = 1.3)
+
+  # Validation ag com. price index
+  p1 <- plotVal(var = "Productivity|Landuse Intensity Indicator Tau",
+                varName = "Landuse Intensity Indicator Tau",
+                weight = "Resources|Land Cover|+|Cropland",
+                histweight = "FAO_crop_past",
+                hist = "dietrich_et_al_2012_updated",
+                histName = "Dietrich 2012")
+  p2 <- plotVal(var = "Costs|TC",
+                weight = "Population")
+  p3 <- plotVal(var = "Agricultural Research Intensity",
+                weight = "Population")
+  p4 <- plotVal(var = "SDG|SDG02|Investment in AgR&D",
+                weight = "Population")
+  p5 <- plotVal(var = "Prices|Index2020|Agriculture|Food products",
+                weight = "Population")
+  p6 <- plotVal(var = "Prices|Index2020|Agriculture|Food products|Plant-based",
+                weight = "Population")
+
+  combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
+  combined <- combined + plot_layout(guides = ifelse(showHistLegend,"keep","collect"), ncol = 2) & theme(legend.position = "bottom", legend.box = ifelse(scens == "BAU_FSEC","horizontal","vertical"))
+  ggsave(filename = file.path(folder, paste(rev, "valPricesCosts.png", sep = "_")), combined,
+         width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valPricesCosts.pdf", sep = "_")), combined,
+         width = 10, height = 10, scale = 1.3)
 
 }

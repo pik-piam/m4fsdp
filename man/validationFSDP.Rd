@@ -9,7 +9,8 @@ validationFSDP(
   val,
   regionSel = "aggregate",
   folder = "output",
-  scens = "BAU_FSEC"
+  scens = "BAU_FSEC",
+  showHistLegend = TRUE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ validationFSDP(
 \item{folder}{output folder}
 
 \item{scens}{if "BAU_FSEC", BAU and FSEC scenarios are plotted, with "central" plots the core scenarios, "extended" plot the core scenarios and all ssps.}
+
+\item{showHistLegend}{show legend for historic data sets. TRUE / FALSE}
 }
 \description{
 Validation for FSDP MAgPIE runs
