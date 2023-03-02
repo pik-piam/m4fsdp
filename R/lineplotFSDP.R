@@ -162,7 +162,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   }
 
   # plot function
-  plotVal <- function(rep, var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, histweight = NULL, tag = NULL, showlegend = FALSE, lowLimit = 0) {
+  plotVal <- function(rep, var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, histweight = NULL, tag = NULL, showlegend = FALSE, lowLimit = 0, highLimit = NA) {
     empty2null<-function(x){out<-x; if(!is.null(x)){if(any(x=="empty")){out<-NULL}}; return(out)}
     varName=empty2null(varName)
     weight=empty2null(weight)
@@ -232,7 +232,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
         }
       }
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050), expand = c(0,0)) +
-        scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(lowLimit, NA)) + theme(plot.margin = margin(0, 20, 20, 0, "pt"))
+        scale_y_continuous(expand = expansion(mult = c(0, 0.05)), limits = c(lowLimit, highLimit)) + theme(plot.margin = margin(0, 20, 20, 0, "pt"))
       if (nrow(h) > 0) p <- p + geom_point(data = h, aes(shape = get("model")), size = 1)
       #p <- p + geom_line(data = b[get("scenset") == "Bundles",],aes(color = get("scenario")),linetype="dotted") #+ facet_wrap("region_class")
       #p <- p + geom_line(data = b[get("scenset") == "SSP2bau / FSDP",],aes(color = get("scenario")),linetype="solid") #+ facet_wrap("region_class")
@@ -272,7 +272,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p12 <- plotVal(rep, var = "Agric. employment", tag = "f)")
   p13 <- plotVal(rep, var = "Agric. wages", tag = "g)")
 
-  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Key conservation landscapes"), tag = "h)", lowLimit = 65, varName = "Biodiversity")
+  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Key conservation landscapes"), tag = "h)", lowLimit = 65, highLimit = 100, varName = "Biodiversity")
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 1.5)
   p6 <- plotVal(rep, var = "Nitrogen surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Water env. flow violations", tag = "k)")
