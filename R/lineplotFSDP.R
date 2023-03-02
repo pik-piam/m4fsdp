@@ -257,7 +257,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       return(p)
     } else {
       warning(paste0("Missing Variable: ",var))
-      return(ggplot(mtcars, aes(x = wt, y = mpg)) + geom_blank()+ggtitle("DUMMY / Placeholder"))
+      return(ggplot(get("mtcars"), aes(x = get("wt"), y = get("mpg"))) + geom_blank()+ggtitle("DUMMY / Placeholder"))
     }
 
   }

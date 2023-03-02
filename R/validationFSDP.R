@@ -217,7 +217,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       return(p)
     } else {
       warning(paste0("Missing Variable: ",var))
-      return(ggplot(mtcars, aes(x = wt, y = mpg)) + geom_blank()+ggtitle("DUMMY / Placeholder"))
+      return(ggplot(get("mtcars"), aes(x = get("wt"), y = get("mpg"))) + geom_blank()+ggtitle("DUMMY / Placeholder"))
     }
 
   }
