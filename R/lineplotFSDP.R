@@ -28,7 +28,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "SSP2bau")
+    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "BAU")
+    scenOrder <- intersect(scenOrder,levels(factor(rep$scenario)))
     scenNames <- as.data.table(m4fsdp::getScenarios())
     scenNames <- scenNames[get("modelrun") %in% scenOrder,]
     scenNames <- scenNames[match(scenOrder,get("modelrun")),]
@@ -74,9 +75,9 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     return(rep)
   }
   rep <- renameRep(rep,var,regionSel)
-  rep[get("scenset") %in% c("FSECd","FSECe"), "scenset" := "SSP2bau / FSDP"]
+  rep[get("scenset") %in% c("FSECc","FSECe"), "scenset" := "SSP2 BAU / FSDP"]
   rep[get("scenset") %in% c("FSECb"), "scenset" := "Bundles"]
-  rep$scenset <- factor(rep$scenset, c("SSP2bau / FSDP", "Bundles"))
+  rep$scenset <- factor(rep$scenset, c("SSP2 BAU / FSDP", "Bundles"))
 
   val <- renameRep(val,var,regionSel)
 
@@ -86,6 +87,10 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   #override.linetype <- c(3,3,3,3,3,1,1)
   override.linetype <- rev(c("dashed","dashed","dashed","dashed","dashed","solid","solid"))
   names(override.linetype) <- names(scenOrder)
+
+  override.linetype <- assignScenarioLinetype(scenOrder)
+  names(override.linetype) <- names(scenOrder)
+
 
   themeMy <- function(baseSize = 13, baseFamily = "", rotateX = FALSE, panelSpacing = 3) {
     txt <- element_text(size = baseSize, colour = "black", face = "plain")
@@ -219,7 +224,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       p <- ggplot(b, aes(x = get("period"), y = get("value")))
       p <- p + labs(title = varName, tag = tag) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 0)
       if (length(levels(b$variable)) == 1) {
-        p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
+        p <- p + geom_line(aes(color = get("scenario"), linetype = get("scenset")), linewidth = 1) #+ facet_wrap("region_class")
       } else {
         for(v in levels(b$variable)) {
           p <- p + geom_line(data = b[get("variable") == v,],aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
@@ -252,7 +257,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       return(p)
     } else {
       warning(paste0("Missing Variable: ",var))
-      return(NULL)
+      return(ggplot(mtcars, aes(x = wt, y = mpg)) + geom_blank()+ggtitle("DUMMY / Placeholder"))
     }
 
   }

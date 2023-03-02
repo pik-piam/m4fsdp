@@ -23,8 +23,9 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd","FSECe"), subset = FALSE)
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="BAU_FSEC") {
-    rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    scenOrder <- c("FSDP", "SSP2bau")
+    rep <- convertReportFSDP(repReg, scengroup = c("FSECc","FSECe"), subset = FALSE)
+    scenOrder <- c("FSDP", "BAU")
+    scenOrder <- intersect(scenOrder,levels(factor(rep$scenario)))
     scenNames <- as.data.table(m4fsdp::getScenarios())
     scenNames <- scenNames[get("modelrun") %in% scenOrder,]
     scenNames <- scenNames[match(scenOrder,get("modelrun")),]
@@ -33,14 +34,16 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     rep$scenario <- factor(rep$scenario, levels = scenOrder, labels = names(scenOrder))
     override.linetype <- rev(c("solid","solid"))
     names(override.linetype) <- names(scenOrder)
-    rep[get("scenset") %in% c("FSECd","FSECe"), "scenset" := "SSP2bau / FSDP"]
-    rep$scenset <- factor(rep$scenset, c("SSP2bau / FSDP"))
+    rep[get("scenset") %in% c("FSECc","FSECe"), "scenset" := "SSP2 BAU / FSDP"]
+    rep$scenset <- factor(rep$scenset, c("SSP2 BAU / FSDP"))
+    rep <- droplevels(rep)
   } else if (scens=="extended") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECc", "FSECd","FSECe"), subset = FALSE)
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "SSP2bau")
+    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "BAU")
+    scenOrder <- intersect(scenOrder,levels(factor(rep$scenario)))
     scenNames <- as.data.table(m4fsdp::getScenarios())
     scenNames <- scenNames[get("modelrun") %in% scenOrder,]
     scenNames <- scenNames[match(scenOrder,get("modelrun")),]
@@ -49,9 +52,9 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     rep$scenario <- factor(rep$scenario, levels = scenOrder, labels = names(scenOrder))
     override.linetype <- rev(c("dashed","dashed","dashed","dashed","dashed","solid","solid"))
     names(override.linetype) <- names(scenOrder)
-    rep[get("scenset") %in% c("FSECd","FSECe"), "scenset" := "SSP2bau / FSDP"]
+    rep[get("scenset") %in% c("FSECc","FSECe"), "scenset" := "SSP2 BAU / FSDP"]
     rep[get("scenset") %in% c("FSECb"), "scenset" := "Bundles"]
-    rep$scenset <- factor(rep$scenset, c("SSP2bau / FSDP", "Bundles"))
+    rep$scenset <- factor(rep$scenset, c("SSP2 BAU / FSDP", "Bundles"))
   } else {stop("unknown scens")}
 
   rev <- tail(levels(rep$version),n=1)
@@ -214,7 +217,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
       return(p)
     } else {
       warning(paste0("Missing Variable: ",var))
-      return(NULL)
+      return(ggplot(mtcars, aes(x = wt, y = mpg)) + geom_blank()+ggtitle("DUMMY / Placeholder"))
     }
 
   }
