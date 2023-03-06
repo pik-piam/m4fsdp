@@ -177,7 +177,12 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       if (is.null(units)) {
         units <- levels(rep$unit)
       }
-      b <- rep[rep$variable %in% var & rep$unit %in% units & rep$period >= 2000 & rep$period <= 2050, ]
+
+      # remove pre-2010 values for expenditures (shoddy data) and poverty (no model outputs)
+      if (var %in% c("Expenditures for agric.", "People Below 3.20$/Day")) {
+        b <- rep[rep$variable %in% var & rep$unit %in% units & rep$period >= 2010 & rep$period <= 2050, ]
+      } else {
+      b <- rep[rep$variable %in% var & rep$unit %in% units & rep$period >= 2000 & rep$period <= 2050, ] }
       b <- droplevels(b)
       units <- levels(b$unit)
       unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]

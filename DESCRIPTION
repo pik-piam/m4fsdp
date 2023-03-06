@@ -2,8 +2,8 @@ Type: Package
 Package: m4fsdp
 Title: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
     for FSDP project
-Version: 0.34.26
-Date: 2023-03-02
+Version: 0.34.27
+Date: 2023-03-06
 Authors@R: c(
     person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),

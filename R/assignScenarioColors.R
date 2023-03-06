@@ -28,7 +28,7 @@ assignScenarioColors <- function(scenario_names) {
     "Sufficiency" = "#00DCB5",
     "Livelihoods" = "#FF71FD",
     "emptycolorblind3" = "#FFCFE2",
-    "emptycolorblind4" = "#003C86",
+    "SSP2fsdp" = "#003C86",
     "emptycolorblind5" = "#7CFFFA",
     "ExternalPressures"="#6A0213"
   )
