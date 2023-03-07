@@ -431,9 +431,9 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     #                  color = I(ifelse(value < 0.1, "white", "white"))), size = 2) +
     scale_fill_gradient2(unit, low = "darkgreen", high = "darkred", mid = "white", midpoint = 0, na.value = "grey90") +
     myTheme +
-    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value,na.rm = TRUE))," to ",round(max(b$.value,na.rm = TRUE))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE))," to ",round(max(b$value,na.rm = TRUE))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
-    geom_text(aes(label = sub(" ", "\n", scenario)), x = labelX, y = labelY,
+    geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Global Surface Temp
