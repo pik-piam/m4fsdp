@@ -151,7 +151,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   textElement <- vector(length = length(scenGroupOrder))
 
   for (i in 1:length(scenGroupOrder)) {
-    if (scenGroupOrder[i] %in% c("A","Z")) {
+    if (scenGroupOrder[i] %in% c("A","Y","Z")) {
       stripBackground[i] <- list(element_blank())
       textElement[i] <- list(element_blank())
     } else {

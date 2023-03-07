@@ -29,11 +29,11 @@ RiceMit;Agriculture;
 LivestockMngmt;Agriculture;
 ManureMngmt;Agriculture;
 SoilCarbon;Agriculture;
+SSP2fsdp;Y;1
 ExternalPressures;ExtTransformation;1
 Population;ExtTransformation;
 EconDevelop;ExtTransformation;
 EnergyTrans;ExtTransformation;
 Bioplastics;ExtTransformation;
 TimberCities;ExtTransformation;
-SSP2fsdp;Z;1
 FSDP;Z;1
