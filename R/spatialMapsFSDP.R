@@ -406,10 +406,13 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "l) Cumulative Greenhouse Gas Emissions"
-  unit  <- "Gt CO2eq since 2000"
+  title <- "l) Greenhouse Gas Emissions"
+  unit  <- "ton CO2eq per ha (cumulative since 2000)"
   caption <- "Projection: Mollweide"
-  b   <- droplevels(repReg[variable == "Emissions|GWP100AR6|Land|Cumulative", ]) # Will become ISO level, eventually
+
+  b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land|Cumulative"] * 1000 /
+                        value[variable == "Resources|Land Cover"]), by = .(model, scenario, region, period)]
+  #b   <- droplevels(repReg[variable == "Emissions|GWP100AR6|Land|Cumulative", ]) # Will become ISO level, eventually
   all <- merge(reg2iso, b)
   all <- merge(countries2, all)
 

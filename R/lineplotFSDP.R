@@ -162,7 +162,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   }
 
   # plot function
-  plotVal <- function(rep, var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, histweight = NULL, tag = NULL, showlegend = FALSE, lowLimit = 0, highLimit = NA) {
+  plotVal <- function(rep, var, units = NULL, varName = NULL, unitName = NULL, weight = NULL, hist = NULL, histName = NULL, histweight = NULL, tag = NULL, showlegend = FALSE, lowLimit = 0, highLimit = NA, muteBefore = 2000) {
     empty2null<-function(x){out<-x; if(!is.null(x)){if(any(x=="empty")){out<-NULL}}; return(out)}
     varName=empty2null(varName)
     weight=empty2null(weight)
@@ -178,11 +178,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
         units <- levels(rep$unit)
       }
 
-      # remove pre-2010 values for expenditures (shoddy data) and poverty (no model outputs)
-      if (var %in% c("Expenditures for agric.", "People Below 3.20$/Day")) {
-        b <- rep[rep$variable %in% var & rep$unit %in% units & rep$period >= 2010 & rep$period <= 2050, ]
-      } else {
-      b <- rep[rep$variable %in% var & rep$unit %in% units & rep$period >= 2000 & rep$period <= 2050, ] }
+      b <- rep[rep$variable %in% var & rep$unit %in% units & rep$period >= 2000 & rep$period <= 2050, ]
+      b[b$period < muteBefore, "value" := NA]
       b <- droplevels(b)
       units <- levels(b$unit)
       unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
@@ -272,8 +269,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p2 <- plotVal(rep, var = "Obesity", tag = "b)")
   p3 <- plotVal(rep, var = "Years of life lost", tag = "c)")
 
-  p10 <- plotVal(rep, var = "Expenditures for agric.", tag = "d)")
-  p11 <- plotVal(rep, var = "People Below 3.20$/Day", tag = "e)")
+  p10 <- plotVal(rep, var = "Expenditures for agric.", tag = "d)", muteBefore = 2005)
+  p11 <- plotVal(rep, var = "People Below 3.20$/Day", tag = "e)", muteBefore = 2010)
   p12 <- plotVal(rep, var = "Agric. employment", tag = "f)")
   p13 <- plotVal(rep, var = "Agric. wages", tag = "g)")
 
