@@ -400,7 +400,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
                       values = c("#ffffd4", "#fee391", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
                       label = c("0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1", "EFR violation"),na.value = "grey50") +
     myTheme +
-    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value))," to ",round(max(b$.value))),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
+    labs(title = title, caption = c(paste0("Data range: 0 to 1"),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_legend(title.position = "top", title.hjust = 1, nrow = 1)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
