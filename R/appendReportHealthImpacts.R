@@ -23,7 +23,7 @@
 appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
 
     if (stringr::str_detect(string = scenario, pattern = "HRc1000")) {
-      scenario <- str_replace("HRc1000", "")
+      scenario <- str_replace(string = scenario, pattern = "HRc1000", replacement = "")
       message("Using low resolution dietary results for HRc1000 runs")
     }
 
