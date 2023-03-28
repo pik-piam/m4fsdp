@@ -608,12 +608,12 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
 
 ####### Nitrogen##############
 
-nitrVar <- scens[grep("Nutrient Surplus", scens$variable), ]$variable %>%  unique()
- scens[grep("Nitrogen", scens$variable), ]$variable %>%  unique()
+nitrVar <- c("Resources|Nitrogen|Pollution|Surplus|+|Cropland",
+             "Resources|Nitrogen|Pollution|Surplus|+|Pasture",
+             "Resources|Nitrogen|Pollution|Surplus|+|Animal Waste Management",
+             "Resources|Nitrogen|Pollution|Surplus|+|Non-agricultural land")
 
-# scens[grep("Nitrogen", scens$variable),]$variable %>%  unique()
-names(nitrVar) <- c("Cropland", "Pasture")
-
+names(nitrVar) <- c("Cropland", "Pasture", "AWMS", "Non-agricultural Land")
 
 nitr_df <- filter(scens,
                   period <= 2050,
