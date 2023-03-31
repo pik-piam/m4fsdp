@@ -39,7 +39,7 @@ getVariables <- function(reportVariables = NULL) {
                   "Environment|5|Croparea Diversity|Shannon Index|increase|2|1",
                   "Environment|6|Nitrogen surplus|Mt N/yr|decrease|0|1",
                   "Environment|7|Water env. flow violations|km3/yr|decrease|0|1",
-                  "Environment|8|Cumul. GHG emissions|GtCO2eq since 1995|decrease|0|1",
+                  "Environment|8|Cumul. GHG emissions|GtCO2eq since 2000|decrease|0|1",
                   "Environment|9|Global Surface Warming|degree Celsius|decrease|2|1",
                   "Inclusion|10|Expenditures for agric.|USD/person|decrease|0|1",
                   "Inclusion|11|People Below 3.20$/Day|mio people|decrease|0|1",
