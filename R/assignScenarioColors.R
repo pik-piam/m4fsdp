@@ -17,6 +17,7 @@ assignScenarioColors <- function(scenario_names) {
   name_to_color <- c(
     "AgroMngmt" = "#009FFA",##FFDC3D
     "SSP2bau" = "#F60239",
+    "BAU" = "#F60239",
     "NatureSparing" = "#00E307",
 #    "SSP3" = "#F60239",
     "AllInclusion" = "#9400E6",
@@ -27,7 +28,7 @@ assignScenarioColors <- function(scenario_names) {
     "Sufficiency" = "#00DCB5",
     "Livelihoods" = "#FF71FD",
     "emptycolorblind3" = "#FFCFE2",
-    "emptycolorblind4" = "#003C86",
+    "SSP2fsdp" = "#003C86",
     "emptycolorblind5" = "#7CFFFA",
     "ExternalPressures"="#6A0213"
   )

@@ -14,13 +14,18 @@
 #' @importFrom gdx readGDX
 #' @importFrom magclass getSets read.report write.report getItems
 #' @importFrom dplyr %>% mutate select pull filter arrange rename
-#' @importFrom stringr str_extract str_replace str_remove
+#' @importFrom stringr str_extract str_replace str_remove str_detect
 #' @importFrom forcats fct_recode
 #' @importFrom quitte as.quitte
 #' @importFrom madrat toolAggregate
 #' @importFrom rlang .data
 
 appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
+
+    if (stringr::str_detect(string = scenario, pattern = "HRc1000")) {
+      scenario <- str_replace(string = scenario, pattern = "HRc1000", replacement = "")
+      message("Using low resolution dietary results for HRc1000 runs")
+    }
 
     # -----------------------------------------------------------------------------------------------------------------
     # Format Marco's health impacts dataset

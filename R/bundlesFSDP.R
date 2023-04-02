@@ -24,6 +24,7 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
 
   #get variable list
   var <- getVariables(levels(rep$variable))
+  var <- var[var != "Biodiversity|BII"]
 
   b <- rep[get("variable") %in% var & get("region") == regionSel & get("period") == 2050, ]
   b <- droplevels(b)

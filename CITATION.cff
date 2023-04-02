@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+title: |-
+  m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
+      for FSDP project
+version: 0.35.1
+date-released: '2023-03-31'
+abstract: Output routines for extracting results from the MAgPIE framework (versions
+  4.x) for the FSDP project.
+authors:
+- family-names: Bodirsky
+  given-names: Benjamin Leon
+  email: bodirsky@pik-potsdam.de
+- family-names: Dietrich
+  given-names: Jan Philipp
+  email: dietrich@pik-potsdam.de
+- family-names: Humpenoeder
+  given-names: Florian
+  email: humpenoeder@pik-potsdam.de
+license: LGPL-3.0
+repository-code: https://github.com/pik-piam/m4fsdp
+doi: '?'
+

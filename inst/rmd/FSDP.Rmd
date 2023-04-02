@@ -106,35 +106,6 @@ some text
 datatable(x[["data"]], options = list(pageLength = 1000))
 ```
 
-HeatMap 2a
-=======================================================================
-
-Column {data-width=700}
------------------------------------------------------------------------
-
-### HeatMap TableType = 2
-
-```{r echo=FALSE, fig.width = 11, fig.height = 13}
-x <- heatmapFSDP(repReg = repReg, regionSel = regionSel, tableType = 2)
-x[["plot"]]
-```
-
-
-Column {data-width=300 .tabset .tabset-fade}
------------------------------------------------------------------------
-
-### Information
-
-some text 
-
-### Data
-
-**Data**
-
-```{r echo=FALSE, fig.height = 13}
-datatable(x[["data"]], options = list(pageLength = 1000))
-```
-
 HeatMap 3
 =======================================================================
 
