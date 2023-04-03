@@ -478,7 +478,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   title <- "o) Production cost agriculture"
   unit  <- "US$05/capita/yr"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repReg[, .(value = value[variable == "Costs"] /
+  b     <- repReg[, .(value = value[variable == "Costs Without Incentives"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
   all <- merge(pop, all, all.x = TRUE)
