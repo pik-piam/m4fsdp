@@ -1,46 +1,46 @@
-modelrun,scenarioname
-SSP2 2020,Ref SSP2 2020
-SSP2 2050,Ref SSP2 2050
-Diet,Diets
-DietEmptyCals,LowProcessed
-DietFish,BalancedFish
-DietLegumes,HighLegumes
-DietMonogastrics,LowMonogastrics
-DietRuminants,LowRuminants
-DietVegFruitsNutsSeeds,HighVegFruitsNuts
-NoOverweight,NoOverweight
-HalfOverweight,HalfOverweight
-NoUnderweight,NoUnderweight
-LessFoodWaste,LowFoodWaste
-Livelihoods,Livelihoods
-LiberalizedTrade,LibTrade
-MinWage,MinWage
-CapitalSubst,CapitalSubst
-NatureSparing,Biosphere
-REDDaff,REDD+
-LandSparing,LandSparing
-PeatlandSparing,PeatlandSparing
-WaterSparing,WaterSparing
-BiodivSparing,BiodivSparing
-AgroMngmt,Agriculture
-NitrogenEff,NitrogenEff
-CropRotations,CropRotations
-LandscapeElements,LandscapeElements
-RiceMit,RiceMitigation
-LivestockMngmt,LivestockMngmt
-ManureMngmt,ManureMngmt
-SoilCarbon,SoilCarbon
-ExternalPressures,ExtTransformation
-Population,Population
-EconDevelop,HumanDevelop
-EnergyTrans,EnergyTrans
-Bioplastics,Bioplastics
-TimberCities,TimberCities
-SSP2fsdp,allFSMs
-BAU,SSP2 BAU
-FSDP,FSDP
-SSP1bau,SSP1 BAU
-SSP2bau,SSP2 BAU
-SSP3bau,SSP3 BAU
-SSP4bau,SSP4 BAU
-SSP5bau,SSP5 BAU
+modelrun;scenarioname
+SSP2 2020;Ref SSP2 2020
+SSP2 2050;Ref SSP2 2050
+Diet;Diets
+DietEmptyCals;LowProcessed
+DietFish;BalancedFish
+DietLegumes;HighLegumes
+DietMonogastrics;LowMonogastrics
+DietRuminants;LowRuminants
+DietVegFruitsNutsSeeds;HighVegFruitsNuts
+NoOverweight;NoOverweight
+HalfOverweight;HalfOverweight
+NoUnderweight;NoUnderweight
+LessFoodWaste;LowFoodWaste
+Livelihoods;Livelihoods
+LiberalizedTrade;LibTrade
+MinWage;MinWage
+CapitalSubst;CapitalSubst
+NatureSparing;Biosphere
+REDDaff;REDD+
+LandSparing;LandSparing
+PeatlandSparing;PeatlandSparing
+WaterSparing;WaterSparing
+BiodivSparing;BiodivSparing
+AgroMngmt;Agriculture
+NitrogenEff;NitrogenEff
+CropRotations;CropRotations
+LandscapeElements;LandscapeElements
+RiceMit;RiceMitigation
+LivestockMngmt;LivestockMngmt
+ManureMngmt;ManureMngmt
+SoilCarbon;SoilCarbon
+ExternalPressures;ExtTransformation
+Population;Population
+EconDevelop;HumanDevelop
+EnergyTrans;EnergyTrans
+Bioplastics;Bioplastics
+TimberCities;TimberCities
+SSP2fsdp;allFSMs
+BAU;SSP2 BAU
+FSDP;FSDP
+SSP1bau;SSP1 BAU
+SSP2bau;SSP2 BAU
+SSP3bau;SSP3 BAU
+SSP4bau;SSP4 BAU
+SSP5bau;SSP5 BAU
