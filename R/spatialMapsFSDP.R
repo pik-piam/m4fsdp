@@ -334,18 +334,21 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
   # Environment: Biodiversity Intactness Index
   title <- "h) Biodiversity Intactness Index"
-  unit  <- "index"
+  unit  <- ""
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
   bb    <- asRaster(b, countries2)
 
   plotBII <- ggplot(bb) +
-    geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
+    geom_raster(aes(x = x, y = y, fill = cut(value,
+                                             breaks = c(0.0, 0.65, 0.7,0.75, 0.8,0.85, 0.9, 1.0)))) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
-    scale_fill_gradientn(unit, colors = brewer.pal(9, "RdYlGn"), na.value = "grey90", oob = scales::squish, limits = c(0.4,1)) +
+    scale_fill_manual(unit,
+                      values = brewer.pal(n = 7,name = "RdYlGn"),
+                      label = c("0-0.65","0.65-0.7", "0.7-0.75", "0.75-0.8", "0.8-0.85", "0.85-0.9", "0.9-1"),na.translate=FALSE) +
     myTheme +
-    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value,na.rm = TRUE),2)," to ",round(max(b$.value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
-    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
+    labs(title = title, caption = c(paste0("Data range: 0 to 1"),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
+    guides(fill = guide_legend(title.position = "top", title.hjust = 1, nrow = 1)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 

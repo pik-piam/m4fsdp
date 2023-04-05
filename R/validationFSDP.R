@@ -230,7 +230,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   p4 <- plotVal(var = "Nutrition|Calorie Supply|+|Livestock products",
                 varName = "Per-capita calorie supply from livestock products",
                 weight = "Population", histweight = "WDI-UN_PopDiv-MI", hist = "FAOmassbalance")
-  p5 <- plotVal(var = "Demand|++|Crops", varName = "Total crop demand including feed and feed")
+  p5 <- plotVal(var = "Demand|++|Crops", varName = "Total crop demand including food and feed")
   p6 <- plotVal(var = "Demand|++|Livestock products", varName = "Total livestock product demand")
   #p7 <- plotVal(var = "Income|Number of People Below 3p20 USDppp11/day", varName = "Number of people under 3.20 USDppp11/day poverty line")
   #p8 <- plotVal(var = "Income|Gini Coefficient", varName = "Gini Coefficient", weight = "Population")

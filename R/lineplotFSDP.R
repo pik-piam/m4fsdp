@@ -230,7 +230,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       } else {
         for(v in levels(b$variable)) {
           p <- p + geom_line(data = b[get("variable") == v,],aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
-          p <- p + geom_label(data = b[get("variable") == v & period == 2010,],aes(label = stringr::str_wrap(get("variable"), 18)), size = 2) #+ facet_wrap("region_class")
+          p <- p + geom_label(data = b[get("variable") == v & period == 2015,],aes(label = stringr::str_wrap(get("variable"), 18)), size = 3) #+ facet_wrap("region_class")
         }
       }
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050), expand = c(0,0)) +
