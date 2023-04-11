@@ -4,14 +4,7 @@
 \alias{spatialMapsAllFSMDiffmap}
 \title{spatialMapsAllFSMDiffmap}
 \usage{
-spatialMapsAllFSMDiffmap(
-  repReg,
-  repIso,
-  repGrid,
-  reg2iso,
-  file = NULL,
-  recalcPolygons = FALSE
-)
+spatialMapsAllFSMDiffmap(repReg, repIso, repGrid, reg2iso, file = NULL)
 }
 \arguments{
 \item{repReg}{reporting .rds file or data.frame with regional results (produced by FDSP_collect.R output script)}
@@ -23,8 +16,6 @@ spatialMapsAllFSMDiffmap(
 \item{reg2iso}{mapping file or data.frame with regions and countries (produced by FDSP_collect.R output script)}
 
 \item{file}{file name (e.g. FSDP_spatialmaps.pdf or FSDP_spatialmaps.pdf) or NULL}
-
-\item{recalcPolygons}{recalculate polygons for cartogram projections (FALSE / TRUE)}
 }
 \value{
 if file is NULL a ggplot2 object will be return

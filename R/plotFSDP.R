@@ -63,6 +63,7 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   try(heatmapFSDP(reg, tableType = 3,    file = file.path(outputfolder, paste0(rev, "_FSDP_heatmap3.png")), height = 4.5))
   try(bundlesFSDP(reg, file = file.path(outputfolder, paste0(rev, "_FSDP_bundle.png"))))
   try(spatialMapsFSDP(reg, iso, grid, reg2iso, file = file.path(outputfolder, paste0(rev, "_FSDP_spatialMaps.png"))))
+  try(spatialMapsAllFSMDiffmap(reg, iso, grid, reg2iso, file = file.path(outputfolder, paste0(rev, "_FSDP_spatialMaps_diffmap.png"))))
   try(SupplPlotsFSDP(repReg = reg, scenarioType = "manuscript", outFolder = file.path(outputfolder)))
   #SupplPlotsCropShr(gdx = gdx, file = file.path(outputfolder, paste0(rev, "_FSDP_supplPlotCropShr.png")))
   try(validationFSDP(repReg = reg, val = val, regionSel = "aggregate", folder = file.path(outputfolder), scens = "BAU_FSEC"))

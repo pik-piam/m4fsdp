@@ -55,12 +55,21 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
       rep <- rep[get("region") != "GLO", ]
       rep <- rep[get("region") != "World", ]
     }
+
     rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("BAU","SSP2fsdp"), ]
-    rep[, "value" := get("value") - get("value")[get("scenario") == "BAU"],
-               by = c("model", "variable", "region", "period")]
+
+    if (length(names(rep)[names(rep) == "value"]) == 1) {
+      rep[, "value" := get("value")[get("variable")!="Population" & get("variable")!="Resources|Land Cover"] - get("value")[get("scenario") == "BAU" & get("variable")!="Population" & get("variable")!="Resources|Land Cover"],
+          by = c("model", "variable", "region", "period")]
+    } else {
+      rep[, ".value" := get(".value")[get("variable")!="Population" & get("variable")!="Resources|Land Cover"] - get(".value")[get("scenario") == "BAU" & get("variable")!="Population" & get("variable")!="Resources|Land Cover"],
+          by = c("model", "variable", "region", "period")]
+    }
+
     rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("SSP2fsdp"), ]
     rep[, "scenario" := paste(get("scenario"), get("period"))]
-    rep$scenario <- factor(rep$scenario, levels = c("allFSM - reference"))
+    rep$scenario <-  factor(c("allFSM - reference"))
+    rep$scenario <- as.factor(rep$scenario)
   }
 
 

@@ -207,7 +207,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   title <- "c) Years of life lost"
   unit <- "Years per person"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repIso[, .(value = (value[variable == "Health|Years of life lost|Risk|Diet and anthropometrics"]) /
+  b     <- repIso[, .(value = (value[variable == "Health|Years of life lost|Disease"]) /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
