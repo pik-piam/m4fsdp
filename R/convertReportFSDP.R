@@ -5,7 +5,7 @@
 #'
 #' @param rep reporting .rds file (produced by FDSP_collect.R output script)
 #' @param scengroup options: FSECa, FSECb, FSECc, FSECd
-#' @param subset TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios
+#' @param subset TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios. "allFSM_minus_ref" returns the allFSM scenario minus the BAU scenario in 2050.
 #' @param varlist file name for plain text variable list (e.g. "var_names.csv")
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
@@ -40,7 +40,7 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
     }
   }
 
-  if (subset) {
+  if (subset==TRUE) {
     if (!is.null(rep$region)) {
       rep <- rep[get("region") != "GLO", ]
       rep <- rep[get("region") != "World", ]
@@ -50,12 +50,25 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
     rep <- rep[!(get("scenario") == "FSDP" & get("period") == 2020), ]
     rep[, "scenario" := paste(get("scenario"), get("period"))]
     rep$scenario <- factor(rep$scenario, levels = c("BAU 2020", "BAU 2050", "FSDP 2050"))
+  } else if (subset=="allFSM_minus_ref") {
+    if (!is.null(rep$region)) {
+      rep <- rep[get("region") != "GLO", ]
+      rep <- rep[get("region") != "World", ]
+    }
+    rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("BAU","SSP2fsdp"), ]
+    rep[, "value" := get("value") - get("value")[get("scenario") == "BAU"],
+               by = c("model", "variable", "region", "period")]
+    rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("SSP2fsdp"), ]
+    rep[, "scenario" := paste(get("scenario"), get("period"))]
+    rep$scenario <- factor(rep$scenario, levels = c("allFSM - reference"))
   }
+
 
   rep <- droplevels(rep)
   if (length(unique(rep$region)) == 249 || length(unique(rep$region)) == 179) {
     names(rep)[names(rep) == "region"] <- "iso_a3"
   }
   names(rep)[names(rep) == "country"] <- "iso_a3"
+
   return(rep)
 }

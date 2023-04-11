@@ -11,7 +11,7 @@ convertReportFSDP(rep, scengroup = NULL, subset = FALSE, varlist = NULL)
 
 \item{scengroup}{options: FSECa, FSECb, FSECc, FSECd}
 
-\item{subset}{TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios}
+\item{subset}{TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios. "allFSM_minus_ref" returns the allFSM scenario minus the BAU scenario in 2050.}
 
 \item{varlist}{file name for plain text variable list (e.g. "var_names.csv")}
 }
