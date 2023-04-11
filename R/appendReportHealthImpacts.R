@@ -22,11 +22,6 @@
 
 appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
 
-    if (stringr::str_detect(string = scenario, pattern = "HRc1000")) {
-      scenario <- str_replace(string = scenario, pattern = "HRc1000", replacement = "")
-      message("Using low resolution dietary results for HRc1000 runs")
-    }
-
     # -----------------------------------------------------------------------------------------------------------------
     # Format Marco's health impacts dataset
 
@@ -90,10 +85,10 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
                                 "Male"       = "MLE",
                                 "Female"     = "FML"),
                metric = fct_recode(.data$metric,
-                                 "Attributable deaths"                   = "deaths_avd",
-                                 "Years of life lost"                    = "YLL_avd",
-                                 "Percent change in Attributable deaths" = "%deaths_avd/all",
-                                 "Percent change in Years of life lost"  = "%YLL_avd/all"),
+                                   "Attributable deaths"                   = "deaths_avd",
+                                   "Years of life lost"                    = "YLL_avd",
+                                   "Percent change in Attributable deaths" = "%deaths_avd/all",
+                                   "Percent change in Years of life lost"  = "%YLL_avd/all"),
                riskFactor = fct_recode(.data$riskFactor,
                                        "All risk factors" = "all-rf",
                                        Diet               = "diet",
@@ -114,28 +109,36 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
                                          "Type-2 Diabetes"          = "T2DM",
                                          "Respiratory Disease"      = "Resp_Dis"))
 
-    # For now we use only the top-level risk factor and cause of death
     healthImpacts <- healthImpacts %>%
-        filter(.data$riskFactor   %in% c("All risk factors"),
-               .data$causeOfDeath %in% c("All-cause mortality"))
+        filter(.data$metric %in% c("Years of life lost", "Percent change in Years of life lost")) %>%
+        filter(.data$riskFactor == "All risk factors") %>%
+        filter(.data$sex == "Both sexes")
 
     healthImpacts <- healthImpacts %>%
-        mutate(variable = ifelse(.data$sex == "Both sexes",
-                                 yes = paste0("Health|", .data$metric, "|Risk|Diet and anthropometrics"),
-                                 no  = paste0("Health|", .data$metric, "|Risk|Diet and anthropometrics|+|", .data$sex)))
+        mutate(variable = case_when(
+            .data$causeOfDeath == "All-cause mortality" ~ paste0("Health|", .data$metric, "|Disease"),
+            TRUE                                        ~ paste0("Health|", .data$metric, "|Disease|+|", .data$causeOfDeath)
+        ))
+
+    # Convert to millions people, millions years
+    healthImpacts <- healthImpacts %>%
+        mutate(value = case_when(
+            .data$metric == "Attributable deaths" ~ .data$value / 1E6,
+            .data$metric == "Years of life lost"  ~ .data$value / 1E6,
+            TRUE ~ .data$value
+        ))
 
     healthImpacts <- healthImpacts %>%
-        mutate(unit = ifelse(.data$metric == "Attributable deaths",
-                             yes = "mio deaths",
-                             no  = "mio years"))
+        mutate(unit = case_when(
+                .data$metric == "Attributable deaths"                   ~ "mio deaths",
+                .data$metric == "Percent change in Attributable deaths" ~ "percent change",
+                .data$metric == "Years of life lost"                    ~ "mio years",
+                .data$metric == "Percent change in Years of life lost"  ~ "percent change"
+        ))
 
     healthImpacts <- healthImpacts %>%
         select(.data$model, .data$scenario, .data$region, .data$unit, .data$year, .data$variable, .data$value) %>%
         arrange(.data$model, .data$scenario, .data$region, .data$year, .data$variable)
-
-    # Convert to millions people, millions years
-    healthImpacts <- healthImpacts %>%
-        mutate(value = .data$value / 1E6)
 
     # -----------------------------------------------------------------------------------------------------------------
     # Country-level data integration into "report_iso.rds"
