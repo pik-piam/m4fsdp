@@ -12,7 +12,7 @@ getVariables <- function(reportVariables = NULL) {
 
   var <- c("SDG|SDG02|Prevalence of underweight",
            "SDG|SDG03|Prevalence of obesity",
-           "Health|Years of life lost|Risk|Diet and anthropometrics",
+           "Health|Years of life lost|Disease",
            "Biodiversity|BII",
            "Biodiversity|Cropland Landscapes BII",
            "Biodiversity|Biodiversity Hotspot and Intact Forest Landscapes BII",
