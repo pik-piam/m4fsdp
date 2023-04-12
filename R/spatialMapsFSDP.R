@@ -357,6 +357,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Shannon crop diversity (index)", ])
+  b[, ".value" := ifelse(.value == 0, NA, .value)]
   bb    <- asRaster(b, countries2)
 
   plotCROPDIV <- ggplot(bb) +

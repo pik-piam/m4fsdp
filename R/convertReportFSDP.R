@@ -59,9 +59,13 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
     rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("BAU","SSP2fsdp"), ]
 
     if (length(names(rep)[names(rep) == "value"]) == 1) {
+      # set shannon index from NA to Zero
+      rep[, "value" := ifelse((variable == "Shannon crop diversity (index)") & (value == 0), NA, value)]
       rep[, "value" := get("value")[get("variable")!="Population" & get("variable")!="Resources|Land Cover"] - get("value")[get("scenario") == "BAU" & get("variable")!="Population" & get("variable")!="Resources|Land Cover"],
           by = c("model", "variable", "region", "period")]
     } else {
+      # set shannon index from NA to Zero
+      rep[, ".value" := ifelse((variable == "Shannon crop diversity (index)") & (.value == 0), NA, .value)]
       rep[, ".value" := get(".value")[get("variable")!="Population" & get("variable")!="Resources|Land Cover"] - get(".value")[get("scenario") == "BAU" & get("variable")!="Population" & get("variable")!="Resources|Land Cover"],
           by = c("model", "variable", "region", "period")]
     }
