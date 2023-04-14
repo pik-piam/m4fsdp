@@ -73,7 +73,7 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
           by = c("model", "variable", "region", "period")]
     }
 
-    rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("SSP2fsdp"), ]
+    rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("SSP2fsdp", "FSDP"), ]
     rep[, "scenario" := paste(get("scenario"), get("period"))]
     rep$scenario <-  factor(c("allFSM - reference"))
     rep$scenario <- as.factor(rep$scenario)
