@@ -66,7 +66,7 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   try(spatialMapsAllFSMDiffmap(reg, iso, grid, reg2iso, file = file.path(outputfolder, paste0(rev, "_FSDP_spatialMaps_diffmap_FSDP.png")), subset=c("FSTsdp_minus_BASEssp2")))
   try(spatialMapsAllFSMDiffmap(reg, iso, grid, reg2iso, file = file.path(outputfolder, paste0(rev, "_FSDP_spatialMaps_diffmap_allFSM.png")), subset=c("FSTssp2_minus_BASEssp2")))
   try(SupplPlotsFSDP(repReg = reg, scenarioType = "manuscript", outFolder = file.path(outputfolder)))
-  #SupplPlotsCropShr(gdx = gdx, file = file.path(outputfolder, paste0(rev, "_FSDP_supplPlotCropShr.png")))
+  try(SupplPlotsCropShr(repGrid = grid, file = file.path(outputfolder, paste0(rev, "_FSDP_supplPlotCropShr.png"))))
   try(validationFSDP(repReg = reg, val = val, regionSel = "aggregate", folder = file.path(outputfolder), scens = "BAU_FSEC"))
   try(lineplotFSDP(reg,val,file = file.path(outputfolder, paste0(rev, "_FSDP_lineplots.png"))))
   try(dashboardFSDP(repReg = reg, repIso = iso, repGrid = grid, outputDir = file.path(outputfolder), file = paste0(rev, "_FSDP_dashboard.html")))
