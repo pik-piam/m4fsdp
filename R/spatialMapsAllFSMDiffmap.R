@@ -10,6 +10,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @param repGrid reporting .rds file or data.frame with grid level results (produced by FDSP_collect.R output script)
 #' @param reg2iso mapping file or data.frame with regions and countries (produced by FDSP_collect.R output script)
 #' @param file file name (e.g. FSDP_spatialmaps.pdf or FSDP_spatialmaps.pdf) or NULL
+#' @param subset "FSTssp2_minus_BASEssp2" or "FSTsdp_minus_BASEssp2" returns diffmaps for allFSM or FSDP scenario minus the BAU scenario in 2050.
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
 #' @author Florian Humpenoeder
@@ -17,14 +18,14 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @importFrom utils write.csv read.csv
 #' @importFrom terra project rast
 
-spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL) {
+spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL, subset=c("FSTsdp_minus_BASEssp2")) {
   ### projections
   # https://semba-blog.netlify.app/01/26/2020/world-map-and-map-projections/
 
   #### read in data files
-  repReg  <- convertReportFSDP(repReg, subset = "allFSM_minus_ref")
-  repIso  <- convertReportFSDP(repIso, subset = "allFSM_minus_ref")
-  repGrid <- convertReportFSDP(repGrid, subset = "allFSM_minus_ref")
+  repReg  <- convertReportFSDP(repReg, subset = subset)
+  repIso  <- convertReportFSDP(repIso, subset = subset)
+  repGrid <- convertReportFSDP(repGrid, subset = subset)
   if (!is.data.frame(reg2iso)) {
     reg2iso <- read.csv(reg2iso, header = TRUE, row.names = 1)
   }
@@ -75,7 +76,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # load polygons
   pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"))
   pop <- pop[which(pop$scenario=="BAU 2050"), ]
-  pop$scenario <- "allFSM - reference"
+  pop$scenario <- subset
   pop$scenario <- factor(pop$scenario)
   agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"))
   agEmpl <- agEmpl[which(agEmpl$scenario=="BAU 2050"), ]

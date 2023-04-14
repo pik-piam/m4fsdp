@@ -5,7 +5,7 @@
 #'
 #' @param rep reporting .rds file (produced by FDSP_collect.R output script)
 #' @param scengroup options: FSECa, FSECb, FSECc, FSECd
-#' @param subset TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios. "allFSM_minus_ref" returns the allFSM scenario minus the BAU scenario in 2050.
+#' @param subset TRUE returns "BAU 2020","BAU 2050","FSDP 2050". FALSE returns all scenarios. "FSTssp2_minus_BASEssp2" or "FSTsdp_minus_BASEssp2" returns the allFSM or FSDP scenario minus the BAU scenario in 2050.
 #' @param varlist file name for plain text variable list (e.g. "var_names.csv")
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
@@ -50,14 +50,17 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
     rep <- rep[!(get("scenario") == "FSDP" & get("period") == 2020), ]
     rep[, "scenario" := paste(get("scenario"), get("period"))]
     rep$scenario <- factor(rep$scenario, levels = c("BAU 2020", "BAU 2050", "FSDP 2050"))
-  } else if (subset=="allFSM_minus_ref") {
+  } else if (subset%in%c("FSTssp2_minus_BASEssp2","FSTsdp_minus_BASEssp2")) {
     if (!is.null(rep$region)) {
       rep <- rep[get("region") != "GLO", ]
       rep <- rep[get("region") != "World", ]
     }
 
-    rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("BAU","SSP2fsdp"), ]
-
+    if(subset=="FSTssp2_minus_BASEssp2"){
+      rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("BAU","SSP2fsdp"), ]
+    } else if (subset=="FSTsdp_minus_BASEssp2") {
+      rep <- rep[get("period") %in% c(2050) & get("scenario") %in% c("BAU","FSDP"), ]
+    }
     if (length(names(rep)[names(rep) == "value"]) == 1) {
       # set shannon index from NA to Zero
       rep[, "value" := ifelse((variable == "Shannon crop diversity (index)") & (value == 0), NA, value)]
