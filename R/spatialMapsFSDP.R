@@ -129,6 +129,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   labelYGrid <- -6500000
   xlimMoll   <- c(-11007870, 16007870)
   asRaster   <- function(x, countries2) {
+    x[is.na(.value), .value:= 999]
     z <- rast()
     for (i in levels(x$scenario)) {
       y <- rast(droplevels(x[scenario == i, ])[, c("x", "y", ".value")], crs = "+proj=latlon")
@@ -137,6 +138,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     }
     z <- terra::project(z, st_crs(countries2)$proj4string)
     z <- as.data.frame(z, xy = TRUE)
+    z[z == 999] <- NA
     z <- melt(setDT(z), id.vars = c("x", "y"), variable.name = "scenario")
     return(z)
   }

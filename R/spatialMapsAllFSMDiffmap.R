@@ -93,7 +93,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
           legend.position = "top",
           legend.justification = "center",
           legend.margin = margin(0, 0, 0, 0),
-          legend.box.margin = margin(-10, -10, -20, -10),
+          legend.box.margin = margin(0, 0, 0, 0),
           legend.spacing.y = unit(2, "pt"),
           plot.title = element_text(hjust = 0, margin = unit(c(0, 0, 0, 0), "pt"), size = 12, face = "bold"),
           legend.title = element_text(size = 12, hjust = 1, margin = unit(c(0, 0, 0, 0), "pt")),
@@ -113,6 +113,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   labelYGrid <- -6500000
   xlimMoll   <- c(-11007870, 16007870)
   asRaster   <- function(x, countries2) {
+    x[is.na(.value), .value:= 999]
     z <- rast()
     for (i in levels(x$scenario)) {
       y <- rast(droplevels(x[scenario == i, ])[, c("x", "y", ".value")], crs = "+proj=latlon")
@@ -121,6 +122,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     }
     z <- terra::project(z, st_crs(countries2)$proj4string)
     z <- as.data.frame(z, xy = TRUE)
+    z[z == 999] <- NA
     z <- melt(setDT(z), id.vars = c("x", "y"), variable.name = "scenario")
     return(z)
   }
@@ -128,7 +130,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # plotDUMMY:
   title <- "DUMMY - data seems missing"
   unit <- "DUMMY"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   b[, value := 0]
   all <- merge(pop, b, all.x = TRUE)
@@ -148,7 +150,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Health: Spatial distribution of population underweight
   title <- "a) Underweight"
   unit <- "Population share per country"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b, all.x = TRUE)
@@ -171,7 +173,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Health: Spatial distribution of population obese
   title <- "b) Obesity"
   unit <- "Population share per country"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b, all.x = TRUE)
@@ -192,7 +194,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Years of lost life
   title <- "c) Years of life lost"
   unit <- "Years per person"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repIso[, .(value = (value[variable == "Health|Years of life lost|Disease"]) /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b, all.x = TRUE)
@@ -213,7 +215,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Inclusion: Expenditure for agr. products per capita
   title <- "d) Expenditure for agricultural products"
   unit <- "USD per capita"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
@@ -233,7 +235,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
   title <- "e) Income below 3.20$ per day"
   unit <- "Population share per world region"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b, all.x = TRUE)
@@ -256,7 +258,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # # Inclusion: Gini Coefficient
   # title <- "f) Gini Coefficient"
   # unit <- "(0-1) Gini Coefficient between 0 and 1"
-  # caption <- "Cartogram projections with areas proportional to population"
+  # caption <- "Cartogram projections"
   # b     <- repIso[, .(value = value[variable == "Income|Gini Coefficient"] /
   #                       value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   # all <- merge(pop, b)
@@ -276,7 +278,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Inclusion: Share of working age population employed in agriculture
   title <- "f) Agricultural employment"
   unit <- "Population share per country"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
 
   b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",
                              "Labor|Employment|Share of working age population employed in agriculture")]/100), # new var name
@@ -448,7 +450,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Cost: Bioeconomy
   title <- "n) Value of Bioeconomy Supply"
   unit  <- "US$05/capita/yr"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repReg[, .(value = value[variable == "Value|Bioeconomy Demand"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
@@ -470,7 +472,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Cost:Production cost agriculture per capita
   title <- "o) Production cost agriculture"
   unit  <- "US$05/capita/yr"
-  caption <- "Cartogram projections with areas proportional to population"
+  caption <- "Cartogram projections"
   b     <- repReg[, .(value = value[variable == "Costs Without Incentives"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
   all <- merge(reg2iso, b)
