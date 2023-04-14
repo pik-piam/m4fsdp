@@ -93,7 +93,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
           axis.text.y = element_blank(), axis.ticks.y = element_blank(),
           legend.position = "top",
           legend.justification = "center",
-          legend.margin = margin(10, 0, -10, 0),
+          legend.margin = margin(5, 0, -10, 0),
           legend.box.margin = margin(0, 0, 0, 0),
           legend.spacing.y = unit(2, "pt"),
           plot.title = element_text(hjust = 0, margin = unit(c(0, 0, 0, 0), "pt"), size = 12, face = "bold"),
@@ -518,67 +518,20 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   group3 <- wrap_plots(trytoplot(plotEXPENDITURE), trytoplot(plotPOVERTY), trytoplot(plotEMPLOYMENT), trytoplot(plotWAGE), widths = 1, ncol = 2, heights = 1) +
     plot_annotation(title = "Inclusion", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
     plot_layout(guides = "keep")
-  # groupEmpty <- wrap_plots(plot_spacer(), widths = 1, ncol = 1, heights = 1) +
-  #   plot_annotation(title = NULL, theme = theme(title = element_text(face = "bold"), plot.background = element_rect(colour = NA, fill = NA, linewidth = 0)))
+  groupEmpty <- wrap_plots(plot_spacer(), widths = 1, ncol = 1, heights = 1) +
+    plot_annotation(title = NULL, theme = theme(title = element_text(face = "bold"), plot.background = element_rect(colour = NA, fill = NA, linewidth = 0)))
   group4 <- wrap_plots(trytoplot(plotBIOECON), trytoplot(plotCOSTS), widths = 1, ncol = 2, heights = 1) +
     plot_annotation(title = "Economy", theme = theme(title = element_text(face = "bold", size = 20), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2), plot.margin = margin(10, 5, 5, 5, "pt"))) +
     plot_layout(guides = "keep")
 
   col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group3),ncol = 1,nrow=2,heights = c(0.5,0.5)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  col2 <- wrap_plots(wrap_elements(group2),wrap_elements(group4),ncol = 1,nrow=2,heights = c(0.73,0.27 )) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
+  col2 <- wrap_plots(wrap_elements(group2),wrap_elements(group4),wrap_elements(groupEmpty),ncol = 1,nrow=3,heights = c(0.67,0.27,0.06)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
   combined <- wrap_plots(wrap_elements(col1),wrap_elements(col2))
 
-
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  #
-  # group1 <- wrap_plots(trytoplot(plotUNDERWEIGHT), trytoplot(plotOBESE), trytoplot(plotYOLL), widths = 1, ncol = 1, heights = 1) +
-  #   plot_annotation(title = "Health", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
-  #   plot_layout(guides = "keep")
-  # group2 <- wrap_plots(trytoplot(plotEXPENDITURE), trytoplot(plotPOVERTY), trytoplot(plotEMPLOYMENT), trytoplot(plotWAGE), widths = 1, ncol = 1, heights = 1) +
-  #   plot_annotation(title = "Inclusion", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
-  #   plot_layout(guides = "keep")
-  # groupEmpty <- wrap_plots(plot_spacer(), widths = 1, ncol = 1, heights = 1) +
-  #   plot_annotation(title = NULL, theme = theme(title = element_text(face = "bold"), plot.background = element_rect(colour = NA, fill = NA, linewidth = 0)))
-  # group3 <- wrap_plots(trytoplot(plotBII), trytoplot(plotCROPDIV), trytoplot(plotNITROGEN), trytoplot(plotWATER), trytoplot(plotGHG), trytoplot(plotTEMP), widths = 1, ncol = 1, heights = 1) +
-  #   plot_annotation(title = "Environment", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
-  #   plot_layout(guides = "keep")
-  # group4 <- wrap_plots(trytoplot(plotBIOECON), trytoplot(plotCOSTS), widths = 1, ncol = 1, heights = 1) +
-  #   plot_annotation(title = "Economy", theme = theme(title = element_text(face = "bold", size = 20), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2), plot.margin = margin(10, 5, 5, 5, "pt"))) +
-  #   plot_layout(guides = "keep")
-  #
-  # col1 <- wrap_plots(wrap_elements(group1), wrap_elements(group2), wrap_elements(groupEmpty), ncol = 1, nrow = 3, heights = c(0.375, 0.5, 0.125)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  # col2 <- wrap_plots(wrap_elements(group3), wrap_elements(group4), ncol = 1, nrow = 2, heights = c(0.75, 0.25)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  # combined <- wrap_plots(wrap_elements(col1), wrap_elements(col2))
-  #
-  #
-  #
-  #
-  #
-  # group1 <- p1 + p2 + p3 + guide_area() + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom")
-  # group2 <- p4 + p5 + p6 + p7 + p8 + p9 + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
-  # group3 <- p10 + p11 + p12 + p13 + plot_annotation(title = "Inclusion", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
-  # group4 <- p14 + p15 + plot_annotation(title = "Economy", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
-  #
-  # col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group3),ncol = 1,nrow=2,heights = c(0.5,0.5)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  # col2 <- wrap_plots(wrap_elements(group2),wrap_elements(group4),ncol = 1,nrow=2,heights = c(0.73,0.27 )) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  # combined <- wrap_plots(wrap_elements(col1),wrap_elements(col2))
-  #
-  #
   if (is.null(file)) {
     return(combined)
   } else {
-    # ggsave(filename = file, combined, width = unit(8, "cm"), height = unit(26.3, "cm"), scale = 1, bg = "white")
-    # ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = unit(8, "cm"), height = unit(26.3, "cm"), scale = 1, bg = "white")
     ggsave(filename = file, combined, width = 13, height = 12, scale = 1.5, bg = "white")
-    ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = unit(8, "cm"), height = unit(26.3, "cm"), scale = 1, bg = "white")
+    ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = 13, height = 12, scale = 1.5, bg = "white")
   }
 }
