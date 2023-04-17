@@ -82,7 +82,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"))
   agEmpl <- agEmpl[which(agEmpl$scenario=="BAU 2050"), ]
   agEmpl$scenario <- subset
-  agEmpl<-agEmpl[,c("model","scenario","iso_a3","period","pop")]
+  agEmpl<-agEmpl[,c("model","scenario","iso_a3","period","agEmpl")]
   agEmpl$scenario <- factor(agEmpl$scenario)
 
   # theme for maps
