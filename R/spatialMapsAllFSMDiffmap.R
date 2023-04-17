@@ -195,8 +195,8 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   ggsave("testOBESE.png",plotOBESE)
 
   # Years of lost life
-  title <- "c) Years of life lost"
-  unit <- "Years per person"
+  title <- "c) Premature mortality"
+  unit <- "Years of life lost per person"
   caption <- "Cartogram projections"
   b     <- repIso[, .(value = (value[variable == "Health|Years of life lost|Disease"]) /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
@@ -216,7 +216,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "d) Expenditure for agricultural products"
+  title <- "d) Expenditure for Agricultural Products"
   unit <- "USD per capita"
   caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
@@ -279,8 +279,8 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title <- "f) Agricultural employment"
-  unit <- "Population share per country"
+  title <- "f) Agricultural Employment"
+  unit <- "Population share"
   caption <- "Cartogram projections"
 
   b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",
@@ -304,7 +304,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Hourly labor costs in agriculture
-  title <- "g) Agricultural wages"
+  title <- "g) Agricultural Wages"
   unit <- "USD per hour"
   caption <- "Cartogram projections" # with areas proportional to agricultural employment
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
@@ -346,7 +346,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   ggsave("plotBII.png",plotBII)
 
   # Environment: Croparea diversity
-  title <- "i) Shannon crop diversity"
+  title <- "i) Shannon Crop Diversity"
   unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Shannon crop diversity (index)", ])
@@ -383,8 +383,8 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   ggsave("plotNITROGEN.png",plotNITROGEN)
 
   # Environment: Water Withdrawal to Availability Ratio
-  title <- "k) Water Withdrawal to Availability Ratio"
-  unit  <- ""
+  title <- "k) Water Stress"
+  unit  <- "Withrawal to availabiltiy ratio"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "water stress and violations", ])
   bb    <- asRaster(b, countries2)
@@ -433,7 +433,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   ggsave("plotGHG.png",plotGHG)
 
   # Environment: Global Surface Temp
-  title <- "m) Global Surface Temp"
+  title <- "m) Global Surface Temperature"
   unit  <- "deg C"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
@@ -473,7 +473,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   ggsave("plotBIOECON.png",plotBIOECON)
 
   # Cost:Production cost agriculture per capita
-  title <- "o) Production cost agriculture"
+  title <- "o) Production Costs"
   unit  <- "US$05/capita/yr"
   caption <- "Cartogram projections"
   b     <- repReg[, .(value = value[variable == "Costs Without Incentives"] /
