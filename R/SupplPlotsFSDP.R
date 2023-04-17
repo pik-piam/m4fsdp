@@ -98,9 +98,9 @@ scens <- inner_join(scens, names)
 
 
 scens$scenarioname <- factor(scens$scenarioname,
-                         levels = c("SSP2 BAU",
+                         levels = c("BASE_SSP2",
                                     "Diets", "Livelihoods", "Biosphere",
-                                    "Agriculture", "ExtTransformation", "allFSMs", "FSDP"))
+                                    "Agriculture", "CrossSector", "FST_SSP2", "FST_SDP"))
 
 scens$scenario <- factor(scens$scenario,
                              levels = c("BAU",

@@ -1,6 +1,6 @@
 modelrun;scenarioname
-SSP2 2020;Ref SSP2 2020
-SSP2 2050;Ref SSP2 2050
+SSP2 2020;BASE_SSP2 2020
+SSP2 2050;BASE_SSP2 2050
 Diet;Diets
 DietEmptyCals;LowProcessed
 DietFish;BalancedFish
@@ -27,20 +27,20 @@ NitrogenEff;NitrogenEff
 CropRotations;CropRotations
 LandscapeElements;LandscapeElements
 RiceMit;RiceMitigation
-LivestockMngmt;LivestockMngmt
-ManureMngmt;ManureMngmt
+LivestockMngmt;LivestockManagement
+ManureMngmt;ManureManagement
 SoilCarbon;SoilCarbon
-ExternalPressures;ExtTransformation
+ExternalPressures;CrossSector
 Population;Population
 EconDevelop;HumanDevelop
 EnergyTrans;EnergyTrans
 Bioplastics;Bioplastics
 TimberCities;TimberCities
-SSP2fsdp;allFSMs
-BAU;SSP2 BAU
-FSDP;FSDP
-SSP1bau;SSP1 BAU
-SSP2bau;SSP2 BAU
-SSP3bau;SSP3 BAU
-SSP4bau;SSP4 BAU
-SSP5bau;SSP5 BAU
+SSP2fsdp;FST_SSP2
+BAU;BASE_SSP2
+FSDP;FST_SDP
+SSP1bau;BASE_SSP1
+SSP2bau;BASE_SSP2
+SSP3bau;BASE_SSP3
+SSP4bau;BASE_SSP4
+SSP5bau;BASE_SSP5

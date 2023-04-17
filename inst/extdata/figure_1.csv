@@ -30,10 +30,10 @@ LivestockMngmt;Agriculture;
 ManureMngmt;Agriculture;
 SoilCarbon;Agriculture;
 SSP2fsdp;Y;1
-ExternalPressures;External;1
-Population;External;
-EconDevelop;External;
-EnergyTrans;External;
-Bioplastics;External;
-TimberCities;External;
+ExternalPressures;CrossSector;1
+Population;CrossSector;
+EconDevelop;CrossSector;
+EnergyTrans;CrossSector;
+Bioplastics;CrossSector;
+TimberCities;CrossSector;
 FSDP;Z;1
