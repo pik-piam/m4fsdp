@@ -47,7 +47,7 @@ getVariables <- function(reportVariables = NULL) {
                   "Inclusion|12|Agric. Employment|mio people|increase|0|1",
                   "Inclusion|13|Agric. Wages|Index rel. to 2010|increase|2|1",
                   "Economy|14|Bioeconomy Supply|billion US$05/yr|increase|0|0.001",
-                  "Economy|15|Costs|billion US$05/yr|decrease|0|0.001")
+                  "Economy|15|Production Costs|billion US$05/yr|decrease|0|0.001")
 
   if (is.null(reportVariables)) {
     return(var)

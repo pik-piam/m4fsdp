@@ -267,22 +267,22 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   #todo: loop over variables. use variable Names from getVariables.
   p1 <- plotVal(rep, var = "Underweight", tag = "a)", showlegend = TRUE)
   p2 <- plotVal(rep, var = "Obesity", tag = "b)")
-  p3 <- plotVal(rep, var = "Years of life lost", tag = "c)")
+  p3 <- plotVal(rep, var = "Premature Mortality", tag = "c)")
 
-  p10 <- plotVal(rep, var = "Expenditures for agric.", tag = "d)", muteBefore = 2005)
-  p11 <- plotVal(rep, var = "People Below 3.20$/Day", tag = "e)", muteBefore = 2010)
-  p12 <- plotVal(rep, var = "Agric. employment", tag = "f)")
-  p13 <- plotVal(rep, var = "Agric. wages", tag = "g)")
+  p10 <- plotVal(rep, var = "Expenditures for Agric.", tag = "d)", muteBefore = 2005)
+  p11 <- plotVal(rep, var = "People below 3.20$/Day", tag = "e)", muteBefore = 2010)
+  p12 <- plotVal(rep, var = "Agric. Employment", tag = "f)")
+  p13 <- plotVal(rep, var = "Agric. Wages", tag = "g)")
 
-  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Biodiversity Hotspots"), tag = "h)", lowLimit = 65, highLimit = 95, varName = "Biodiversity")
+  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot Landscapes"), tag = "h)", lowLimit = 65, highLimit = 95, varName = "Biodiversity")
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 1.5)
-  p6 <- plotVal(rep, var = "Nitrogen surplus", tag = "j)")
-  p7 <- plotVal(rep, var = "Water env. flow violations", tag = "k)")
+  p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
+  p7 <- plotVal(rep, var = "Env. water flow violations", tag = "k)")
   p8 <- plotVal(rep, var = "Cumul. GHG emissions", tag = "l)")
   p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
 
   p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
-  p15 <- plotVal(rep, var = "Costs", tag = "o)")
+  p15 <- plotVal(rep, var = "Production Costs", tag = "o)")
 
   group1 <- p1 + p2 + p3 + guide_area() + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom")
   group2 <- p4 + p5 + p6 + p7 + p8 + p9 + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")

@@ -59,7 +59,12 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
 
   b[,"value" := get("value") * get("factor")]
 
-  b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
+  if(tableType==1){
+    b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
+  } else {
+    b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2020"], by = "variable"]
+  }
+
   b[get("variableName") == "People Below 3.20$/Day", "valuefill" := ifelse(get("valuefill") < -100,-100,get("valuefill"))]
   b[get("variableName") == "People Below 3.20$/Day", "valuefill" := ifelse(get("valuefill") > 100,100,get("valuefill"))]
 
