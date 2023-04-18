@@ -35,7 +35,7 @@ getVariables <- function(reportVariables = NULL) {
                   "Health|3|Premature Mortality|mio years of life lost|decrease|0|1",
                   "Environment|4.1|All Land Types|Biodiv. Intactness Index|increase|2|100",
                   "Environment|4.2|Cropland Landscapes|Biodiv. Intactness Index|increase|2|100",
-                  "Environment|4.3|Hotspot Lanscapes|Biodiv. Intactness Index|increase|2|100",
+                  "Environment|4.3|Hotspot Landscapes|Biodiv. Intactness Index|increase|2|100",
                   "Environment|5|Croparea Diversity|Shannon Index|increase|2|1",
                   "Environment|6|Nitrogen Surplus|Mt N/yr|decrease|0|1",
                   "Environment|7|Env. Water Flow Violations|km3/yr|decrease|0|1",

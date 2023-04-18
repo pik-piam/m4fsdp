@@ -277,8 +277,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot Landscapes"), tag = "h)", lowLimit = 65, highLimit = 95, varName = "Biodiversity")
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 1.5)
   p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
-  p7 <- plotVal(rep, var = "Env. water flow violations", tag = "k)")
-  p8 <- plotVal(rep, var = "Cumul. GHG emissions", tag = "l)")
+  p7 <- plotVal(rep, var = "Env. Water Flow Violations", tag = "k)")
+  p8 <- plotVal(rep, var = "Cumul. GHG Emissions", tag = "l)")
   p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
 
   p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
