@@ -170,7 +170,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("testUNDERWEIGHT.png",plotUNDERWEIGHT)
+  #ggsave("testUNDERWEIGHT.png",plotUNDERWEIGHT)
 
 
   # Health: Spatial distribution of population obese
@@ -192,7 +192,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("testOBESE.png",plotOBESE)
+  #ggsave("testOBESE.png",plotOBESE)
 
   # Years of lost life
   title <- "c) Premature mortality"
@@ -213,7 +213,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("testYOLL.png",plotYOLL)
+  #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
   title <- "d) Expenditure for Agricultural Products"
@@ -233,7 +233,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("testExpenditures.png",plotEXPENDITURE)
+  #ggsave("testExpenditures.png",plotEXPENDITURE)
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
   title <- "e) Income below 3.20$ per day"
@@ -256,7 +256,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX + 1000000, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotPOVERTY.png",plotPOVERTY)
+  #ggsave("plotPOVERTY.png",plotPOVERTY)
 
   # # Inclusion: Gini Coefficient
   # title <- "f) Gini Coefficient"
@@ -300,7 +300,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotEMPLOYMENT.png",plotEMPLOYMENT)
+  #ggsave("plotEMPLOYMENT.png",plotEMPLOYMENT)
 
 
   # Inclusion: Hourly labor costs in agriculture
@@ -324,7 +324,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotWAGE.png",plotWAGE)
+  #ggsave("plotWAGE.png",plotWAGE)
 
 
   # Environment: Biodiversity Intactness Index
@@ -343,7 +343,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotBII.png",plotBII)
+  #ggsave("plotBII.png",plotBII)
 
   # Environment: Croparea diversity
   title <- "i) Shannon Crop Diversity"
@@ -362,7 +362,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotCROPDIV.png",plotCROPDIV)
+  #ggsave("plotCROPDIV.png",plotCROPDIV)
 
   # Environment: Nutrient Surplus
   title <- "j) Nutrient Surplus"
@@ -380,7 +380,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotNITROGEN.png",plotNITROGEN)
+  #ggsave("plotNITROGEN.png",plotNITROGEN)
 
   # Environment: Water Withdrawal to Availability Ratio
   title <- "k) Water Stress"
@@ -398,7 +398,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotWATER.png",plotWATER)
+  #ggsave("plotWATER.png",plotWATER)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
   title <- "l) Greenhouse Gas Emissions"
@@ -430,7 +430,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotGHG.png",plotGHG)
+  #ggsave("plotGHG.png",plotGHG)
 
   # Environment: Global Surface Temp
   title <- "m) Global Surface Temperature"
@@ -448,7 +448,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotTEMP.png",plotTEMP)
+  #ggsave("plotTEMP.png",plotTEMP)
 
   # Cost: Bioeconomy
   title <- "n) Value of Bioeconomy Supply"
@@ -470,7 +470,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotBIOECON.png",plotBIOECON)
+  #ggsave("plotBIOECON.png",plotBIOECON)
 
   # Cost:Production cost agriculture per capita
   title <- "o) Production Costs"
@@ -492,7 +492,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
     geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("plotCOSTS.png",plotCOSTS)
+  #ggsave("plotCOSTS.png",plotCOSTS)
 
 
 
@@ -511,29 +511,30 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   }
 
 
-  group1 <- wrap_plots(trytoplot(plotUNDERWEIGHT), trytoplot(plotOBESE), trytoplot(plotYOLL), guide_area(), widths = 1, ncol = 2, heights = 1) +
+  group1 <- wrap_plots(trytoplot(plotUNDERWEIGHT), trytoplot(plotOBESE), trytoplot(plotYOLL), guide_area(), widths = c(0.33,0.33,0.34), ncol = 3, heights = 1) +
     plot_annotation(title = "Health", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
     plot_layout(guides = "keep")
-  group2 <- wrap_plots(trytoplot(plotBII), trytoplot(plotCROPDIV), trytoplot(plotNITROGEN), trytoplot(plotWATER), trytoplot(plotGHG), trytoplot(plotTEMP), widths = 1, ncol = 2, heights = 1) +
+  group2 <- wrap_plots(trytoplot(plotBII), trytoplot(plotCROPDIV), trytoplot(plotNITROGEN), trytoplot(plotWATER), trytoplot(plotGHG), trytoplot(plotTEMP), widths = c(0.33,0.33,0.34), ncol = 3, heights = c(0.5,0.5)) +
     plot_annotation(title = "Environment", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
     plot_layout(guides = "keep")
-  group3 <- wrap_plots(trytoplot(plotEXPENDITURE), trytoplot(plotPOVERTY), trytoplot(plotEMPLOYMENT), trytoplot(plotWAGE), widths = 1, ncol = 2, heights = 1) +
+  group3 <- wrap_plots(trytoplot(plotEXPENDITURE), trytoplot(plotPOVERTY), trytoplot(plotEMPLOYMENT), trytoplot(plotWAGE), widths = c(0.5,0.5), ncol = 2, heights = c(0.5,0.5)) +
     plot_annotation(title = "Inclusion", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(10, 5, 5, 5, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
     plot_layout(guides = "keep")
-  groupEmpty <- wrap_plots(plot_spacer(), widths = 1, ncol = 1, heights = 1) +
-    plot_annotation(title = NULL, theme = theme(title = element_text(face = "bold"), plot.background = element_rect(colour = NA, fill = NA, linewidth = 0)))
-  group4 <- wrap_plots(trytoplot(plotBIOECON), trytoplot(plotCOSTS), widths = 1, ncol = 2, heights = 1) +
+  #groupEmpty <- wrap_plots(plot_spacer(), widths = 1, ncol = 1, heights = 1) +
+  #  plot_annotation(title = NULL, theme = theme(title = element_text(face = "bold"), plot.background = element_rect(colour = NA, fill = NA, linewidth = 0)))
+  group4 <- wrap_plots(trytoplot(plotBIOECON), trytoplot(plotCOSTS), widths = 1, ncol = 1, heights = 1) +
     plot_annotation(title = "Economy", theme = theme(title = element_text(face = "bold", size = 20), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2), plot.margin = margin(10, 5, 5, 5, "pt"))) +
     plot_layout(guides = "keep")
 
-  col1 <- wrap_plots(wrap_elements(group1),wrap_elements(group3),ncol = 1,nrow=2,heights = c(0.5,0.5)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  col2 <- wrap_plots(wrap_elements(group2),wrap_elements(group4),wrap_elements(groupEmpty),ncol = 1,nrow=3,heights = c(0.67,0.27,0.06)) & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
-  combined <- wrap_plots(wrap_elements(col1),wrap_elements(col2))
+  low <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 2,nrow=1,heights = 1, widths=c(0.66,0.34)) & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
+  up <- wrap_plots(wrap_elements(group1),wrap_elements(group2), ncol=1, nrow=2, heights=c(0.34,0.66)) & theme(plot.margin = margin(0, 10, 10, 0, "pt"))
+  combined <-  wrap_plots(wrap_elements(up),wrap_elements(low), ncol=1, heights=c(0.6,0.4))
+
 
   if (is.null(file)) {
     return(combined)
   } else {
-    ggsave(filename = file, combined, width = 13, height = 12, scale = 1.5, bg = "white")
+
     ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = 13, height = 12, scale = 1.5, bg = "white")
   }
 }
