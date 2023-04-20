@@ -14,7 +14,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @details blub
 #' @return if file is NULL a ggplot2 object will be return
 #' @author Florian Humpenoeder, Vartika Singh
-#' @import ggplot2 ggiraph forcats data.table scales htmlwidgets tidyr
+#' @import ggplot2 ggiraph data.table scales htmlwidgets tidyr
 #' @importFrom rlang .data
 #' @importFrom dplyr %>% filter pull select mutate
 #' @importFrom utils write.csv
@@ -168,106 +168,6 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b$scenario <- factor(b$scenario,levels = scenarioOrder,ordered = TRUE)
 
   b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
-
-### todo: DELETE once scenario selection is approved
-
-# if (regionSel == "IND") {
-#
-#   ##Dropping scenarios not relevant for India
-#   b <- b[scenario != "SSP1",]
-#   b <- b[scenario != "SSP3",]
-#   b <- b[scenario != "SSP4",]
-#   b <- b[scenario != "SSP5",]
-#   b <- b[scenario != "ExternalPressures",]
-#   b <- b[scenario != "NoUnderweight",]
-#   b <- b[scenario != "NoOverweight",]
-#   b <- b[scenario != "HalfOverweight",]
-#   b <- b[scenario != "LessFoodWaste",]
-#   b <- b[scenario != "DietVegFruitsNutsSeeds",]
-#   b <- b[scenario != "DietRuminants",]
-#   b <- b[scenario != "DietMonogastrics",]
-#   b <- b[scenario != "DietLegumes",]
-#   b <- b[scenario != "DietFish",]
-#   b <- b[scenario != "DietEmptyCals",]
-#   b <- b[scenario != "WaterSparing",]
-#   b <- b[scenario != "LandSparing",]
-#   b <- b[scenario != "BiodivSparing",]
-#   b <- b[scenario != "PeatlandSparing",]
-#   b <- b[scenario != "REDD",]
-#   b <- b[scenario != "REDDaff",]
-#   b <- b[scenario != "SoilCarbon",]
-#   b <- b[scenario != "CropRotations",]
-#   b <- b[scenario != "NitrogenUptakeEff",]
-#   b <- b[scenario != "LivestockMngmt",]
-#   b <- b[scenario != "AnimalWasteMngmt",]
-#   b <- b[scenario != "AirPollution",]
-#   b <- b[scenario != "LiberalizedTrade",]
-#   b <- b[scenario != "DietRotations",]
-#   b <- b[scenario != "FullBiodiv",]
-#   b <- b[scenario != "Protection",]
-#   b <- b[scenario != "REDDaffDietRuminants",]
-#   b <- b[scenario != "SoilMonogastric",]
-#   b <- b[scenario != "SoilRotations",]
-#   b <- b[scenario != "Diet",]
-#
-#
-#   scenFirst <- c("SSP2 2020", "SSP2 2050")
-#   scenLast <- c("FSDP")
-#
-#   scenCombinations <- c("WaterSoil", "Efficiency")
-#   scenArchetypes <- c("AllHealth", "AllEnvironment",
-#                       "AllClimate", "AllInclusion")
-#   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-#   scenMiddle <- c(scenCombinations,scenArchetypes)
-#   scenOrder <- c(rev(scenLast), rev(scenMiddle), scenOrder[!scenOrder %in% c(scenFirst, scenMiddle, scenLast)], rev(scenFirst))
-#   b$scenario <- factor(b$scenario, levels = scenOrder)
-#   b <- droplevels(b)
-#
-# } else {
-#
-#   scenFirst <- c("SSP2 2020", "SSP2 2050")
-#   scenExt <- c("Population", "EconDevelop", "EnergyTrans", "TimberCities", "Bioplastics")
-#   scenLast <- c("FSDP")
-#   scenSSPs <- c("SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau","SSP1PLUSbau")
-#   scenFSTs <- c("SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp","SSP1PLUSfsdp")
-#   scenDiet <- c("NoUnderweight", "HalfOverweight", "NoOverweight", "LessFoodWaste")
-#   scenDiet2 <- c("DietVegFruitsNutsSeeds", "DietRuminants", "DietMonogastrics",
-#                  "DietLegumes", "DietFish", "DietEmptyCals")
-#   scenProtect <- c("WaterSparing", "LandSparing", "BiodivSparing", "PeatlandSparing","REDD", "REDDaff")
-#   scenMngmt <- c("SoilCarbon","CropRotations", "NitrogenEff", "CropeffTax", "RiceMit", "LivestockMngmt", "ManureMngmt",
-#                  "AirPollution")
-#   scenInclusion <- c("LiberalizedTrade","MinWage")
-#   scenCombinations <- c("WaterSoil", "DietRotations", "SoilRotations", "SoilMonogastric",
-#                         "REDDaffDietRuminants", "FullBiodiv")
-#   scenArchetypes <- c("Sufficiency", "Efficiency", "Protection", "AllHealth", "AllEnvironment",
-#                       "AllClimate", "AllInclusion")
-#
-#   b[scenario == "BAU", scenario := paste("SSP2", period)]
-#   b$period <- factor(b$period)
-#   b[!scenario %in% c(scenFirst,scenExt,scenSSPs,scenFSTs,scenCombinations,scenArchetypes), period := "FSMs"]
-#   b[scenario %in% scenFirst, period := "Ref"]
-#   b[scenario %in% c(scenDiet,scenDiet2), period := "Diet"]
-#   b[scenario %in% c(scenInclusion), period := "Incl."]
-#   b[scenario %in% c(scenProtect), period := "NatureSparing"]
-#   b[scenario %in% c(scenMngmt), period := "AgroMngmt"]
-#   b[scenario %in% scenExt, period := "Ext. Transf."]
-#   b[scenario %in% scenSSPs, period := "SSPs"]
-#   b[scenario %in% scenFSTs, period := "FSTs"]
-#   b[scenario %in% c(scenCombinations, scenArchetypes), period := "Food System Measure Bundles"]
-#
-#   b$period <- factor(b$period)
-#   b <- droplevels(b)
-#
-#   scenOrder <- levels(fct_reorder(b$scenario, b$valuefill, sum, .desc = FALSE))
-#   scenMiddle <- c(scenSSPs, scenFSTs, scenDiet2, scenDiet, scenInclusion, scenProtect, scenMngmt,
-#   scenCombinations, scenArchetypes)
-#   scenOrder <- c(rev(scenLast), rev(scenExt), rev(scenMiddle), scenOrder[!scenOrder %in% c(
-#     scenFirst, scenMiddle, scenExt, scenLast)], rev(scenFirst))
-#   b$scenario <- factor(b$scenario, levels = scenOrder)
-#   b <- droplevels(b)
-#
-# }
-
 
   makeExp <- function(x, y) {
     exp <- vector(length = 0, mode = "expression")

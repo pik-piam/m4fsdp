@@ -13,9 +13,8 @@
 #'
 #' @importFrom gdx readGDX
 #' @importFrom magclass getSets read.report write.report getItems
-#' @importFrom dplyr %>% mutate select pull filter arrange rename
+#' @importFrom dplyr %>% mutate select pull filter arrange rename recode
 #' @importFrom stringr str_extract str_replace str_remove str_detect
-#' @importFrom forcats fct_recode
 #' @importFrom quitte as.quitte
 #' @importFrom madrat toolAggregate
 #' @importFrom rlang .data
@@ -79,35 +78,38 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
         filter(!(.data$region %in% marco_worldRegions))
 
     # Clarify the variable names
-    healthImpacts <- healthImpacts %>%
-        mutate(sex = fct_recode(.data$sex,
-                                "Both sexes" = "BTH",
-                                "Male"       = "MLE",
-                                "Female"     = "FML"),
-               metric = fct_recode(.data$metric,
-                                   "Attributable deaths"                   = "deaths_avd",
-                                   "Years of life lost"                    = "YLL_avd",
-                                   "Percent change in Attributable deaths" = "%deaths_avd/all",
-                                   "Percent change in Years of life lost"  = "%YLL_avd/all"),
-               riskFactor = fct_recode(.data$riskFactor,
-                                       "All risk factors" = "all-rf",
-                                       Diet               = "diet",
-                                       Weight             = "weight",
-                                       Fruits             = "fruits",
-                                       Vegetables         = "vegetables",
-                                       "Nuts and seeds"   = "nuts_seeds",
-                                       Legumes            = "legumes",
-                                       "Red meat"         = "red_meat",
-                                       Underweight        = "underweight",
-                                       Overweight         = "overweight",
-                                       Obese              = "obese"),
-               causeOfDeath = fct_recode(.data$causeOfDeath,
-                                         "All-cause mortality"      = "all-c",
-                                         "Congenital Heart Disease" = "CHD",
-                                         Stroke                     = "Stroke",
-                                         Cancer                     = "Cancer",
-                                         "Type-2 Diabetes"          = "T2DM",
-                                         "Respiratory Disease"      = "Resp_Dis"))
+    healthImpacts$sex <- recode(healthImpacts$sex,
+                                `BTH` = "Both sexes",
+                                `MLE` = "Male",
+                                `FML` = "Female")
+
+    healthImpacts$metric <- recode(healthImpacts$metric,
+                                `deaths_avd`      = "Attributable deaths",
+                                `YLL_avd`         = "Years of life lost",
+                                `%deaths_avd/all` = "Percent change in Attributable deaths",
+                                `%YLL_avd/all`    = "Percent change in Years of life lost")
+
+    healthImpacts$riskFactor <- recode(healthImpacts$riskFactor,
+                                    `all-rf`        = "All risk factors",
+                                    `diet`          = "Diet",
+                                    `weight`        = "Weight",
+                                    `fruits`        = "Fruits",
+                                    `vegetables`    = "Vegetables",
+                                    `nuts_seeds`    = "Nuts and seeds",
+                                    `legumes`       = "Legumes",
+                                    `red_meat`      = "Red meat",
+                                    `underweight`   = "Underweight",
+                                    `overweight`    = "Overweight",
+                                    `obese`         = "Obese")
+
+    healthImpacts$causeOfDeath <- recode(healthImpacts$causeOfDeath,
+                                        `all-c`     = "All-cause mortality",
+                                        `CHD`       = "Congenital Heart Disease",
+                                        `Stroke`    = "Stroke",
+                                        `Cancer`    = "Cancer",
+                                        `T2DM`      = "Type-2 Diabetes",
+                                        `Resp_Dis`  = "Respiratory Disease")
+
 
     healthImpacts <- healthImpacts %>%
         filter(.data$metric %in% c("Years of life lost", "Percent change in Years of life lost")) %>%
@@ -211,9 +213,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
 
     ## Append to regional report.mif
 
-    healthImpacts_regional <- healthImpacts_regional %>%
-        mutate(region = fct_recode(.data$region,
-                                   "GLO" = "World"))
+    healthImpacts_regional$region[healthImpacts_regional$region == "World"] <- "GLO"
 
     healthImpacts_regional <- as.magpie(healthImpacts_regional)
 
