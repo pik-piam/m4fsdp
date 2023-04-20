@@ -216,7 +216,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "d) Expenditure for Agricultural Products"
+  title <- "j) Expenditure for Agricultural Products"
   unit <- "USD per capita"
   caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
@@ -236,7 +236,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testExpenditures.png",plotEXPENDITURE)
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
-  title <- "e) Income below 3.20$ per day"
+  title <- "k) Income below 3.20$ per day"
   unit <- "Population share per world region"
   caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
@@ -279,7 +279,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title <- "f) Agricultural Employment"
+  title <- "l) Agricultural Employment"
   unit <- "Population share"
   caption <- "Cartogram projections"
 
@@ -304,7 +304,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Hourly labor costs in agriculture
-  title <- "g) Agricultural Wages"
+  title <- "m) Agricultural Wages"
   unit <- "USD per hour"
   caption <- "Cartogram projections" # with areas proportional to agricultural employment
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
@@ -328,7 +328,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Environment: Biodiversity Intactness Index
-  title <- "h) Biodiversity Intactness Index"
+  title <- "d) Biodiversity Intactness Index"
   unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
@@ -346,7 +346,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotBII.png",plotBII)
 
   # Environment: Croparea diversity
-  title <- "i) Shannon Crop Diversity"
+  title <- "e) Shannon Crop Diversity"
   unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Shannon crop diversity (index)", ])
@@ -365,7 +365,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotCROPDIV.png",plotCROPDIV)
 
   # Environment: Nutrient Surplus
-  title <- "j) Nutrient Surplus"
+  title <- "f) Nutrient Surplus"
   unit  <- "kg N per ha"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
@@ -383,7 +383,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotNITROGEN.png",plotNITROGEN)
 
   # Environment: Water Withdrawal to Availability Ratio
-  title <- "k) Water Stress"
+  title <- "g) Water Stress"
   unit  <- "Withrawal to availabiltiy ratio"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "water stress and violations", ])
@@ -401,7 +401,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotWATER.png",plotWATER)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "l) Greenhouse Gas Emissions"
+  title <- "h) Greenhouse Gas Emissions"
   unit  <- "ton CO2eq per ha (cumulative since 2000)"
   caption <- "Projection: Mollweide"
 
@@ -433,7 +433,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotGHG.png",plotGHG)
 
   # Environment: Global Surface Temp
-  title <- "m) Global Surface Temperature"
+  title <- "i) Global Surface Temperature"
   unit  <- "deg C"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
