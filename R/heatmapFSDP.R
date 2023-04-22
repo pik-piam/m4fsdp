@@ -97,7 +97,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
     as.character()
 
   haveYLLScenarios <- tb %>%
-    filter(.data$variableName == "Years of life lost") %>%
+    filter(.data$variableName == "Premature Mortality") %>%
     pull(.data$scenario) %>%
     unique() %>%
     as.character()
@@ -107,7 +107,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   tb <- tb %>%
     filter(.data$scenario == "BAU",
            .data$period == "2050",
-           .data$variableName %in% "Years of life lost") %>%
+           .data$variableName %in% "Premature Mortality") %>%
     select(-"scenario")
 
   tb <- tidyr::expand_grid(tb, scenario = nonDietaryScenarios) %>%
