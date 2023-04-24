@@ -517,11 +517,13 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     plot_annotation(title = "Economy", theme = theme(title = element_text(face = "bold", size = 20), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2), plot.margin = margin(10, 5, 5, 5, "pt"))) +
     plot_layout(guides = "keep")
 
+  file_base <- substring(file, 1, nchar(file) - 4)
+
   up <- wrap_plots(wrap_elements(group1),wrap_elements(group2), ncol = 1, nrow = 2, heights=c(0.3615,0.6385)) & theme(plot.margin = margin(0, 10, 10, 0, "pt"))
-  ggsave(filename = paste0("Part1_",file), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
-  ggsave(filename = paste0("Part1_",substring(file, 1, nchar(file) - 3), "pdf"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
+  ggsave(filename = paste0(file_base,"_part1",".png"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
+  ggsave(filename = paste0(file_base,"_part1",".pdf"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
 
   low <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 2, nrow = 1, widths=c(0.665,0.335)) & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
-  ggsave(filename = paste0("Part2_",file), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
-  ggsave(filename = paste0("Part2_",substring(file, 1, nchar(file) - 3), "pdf"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
+  ggsave(filename = paste0(file_base,"_part2",".png"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
+  ggsave(filename = paste0(file_base,"_part2",".pdf"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
 }
