@@ -401,23 +401,14 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotWATER.png",plotWATER)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "h) Greenhouse Gas Emissions"
-  unit  <- "ton CO2eq per ha (cumulative since 2000)"
+  title <- "h) Annual Greenhouse Gas Emissions (GWP100)"
+  unit  <- "ton CO2eq per ha"
   caption <- "Projection: Mollweide"
 
-  b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land|Cumulative"] * 1000 /
+  b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land"] * 1000 /
                         value[variable == "Resources|Land Cover"]), by = .(model, scenario, region, period)]
-  #b   <- droplevels(repReg[variable == "Emissions|GWP100AR6|Land|Cumulative", ]) # Will become ISO level, eventually
   all <- merge(reg2iso, b)
   all <- merge(countries2, all)
-
-  # title <- "l) Cumulative Greenhouse Gas Emissions"
-  # unit  <- "ton CO2eq per capita"
-  # caption <- "Projection: Mollweide"
-  # b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land|Cumulative"] /
-  #                       value[variable == "Population"]), by = .(model, scenario, region, period)]
-  # all <- merge(reg2iso, b)
-  # all <- merge(pop, all, all.x = TRUE)
 
   plotGHG <- ggplot(all) +
     facet_wrap(vars(scenario), ncol = 3) +
