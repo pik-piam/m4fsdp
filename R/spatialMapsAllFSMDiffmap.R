@@ -216,7 +216,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "d) Expenditure for Agricultural Products"
+  title <- "j) Expenditure for Agricultural Products"
   unit <- "USD per capita"
   caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
@@ -236,7 +236,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testExpenditures.png",plotEXPENDITURE)
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
-  title <- "e) Income below 3.20$ per day"
+  title <- "k) Income below 3.20$ per day"
   unit <- "Population share per world region"
   caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
@@ -279,7 +279,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title <- "f) Agricultural Employment"
+  title <- "l) Agricultural Employment"
   unit <- "Population share"
   caption <- "Cartogram projections"
 
@@ -304,7 +304,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Hourly labor costs in agriculture
-  title <- "g) Agricultural Wages"
+  title <- "m) Agricultural Wages"
   unit <- "USD per hour"
   caption <- "Cartogram projections" # with areas proportional to agricultural employment
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
@@ -328,7 +328,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Environment: Biodiversity Intactness Index
-  title <- "h) Biodiversity Intactness Index"
+  title <- "d) Biodiversity Intactness Index"
   unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
@@ -346,7 +346,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotBII.png",plotBII)
 
   # Environment: Croparea diversity
-  title <- "i) Shannon Crop Diversity"
+  title <- "e) Shannon Crop Diversity"
   unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Shannon crop diversity (index)", ])
@@ -365,7 +365,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotCROPDIV.png",plotCROPDIV)
 
   # Environment: Nutrient Surplus
-  title <- "j) Nutrient Surplus"
+  title <- "f) Nutrient Surplus"
   unit  <- "kg N per ha"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
@@ -383,7 +383,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotNITROGEN.png",plotNITROGEN)
 
   # Environment: Water Withdrawal to Availability Ratio
-  title <- "k) Water Stress"
+  title <- "g) Water Stress"
   unit  <- "Withrawal to availabiltiy ratio"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "water stress and violations", ])
@@ -401,23 +401,14 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotWATER.png",plotWATER)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "l) Greenhouse Gas Emissions"
-  unit  <- "ton CO2eq per ha (cumulative since 2000)"
+  title <- "h) Annual Greenhouse Gas Emissions (GWP100)"
+  unit  <- "ton CO2eq per ha"
   caption <- "Projection: Mollweide"
 
-  b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land|Cumulative"] * 1000 /
+  b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land"] * 1000 /
                         value[variable == "Resources|Land Cover"]), by = .(model, scenario, region, period)]
-  #b   <- droplevels(repReg[variable == "Emissions|GWP100AR6|Land|Cumulative", ]) # Will become ISO level, eventually
   all <- merge(reg2iso, b)
   all <- merge(countries2, all)
-
-  # title <- "l) Cumulative Greenhouse Gas Emissions"
-  # unit  <- "ton CO2eq per capita"
-  # caption <- "Projection: Mollweide"
-  # b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land|Cumulative"] /
-  #                       value[variable == "Population"]), by = .(model, scenario, region, period)]
-  # all <- merge(reg2iso, b)
-  # all <- merge(pop, all, all.x = TRUE)
 
   plotGHG <- ggplot(all) +
     facet_wrap(vars(scenario), ncol = 3) +
@@ -433,7 +424,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotGHG.png",plotGHG)
 
   # Environment: Global Surface Temp
-  title <- "m) Global Surface Temperature"
+  title <- "i) Global Surface Temperature"
   unit  <- "deg C"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
@@ -526,15 +517,13 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     plot_annotation(title = "Economy", theme = theme(title = element_text(face = "bold", size = 20), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2), plot.margin = margin(10, 5, 5, 5, "pt"))) +
     plot_layout(guides = "keep")
 
-  low <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 2,nrow=1,heights = 0.4, widths=c(0.66,0.34)) & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
-  up <- wrap_plots(wrap_elements(group1),wrap_elements(group2), ncol=1, nrow=2, widths=1, heights=c(0.2,0.4)) & theme(plot.margin = margin(0, 10, 10, 0, "pt"))
-  combined <-  wrap_plots(wrap_elements(up),wrap_elements(low), ncol=1, heights=c(0.6,0.4),widths=1)
+  file_base <- substring(file, 1, nchar(file) - 4)
 
+  up <- wrap_plots(wrap_elements(group1),wrap_elements(group2), ncol = 1, nrow = 2, heights=c(0.3615,0.6385)) & theme(plot.margin = margin(0, 10, 10, 0, "pt"))
+  ggsave(filename = paste0(file_base,"_part1",".png"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
+  ggsave(filename = paste0(file_base,"_part1",".pdf"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
 
-  if (is.null(file)) {
-    return(combined)
-  } else {
-    ggsave(filename = file, combined, width = 13, height = 12, scale = 1.5, bg = "white")
-    ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width = 13, height = 12, scale = 1.5, bg = "white")
-  }
+  low <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 2, nrow = 1, widths=c(0.665,0.335)) & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
+  ggsave(filename = paste0(file_base,"_part2",".png"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
+  ggsave(filename = paste0(file_base,"_part2",".pdf"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
 }

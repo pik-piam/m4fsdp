@@ -10,7 +10,7 @@
 #' @return depends on file argument. If file==NULL, the default, the plot is returned.
 #' If a filename is provided the plot is saved as file
 #' @author Florian Humpenoeder
-#' @import ggplot2 ggiraph patchwork ggh4x forcats data.table scales htmlwidgets
+#' @import ggplot2 ggiraph patchwork ggh4x data.table scales htmlwidgets
 #' @importFrom rlang .data
 #' @importFrom stats reorder
 #' @importFrom ggtext element_markdown
@@ -154,9 +154,8 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
   b$bundle <- factor(b$bundle)
   b$bundleOrder <- factor(b$bundleOrder)
   b$bundleName <- factor(b$bundleName)
-  b$bundle <- fct_reorder(b$bundle, as.integer(b$bundleOrder))
-  b$bundleName <- fct_reorder(b$bundleName, as.integer(b$bundleOrder))
-
+  b$bundle <- reorder(b$bundle, as.integer(b$bundleOrder))
+  b$bundleName <- reorder(b$bundleName, as.integer(b$bundleOrder))
 
   b[, "bundlesum" := sum(get("value"), na.rm = TRUE), by = list(get("variable"), get("bundle"), get("scenset"))]
   b[, "valuefill" := list(get("value") / max(max(abs(get("value")), na.rm = TRUE),

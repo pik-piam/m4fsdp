@@ -372,7 +372,8 @@ emissReg <- filter(scens, RegionG != "World",
          value = case_when( # GWP
            variable == "CO2" ~ value * 1,
            variable == "CH4" ~ value * 27,
-           variable == "N2O" ~ value * 273)) %>%
+           variable == "N2O" ~ value * 273),
+         value = value / 1000) %>%
   group_by(scenarioname, scenario, region, variable)
 
 
@@ -387,12 +388,12 @@ emissRegch4n2o <- filter(emissReg, variable %in% c("CH4", "N2O")) %>%
                rename("value" = ".value") %>%
                filter(period != 2020) %>% #remove 2020 value for cumsum
                group_by(region, scenarioname, variable) %>%
-               mutate(cum = cumsum((value / 1000))) %>%
+               mutate(cum = cumsum((value))) %>%
                filter(period == 2050) # subset to 2050 value
 
 # co2 is a stock accounting so it only needs to be multiplied by 5
 emissRegco2 <- filter(emissReg, variable == "CO2") %>%
-               mutate(cum = cumsum(value / 1000) * 5) %>%   # Gt and cumulative, multiply by the 5 year time steps
+               mutate(cum = cumsum(value) * 5) %>%   # Gt and cumulative, multiply by the 5 year time steps
                  filter(period == 2050) %>%  # subset to 2050 value
                 select(region, period, variable, scenario, value, cum)
 
@@ -401,11 +402,14 @@ emissReg <- rbind(emissRegco2, emissRegch4n2o)
 emissReg <- inner_join(emissReg, mapping)
 
 
-emissReg$positive <- ifelse(emissReg$cum >= 0, emissReg$cum, 0)
-emissReg$negative <- ifelse(emissReg$cum < 0, emissReg$cum, -1e-36)
+emissReg$positive <- ifelse(emissReg$value >= 0, emissReg$value, 0)
+emissReg$negative <- ifelse(emissReg$value < 0, emissReg$value, -1e-36)
 
 # emiss_reg <- emiss_reg[-which(emiss_reg$period == 2020 & emiss_reg$scenarioname!= "BAU"),] #remove nonBAU 2010 values
-unit <- "Gt CO2eq since 2020"
+#unit <- "Gt CO2eq since 2020"
+unit <- expression(bold("Gt CO"[2] ~ "eq yr"^{
+  -1
+})) # "Gt CO2eq per Year"
 
 if (!is.null(caseRegion)) {
   emissReg <- emissReg %>% filter(RegionG == selRegion)
@@ -425,7 +429,7 @@ plotEmissReg <- ggplot(emissReg, aes(y = scenarioname)) +
   guides(fill = guide_legend("AFOLU emission type", ncol = 4, title.position = "left", byrow = TRUE, reverse = FALSE)) +
   xlab(unit) + scale_x_continuous(guide = guide_axis(check.overlap = TRUE), expand = expansion(mult = c(0.05, 0.1)),
                                   breaks = pretty_breaks()) +
-  labs(title = "b) Cumulative GHG Emissions 2050")
+  labs(title = "b) Regional GHG Emissions")
 
 plotEmiss <- plotEmissGlo + plotEmissReg +
   plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.6))
