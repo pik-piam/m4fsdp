@@ -248,7 +248,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   title <- "e) Income below 3.20$ per day"
   unit <- "Population share per world region"
   caption <- "Cartogram projections with areas proportional to population"
-  b     <- repIso[, .(value = value[variable == "Income|Number of People below 3p20 USDppp11/day"] /
+  b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
@@ -259,7 +259,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
                      color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
     # scale_fill_manual(values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
     #                  breaks = seq(0, 0.4, by = 0.1)) +
-    scale_fill_gradientn(unit, colors = c("#2c7bb7","#5e9fc9","#8cc4dd","#bce0de","#ddefce","#ffffc0"), na.value = "grey90", limits = c(0, 1), oob = scales::squish) +
+    scale_fill_gradientn(unit, colors = rev(c("#2c7bb7","#5e9fc9","#8cc4dd","#bce0de","#ddefce","#f0d700")), na.value = "grey90", limits = c(0, 1), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
