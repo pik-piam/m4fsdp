@@ -86,7 +86,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   agEmpl$scenario <- factor(agEmpl$scenario)
 
   # theme for maps
-  myTheme <- theme_minimal(base_size = 12) +
+  myTheme <- theme_minimal(base_size = 16) +
     theme(plot.margin = grid::unit(c(5, 5, 10, 5), "pt"),
           strip.text = element_blank(), strip.background = element_blank(),
           panel.background = element_rect(fill = "black"),
@@ -98,8 +98,8 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
           legend.margin = margin(5, 0, -10, 0),
           legend.box.margin = margin(0, 0, 0, 0),
           legend.spacing.y = unit(2, "pt"),
-          plot.title = element_text(hjust = 0, margin = unit(c(0, 0, 0, 0), "pt"), size = 12, face = "bold"),
-          legend.title = element_text(size = 12, hjust = 1, margin = unit(c(0, 0, 0, 0), "pt")),
+          plot.title = element_text(hjust = 0, margin = unit(c(0, 0, 0, 0), "pt"), size = 16, face = "bold"),
+          legend.title = element_text(size = 16, hjust = 1, margin = unit(c(0, 0, 0, 0), "pt")),
           plot.caption = element_text(hjust = 1, margin = unit(c(0, 0, 0, 0), "pt")))
 
   ## regional/country data
@@ -151,68 +151,65 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("test25.png",plotDUMMY)
 
   # Health: Spatial distribution of population underweight
-  title <- "a) Underweight"
-  unit <- "Population share per country"
-  caption <- "Cartogram projections"
+  title <- "a) Underweight (population share per country)"
+  caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
-                    value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+                        value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
 
   plotUNDERWEIGHT <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
-                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="black") + coord_sf(expand = FALSE) +
     #scale_fill_gradientn(unit, colors = brewer.pal(9, "PuBu")[-1], na.value = "grey90", limits = c(-0.2, 0.2), oob = scales::squish, breaks = c(-0.2,-0.15,-0.1,-0.05,0,0.05,0.1,0.15,0.2), labels = c("< -0.2",-0.15,-0.1,-0.05,0,0.05,0.1,0.15,">0.2")) +
-    scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.2, 0.2), oob = scales::squish, breaks = c(-0.2,-0.1,0,0.1,0.2), labels = c("< -0.2",-0.1,0,0.1,">0.2")) +
+    scale_fill_gradientn(NULL, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.2, 0.2), oob = scales::squish, breaks = c(-0.2,-0.1,0,0.1,0.2), labels = c("< -0.2",-0.1,0,0.1,">0.2")) +
     myTheme +
-    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
-    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
-    geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
+    labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-180,0,0,0), size = 12)) +
+    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 20, barheight = 0.4)) +
+    annotate(geom = "label", x = labelX, y = labelY, label = label,
+             hjust = 0, vjust = 0, color = "white", size = 12 / .pt, fill = "black", label.size = 0)
   #ggsave("testUNDERWEIGHT.png",plotUNDERWEIGHT)
 
 
   # Health: Spatial distribution of population obese
-  title <- "b) Obesity"
-  unit <- "Population share per country"
-  caption <- "Cartogram projections"
+  title <- "b) Obesity (population share per country)"
+  caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
 
   plotOBESE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
-                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
-    scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.2, 0.2), oob = scales::squish, breaks = c(-0.2,-0.1,0,0.1,0.2), labels = c("< -0.2",-0.1,0,0.1,">0.2")) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="black") + coord_sf(expand = FALSE) +
+    scale_fill_gradientn(NULL, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.2, 0.2), oob = scales::squish, breaks = c(-0.2,-0.1,0,0.1,0.2), labels = c("< -0.2",-0.1,0,0.1,">0.2")) +
     myTheme +
-    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
-    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
-    geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
+    labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-180,0,0,0), size = 12)) +
+    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 20, barheight = 0.4)) +
+    annotate(geom = "label", x = labelX, y = labelY, label = label,
+             hjust = 0, vjust = 0, color = "white", size = 12 / .pt, fill = "black", label.size = 0)
   #ggsave("testOBESE.png",plotOBESE)
 
   # Years of lost life
-  title <- "c) Premature mortality"
-  unit <- "Years of life lost per person"
-  caption <- "Cartogram projections"
+  title <- "c) Premature mortality (years of life lost)"
+  caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = (value[variable == "Health|Years of life lost|Disease"]) /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
 
   plotYOLL <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, "")),
-                     color = I(ifelse(value < 0.1, "white", "white"))), size = 2) + coord_sf(expand = FALSE) +
-    scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.1, 0.1), oob = scales::squish) +
+    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="black") + coord_sf(expand = FALSE) +
+    scale_fill_gradientn(NULL, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.1, 0.1), oob = scales::squish) +
     myTheme +
-    labs(title = title, caption = c(paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
-    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 15, barheight = 0.4)) +
-    geom_text(aes(label = sub("", "", scenario)), x = labelX, y = labelY,
-              hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
+    labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-180,0,0,0), size = 12)) +
+    guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 20, barheight = 0.4)) +
+    annotate(geom = "label", x = labelX, y = labelY, label = label,
+               hjust = 0, vjust = 0, color = "white", size = 12 / .pt, fill = "black", label.size = 0)
   #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
