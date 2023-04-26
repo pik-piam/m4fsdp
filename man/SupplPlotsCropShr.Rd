@@ -4,14 +4,22 @@
 \alias{SupplPlotsCropShr}
 \title{SupplPlotsCropShr}
 \usage{
-SupplPlotsCropShr(repGrid, file = NULL, plotyear = "2050", panel = "row")
+SupplPlotsCropShr(
+  outFolder,
+  file = NULL,
+  scenarios = c("BAU", "FSDP"),
+  plotyears = c("2020", "2050"),
+  panel = "row"
+)
 }
 \arguments{
-\item{repGrid}{gridded joint fsdp report}
+\item{outFolder}{output folder}
 
 \item{file}{Name of file output}
 
-\item{plotyear}{year for the plot}
+\item{scenarios}{scenarios used for plotting}
+
+\item{plotyears}{years for the plot}
 
 \item{panel}{plot regions as "row" or as "matrix"}
 }
