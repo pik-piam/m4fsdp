@@ -30,9 +30,9 @@ getVariables <- function(reportVariables = NULL) {
            "Costs Without Incentives")
 
   # vargroup|var#|variableName|variableUnit|DirectionImprovment|rounding|factor
-  names(var) <- c("Health|1|Underweight|mio people|decrease|0|1",
-                  "Health|2|Obesity|mio people|decrease|0|1",
-                  "Health|3|Premature Mortality|mio years of life lost|decrease|0|1",
+  names(var) <- c("Health|1|Underweight|Mio people|decrease|0|1",
+                  "Health|2|Obesity|Mio people|decrease|0|1",
+                  "Health|3|Premature Mortality|Mio years of life lost|decrease|0|1",
                   "Environment|4.1|All Land Types|Biodiv. Intactness Index|increase|2|100",
                   "Environment|4.2|Cropland Landscapes|Biodiv. Intactness Index|increase|2|100",
                   "Environment|4.3|Hotspot Landscapes|Biodiv. Intactness Index|increase|2|100",
@@ -40,14 +40,14 @@ getVariables <- function(reportVariables = NULL) {
                   "Environment|6|Nitrogen Surplus|Mt N/yr|decrease|0|1",
                   "Environment|7|Env. Water Flow Violations|km3/yr|decrease|0|1",
                   "Environment|8|GHG Emissions|GtCO2eq/yr|decrease|1|1",
-                  "Environment|9|Global Surface Warming|degree Celsius|decrease|2|1",
+                  "Environment|9|Global Surface Warming|Degree Celsius|decrease|2|1",
                   "Inclusion|10|Expenditures for Agric.|USD/person|decrease|0|1",
-                  "Inclusion|11|People below 3.20$/Day|mio people|decrease|0|1",
-                  "Inclusion|12|Agric. Employment|mio people|increase|0|1",
-                  "Inclusion|12|Agric. Employment|mio people|increase|0|1",
+                  "Inclusion|11|Poverty|Mio people below 3.20$/day|decrease|0|1",
+                  "Inclusion|12|Agric. Employment|Mio people|increase|0|1",
+                  "Inclusion|12|Agric. Employment|Mio people|increase|0|1",
                   "Inclusion|13|Agric. Wages|Index rel. to 2010|increase|2|1",
-                  "Economy|14|Bioeconomy Supply|billion US$05/yr|increase|0|0.001",
-                  "Economy|15|Production Costs|billion US$05/yr|decrease|0|0.001")
+                  "Economy|14|Bioeconomy Supply|Billion US$05/yr|increase|0|0.001",
+                  "Economy|15|Production Costs|Billion US$05/yr|decrease|0|0.001")
 
   if (is.null(reportVariables)) {
     return(var)
