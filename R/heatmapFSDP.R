@@ -85,7 +85,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
                      "ExternalPressures", "AllInclusion", "EconDevelop", "MinWage") &
-      get("variableName") %in% c("Agric. wages"),
+      get("variableName") %in% c("Ag. wages"),
     c("valuefill","value") := NA]
 
   # Adding and greying-out years of life lost for non-dietary scenarios
