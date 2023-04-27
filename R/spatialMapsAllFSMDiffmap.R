@@ -189,7 +189,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotOBESE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(pop >= 100, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.2, 0.2), oob = scales::squish, breaks = c(-0.2,-0.1,0,0.1,0.2), labels = c("< -0.2",-0.1,0,0.1,">0.2")) +
     myTheme +
     labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-180,0,0,0), size = 12)) +
@@ -210,7 +210,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotYOLL <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(pop >= 100, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.1, 0.1), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-180,0,0,0), size = 12)) +
@@ -230,7 +230,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotEXPENDITURE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(pop >= 100, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-500, 500), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-180,0,0,0), size = 12)) +
@@ -251,7 +251,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotPOVERTY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(pop >= 100, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     # scale_fill_manual(values = c("#FFFFFF", "#fee8c8", "#fdbb84", "#d7301f", "#7f0000", "#54278f"),
     #                  breaks = seq(0, 0.4, by x  = 0.1)) +
     scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-0.2, 0.2), oob = scales::squish) +
@@ -297,7 +297,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotEMPLOYMENT <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(pop >= 100, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdYlGn"), na.value = "grey90", limits = c(-0.07, 0.07), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-180,0,0,0), size = 12)) +
@@ -320,7 +320,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotWAGE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(agEmpl >= 10000000, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdYlGn"), na.value = "grey90", limits = c(-3, 3), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-190,0,0,0), size = 12)) +
@@ -463,7 +463,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotBIOECON <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) + # coord_sf(xlim = xlimMoll) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(pop >= 100, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     scale_fill_gradientn(unit, colors = brewer.pal(9, "RdYlGn"), na.value = "grey90", limits = c(-100, 100), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-185,0,0,0), size = 12)) +
@@ -485,7 +485,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   plotCOSTS <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) + # coord_sf(xlim = xlimMoll) +
-    geom_sf_text(aes(label = I(ifelse(iso_a3 %in% c("USA", "IND", "NGA", "BRA", "CHN"), iso_a3, ""))), size = 12 / .pt,color="grey20") + coord_sf(expand = FALSE) +
+    geom_sf_label(aes(label = I(ifelse(pop >= 100, iso_a3, NA))), size = 4,color="grey20") + coord_sf(expand = FALSE) +
     scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-250, 250), oob = scales::squish) +
     myTheme +
     labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-185,0,0,0), size = 12)) +
@@ -528,13 +528,13 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   file_base <- substring(file, 1, nchar(file) - 4)
 
-  up <- wrap_plots(wrap_elements(group1),wrap_elements(group2), ncol = 1, nrow = 2, heights=c(0.3615,0.6385)) & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
-  ggsave(filename = paste0(file_base,"_part1",".png"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
-  ggsave(filename = paste0(file_base,"_part1",".pdf"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
-
-  low <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 2, nrow = 1, widths=c(0.665,0.335))# & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
-  ggsave(filename = paste0(file_base,"_part2",".png"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
-  ggsave(filename = paste0(file_base,"_part2",".pdf"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
+  # up <- wrap_plots(wrap_elements(group1),wrap_elements(group2), ncol = 1, nrow = 2, heights=c(0.3615,0.6385)) & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
+  # ggsave(filename = paste0(file_base,"_part1",".png"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
+  # ggsave(filename = paste0(file_base,"_part1",".pdf"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
+  #
+  # low <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 2, nrow = 1, widths=c(0.665,0.335))# & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
+  # ggsave(filename = paste0(file_base,"_part2",".png"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
+  # ggsave(filename = paste0(file_base,"_part2",".pdf"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
 
   row1 <- ggplotify::as.grob(wrap_plots(wrap_elements(group1)))
   row2 <- ggplotify::as.grob(wrap_plots(wrap_elements(group2)))
