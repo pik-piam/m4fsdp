@@ -213,7 +213,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "j) Expenditure for Ag. Products (USD per capita)"
+  title <- "j) Ag. Expenditures (USD per capita)"
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))

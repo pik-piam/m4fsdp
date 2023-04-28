@@ -226,7 +226,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "d) Expenditure for Agricultural Products"
+  title <- "d) Ag. Expenditures"
   unit <- "USD per capita"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]

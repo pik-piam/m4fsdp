@@ -41,7 +41,7 @@ getVariables <- function(reportVariables = NULL) {
                   "Environment|7|Env. Water Flow Violations|km3/yr|decrease|0|1",
                   "Environment|8|GHG Emissions|GtCO2eq/yr|decrease|1|1",
                   "Environment|9|Global Surface Warming|Degree Celsius|decrease|2|1",
-                  "Inclusion|10|Expenditure for Ag. Products|USD/person/yr|decrease|0|1",
+                  "Inclusion|10|Ag. Expenditures|USD/person/yr|decrease|0|1",
                   "Inclusion|11|Poverty|Mio people below 3.20$/day|decrease|0|1",
                   "Inclusion|12|Ag. Employment|Mio people|increase|0|1",
                   "Inclusion|12|Ag. Employment|Mio people|increase|0|1",
