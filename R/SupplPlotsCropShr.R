@@ -10,6 +10,7 @@ globalVariables(c("gdx", "suppFolder", "Data1", "Value", "Year", "Region", "Crop
 #' @param panel plot regions as "row" or as "matrix"
 #' @param scenarios scenarios used for plotting
 #' @param plotyears years for the plot
+#' @param combined whether regional and global plots should be combined
 #' @details blub
 #' @return Crop share on the y-axis and cropland area in each cluster on the x-axis.
 #' @author Patrick v. Jeetze, Benjamin Bodirsky
@@ -18,7 +19,7 @@ globalVariables(c("gdx", "suppFolder", "Data1", "Value", "Year", "Region", "Crop
 #' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select %>%
 
 SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP"),
-                              plotyears = c("2020", "2050"), panel = "row") {
+                              plotyears = c("2020", "2050"), panel = "row", combined = TRUE) {
   runFolder <- file.path(list.dirs(outFolder, full.names = FALSE, recursive = FALSE))
 
   # Select runs to be displayed
@@ -35,7 +36,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     dir.create(suppFolder)
   }
 
-  .plotCropShr <- function(gdx, file, scenario, year) {
+  .plotCropShr <- function(gdx, file, scenario, year, combined) {
     #-----------------------------
     # Data processing
     # ----------------------------
@@ -44,7 +45,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     cropland <- magpie4::land(gdx, types = "crop", level = "cell")
     cropData <- as.data.frame(cropland)
     cropData <- dplyr::select(cropData, -Data1)
-    cropData <- rename(cropData, TotalArea = Value)
+    cropData <- dplyr::rename(cropData, TotalArea = Value)
 
     # Get area of different crop types in each cluster
     cropArea <- magpie4::croparea(gdx, level = "cell", product_aggr = FALSE)
@@ -78,7 +79,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     CropShrData <- as.data.frame(CropShr)
 
     # Assign crops to crop groups
-    CropShrData <- mutate(CropShrData, CropGroup = case_when(
+    CropShrData <- dplyr::mutate(CropShrData, CropGroup = dplyr::case_when(
       Data1 %in% cereal ~ "Cereals",
       Data1 %in% legumes ~ "Legumes",
       Data1 %in% plant ~ "Plantations",
@@ -86,7 +87,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
       Data1 == "Fallow" ~ "Fallow",
       Data1 %in% fruit ~ "Fruits & Vegetables"
     ), CropGroup = factor(CropGroup))
-    CropShrData <- rename(CropShrData, Crop = Data1, CropShare = Value)
+    CropShrData <- dplyr::rename(CropShrData, Crop = Data1, CropShare = Value)
 
     # Calculate rank (for plotting) depending on total cereal area
     CerealRank <- setNames(dimSums(CropShr[, , cereal], dim = 3), "Cereals")
@@ -161,7 +162,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
       CropShrReg <- CropShrReg +
         facet_grid(. ~ Region, scales = "free_x", space = "free_x") +
         theme(legend.position = "bottom", legend.box = "horizontal") +
-        scale_x_continuous(breaks = c(0, 50, 100, 150, 200, 250, 300)) +
+        scale_x_continuous(breaks = c(0, 50, 100, 200, 300)) +
         guides(fill = guide_legend(nrow = 1))
     } else {
       CropShrReg <- CropShrReg +
@@ -170,11 +171,19 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
         guides(fill = guide_legend(ncol = 2))
     }
 
-    if (!is.null(file)) {
-      if (panel == "row") {
-        ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_REG_", file), CropShrReg, width = 9, height = 3, scale = 1)
-      } else {
-        ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_REG_", file), CropShrReg, width = 9, height = 9, scale = 1)
+    CropShrReg <- CropShrReg +
+      theme(
+        strip.background = element_blank(),
+        strip.clip = "off"
+      )
+
+    if (!combined) {
+      if (!is.null(file)) {
+        if (panel == "row") {
+          ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_REG_", file), CropShrReg, width = 9, height = 3, scale = 1)
+        } else {
+          ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_REG_", file), CropShrReg, width = 9, height = 9, scale = 1)
+        }
       }
     }
 
@@ -194,16 +203,27 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
       labs(fill = "Crop group") +
       xlab("Cropland area (Mha)") +
       ylab("Crop share") +
-      facet_wrap(~Region, ncol = 3)
+      facet_wrap(~Region, ncol = 3) +
+      theme(
+        strip.background = element_blank(),
+        strip.clip = "off"
+      )
 
-    combined <- CropShrGlo +
+    CropShrAll <- CropShrGlo +
+      theme(legend.position = "none") +
+      ggtitle(scenario) +
+      theme(plot.title = element_text(size = 14)) +
       CropShrReg +
       plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
 
     if (!is.null(file)) {
-      ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_GLO_", file), CropShrGlo, width = 12, height = 6, scale = 1)
+      if (!combined) {
+        ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_GLO_", file), CropShrGlo, width = 12, height = 6, scale = 1)
+      } else {
+        ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_", file), CropShrAll, width = 6, height = 7, scale = 1.4)
+      }
     } else {
-      return(combined)
+      return(CropShrAll)
     }
   }
   ### end of plotting function
@@ -216,7 +236,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     for (yr in plotyears) {
       if (!(yr == "2020" && scen != "BAU")) {
         gdx <- paste(outFolder, gdxFolder[grep(scen, gdxFolder)], "fulldata.gdx", sep = "/")
-        .plotCropShr(gdx = gdx, file = file, scenario = scen, year = yr)
+        .plotCropShr(gdx = gdx, file = file, scenario = scen, year = yr, combined = TRUE)
       }
     }
   }
