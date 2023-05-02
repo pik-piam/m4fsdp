@@ -211,7 +211,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
 
     CropShrAll <- CropShrGlo +
       theme(legend.position = "none") +
-      ggtitle(scenario) +
+      ggtitle(paste(scenario, year)) +
       theme(plot.title = element_text(size = 14)) +
       CropShrReg +
       plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
