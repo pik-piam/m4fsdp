@@ -17,8 +17,6 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @import ggplot2 data.table patchwork cartogram sf RColorBrewer rnaturalearth quitte
 #' @importFrom utils write.csv read.csv
 #' @importFrom terra project rast
-#' @importFrom ggplotify as.grob
-#' @importFrom gridExtra marrangeGrob
 
 spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL, subset=c("FSTsdp_minus_BASEssp2")) {
   ### projections
@@ -244,7 +242,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "j) Ag. Expenditures"
+  title <- "l) Ag. Expenditures"
   unit <- "USD per capita"
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
@@ -265,7 +263,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testExpenditures.png",plotEXPENDITURE)
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
-  title <- "k) Poverty"
+  title <- "m) Poverty"
   unit <- "population share with income <3.20$/day"
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
@@ -309,7 +307,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title <- "l) Agricultural Employment"
+  title <- "n) Agricultural Employment"
   unit <- "population share per world region"
   caption <- "Population-weighted cartogram"
 
@@ -335,7 +333,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Hourly labor costs in agriculture
-  title <- "m) Agricultural Wages"
+  title <- "o) Agricultural Wages"
   unit <- "USD per hour"
   caption <- "Employment-weighted cartogram" # with areas proportional to agricultural employment
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
@@ -485,7 +483,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotTEMP.png",plotTEMP)
 
   # Cost: Bioeconomy
-  title <- "n) Value of Bioeconomy Supply"
+  title <- "j) Value of Bioeconomy Supply"
   unit <- "US$05/capita/yr"
   caption <- "Population-weighted cartogram"
   b     <- repReg[, .(value = value[variable == "Value|Bioeconomy Demand"] /
@@ -508,7 +506,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotBIOECON.png",plotBIOECON)
 
   # Cost:Production cost agriculture per capita
-  title <- "o) Production Costs"
+  title <- "k) Production Costs"
   unit <- "US$05/capita/yr"
   caption <- "Population-weighted cartogram"
   b     <- repReg[, .(value = value[variable == "Costs Without Incentives"] /
@@ -556,27 +554,16 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   group3 <- wrap_plots(trytoplot(plotEXPENDITURE), trytoplot(plotPOVERTY), trytoplot(plotEMPLOYMENT), trytoplot(plotWAGE), ncol = 2) +
     plot_annotation(title = "Inclusion", theme = theme(title = element_text(face = "bold", size = 20), plot.margin = margin(6, 2, 2, 2, "pt"), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2))) +
     plot_layout(guides = "keep")
-  #groupEmpty <- wrap_plots(plot_spacer(), widths = 1, ncol = 1, heights = 1) +
-  #  plot_annotation(title = NULL, theme = theme(title = element_text(face = "bold"), plot.background = element_rect(colour = NA, fill = NA, linewidth = 0)))
   group4 <- trytoplot(plotBIOECON) + trytoplot(plotCOSTS) +
     plot_annotation(title = "Economy", theme = theme(title = element_text(face = "bold", size = 20), plot.background = element_rect(colour = "black", fill = NA, linewidth = 2), plot.margin = margin(6, 2, 2, 2, "pt"))) +
     plot_layout(guides = "keep")
 
-  file_base <- substring(file, 1, nchar(file) - 4)
+  combined <- wrap_plots(wrap_elements(group1), wrap_elements(group4), wrap_elements(group2), wrap_elements(group3), ncol = 2, nrow = 2, widths = c(0.6,0.4), heights = c(0.345,0.655))# & theme(plot.margin = margin(0, 0, 10, 0, "pt"))
 
-  # up <- wrap_plots(wrap_elements(group1),wrap_elements(group2), ncol = 1, nrow = 2, heights=c(0.3615,0.6385)) & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
-  # ggsave(filename = paste0(file_base,"_part1",".png"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
-  # ggsave(filename = paste0(file_base,"_part1",".pdf"), up, width = 10, height = 8.4, scale = 1.7, bg = "white")
-  #
-  # low <- wrap_plots(wrap_elements(group3),wrap_elements(group4),ncol = 2, nrow = 1, widths=c(0.665,0.335))# & theme(plot.margin = margin(0, 10, 0, 0, "pt"))
-  # ggsave(filename = paste0(file_base,"_part2",".png"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
-  # ggsave(filename = paste0(file_base,"_part2",".pdf"), low, width = 10, height = 5.7, scale = 1.7, bg = "white")
-
-  row1 <- ggplotify::as.grob(wrap_plots(wrap_elements(group1),wrap_elements(group4),ncol = 2, nrow = 1, widths=c(0.6,0.4)))
-  row2 <- ggplotify::as.grob(wrap_plots(wrap_elements(group2),wrap_elements(group3),ncol = 2, nrow = 1, widths=c(0.6,0.4)))
-
-  ggsave(paste0(file_base,"_combined",".png"),width=16, height=8.8, scale= 1.6,
-         marrangeGrob(grobs = list(row1,row2), heights= c(0.36,0.64), nrow=2, ncol=1,top=NULL))
-  ggsave(paste0(file_base,"_combined",".pdf"),width=16, height=8.8, scale= 1.6,
-         marrangeGrob(grobs = list(row1,row2), heights= c(0.36,0.64), nrow=2, ncol=1,top=NULL))
+  if (is.null(file)) {
+    return(combined)
+  } else {
+    ggsave(filename = file, combined, width=16, height=8.8, scale= 1.6, bg = "white")
+    ggsave(filename = paste0(substring(file, 1, nchar(file) - 3), "pdf"), combined, width=16, height=8.8, scale= 1.6, bg = "white")
+  }
 }
