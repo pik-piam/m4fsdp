@@ -75,9 +75,9 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     return(rep)
   }
   rep <- renameRep(rep,var,regionSel)
-  rep[get("scenset") %in% c("FSECc","FSECe"), "scenset" := "SSP2 BAU / FSDP"]
-  rep[get("scenset") %in% c("FSECb"), "scenset" := "Bundles"]
-  rep$scenset <- factor(rep$scenset, c("SSP2 BAU / FSDP", "Bundles"))
+  rep[get("scenset") %in% c("FSECc","FSECe","FSECd"), "scenset" := "Solid"]
+  rep[get("scenset") %in% c("FSECb"), "scenset" := "Dashed"]
+  rep$scenset <- factor(rep$scenset, c("Solid", "Dashed"))
 
   val <- renameRep(val,var,regionSel)
 
