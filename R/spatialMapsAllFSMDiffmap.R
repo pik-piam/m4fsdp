@@ -132,12 +132,32 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     return(z)
   }
 
+  bdiff=function(b,subset){
+    if("value"%in%dimnames(b)[[2]]){
+      if("iso_a3"%in%dimnames(b)[[2]]){
+        b[, "value" := get("value") - get("value")[get("scenario") == "BAU"],
+          by = c("model", "iso_a3", "period")]
+      } else {
+        b[, "value" := get("value") - get("value")[get("scenario") == "BAU"],
+          by = c("model", "region", "period")]
+      }
+    } else {
+      b[, ".value" := get(".value") - get(".value")[get("scenario") == "BAU"],
+        by = c("model", "iso_a3", "period")]
+    }
+    b <- b[get("scenario") %in% c("SSP2fsdp", "FSDP"), ]
+    b[, "scenario" := subset]
+    b <- droplevels(b)
+    return(b)
+  }
+
   # plotDUMMY:
   title <- "DUMMY - data seems missing"
   unit <- "DUMMY"
   caption <- "Cartogram projections"
   b     <- repIso[, .(value = value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   b[, value := 0]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
@@ -159,9 +179,11 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
+
 
   plotUNDERWEIGHT <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
@@ -183,6 +205,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People obese"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
@@ -204,6 +227,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = (value[variable == "Health|Years of life lost|Disease"]) /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
@@ -224,6 +248,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   unit <- "USD per capita"
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
@@ -240,11 +265,12 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testExpenditures.png",plotEXPENDITURE)
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
-  title <- "k) Income Below 3.20$ per Day"
-  unit <- "population share per country"
+  title <- "k) Poverty"
+  unit <- "population share with income <3.20$/day"
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(pop, b, all.x = TRUE)
   all <- cropAll(all)
@@ -290,6 +316,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",
                              "Labor|Employment|Share of working age population employed in agriculture")]/100), # new var name
                   by = .(model, scenario, region, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all   <- merge(reg2iso, b)
   all   <- merge(pop, all, all.x = TRUE)
@@ -313,6 +340,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   caption <- "Employment-weighted cartogram" # with areas proportional to agricultural employment
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
                     by = .(model, scenario, region, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
   all   <- merge(reg2iso, b)
   all   <- merge(agEmpl, all, all.x = TRUE)
@@ -335,6 +363,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   unit <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),2)," to ",round(max(b$.value,na.rm = TRUE),2))
   bb    <- asRaster(b, countries2)
 
@@ -347,13 +376,14 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 20, barheight = 0.4)) +
     annotate(geom = "label", x = labelXGrid, y = labelYGrid, label = label,
              hjust = 0, vjust = 0, color = "white", size = 12 / .pt, fill = "black", label.size = 0)
-  #ggsave("plotBII.png",plotBII)
+  ggsave("plotBII.png",plotBII)
 
   # Environment: Croparea diversity
   title <- "e) Shannon Crop Diversity"
   unit <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Shannon crop diversity (index)", ])
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),2)," to ",round(max(b$.value,na.rm = TRUE),2))
   bb    <- asRaster(b, countries2)
 
@@ -374,6 +404,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   unit <- "kg N per ha"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),0)," to ",round(max(b$.value,na.rm = TRUE),0))
   bb    <- asRaster(b, countries2)
 
@@ -393,6 +424,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   unit <- "withrawal to availability ratio"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "water stress and violations", ])
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),0)," to ",round(max(b$.value,na.rm = TRUE),0))
   bb    <- asRaster(b, countries2)
 
@@ -414,6 +446,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land"] * 1000 /
                         value[variable == "Resources|Land Cover"]), by = .(model, scenario, region, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all <- merge(reg2iso, b)
   all <- merge(countries2, all)
@@ -436,6 +469,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   unit <- "deg C"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),2)," to ",round(max(b$.value,na.rm = TRUE),2))
   bb    <- asRaster(b, countries2)
 
@@ -456,6 +490,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   caption <- "Population-weighted cartogram"
   b     <- repReg[, .(value = value[variable == "Value|Bioeconomy Demand"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
   all <- merge(reg2iso, b)
   all <- merge(pop, all, all.x = TRUE)
@@ -478,6 +513,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   caption <- "Population-weighted cartogram"
   b     <- repReg[, .(value = value[variable == "Costs Without Incentives"] /
                         value[variable == "Population"]), by = .(model, scenario, region, period)]
+  b=bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
   all <- merge(reg2iso, b)
   all <- merge(pop, all, all.x = TRUE)
