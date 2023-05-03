@@ -109,7 +109,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     names(plotData) <- c("Cell", "Region", "Year", "Crop", "CropShare", "CropGroup", "TotalArea", "CerealRank")
 
     # Sort data and calculate bar positions
-    plotData <- plotData %>%
+    plotDataReg <- plotData %>%
       arrange(Year, Region, CerealRank) %>%
       group_by(Year, Region, Crop, CropGroup) %>%
       mutate(BarPos = 0.5 * (cumsum(TotalArea) + cumsum(c(0, TotalArea[-length(TotalArea)]))))
@@ -147,9 +147,9 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
           y = CropShare, x = BarPos,
           fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")))
         ),
-        data = filter(plotData, Year == year)
+        data = filter(plotDataReg, Year == year)
       ) +
-      geom_col(position = "fill", width = filter(plotData, Year == year)$TotalArea) +
+      geom_col(position = "fill", width = filter(plotDataReg, Year == year)$TotalArea) +
       scale_fill_manual(
         values = colors,
         limits = c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")
@@ -191,14 +191,14 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
       ggplot(
         aes(
           y = CropShare, x = BarPos,
-          fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other", "Fallow", "Fruits & Vegetables")))
+          fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other",  "Fruits & Vegetables", "Fallow")))
         ),
         data = filter(plotDataGlo, Year == year)
       ) +
       geom_col(position = "fill", width = filter(plotDataGlo, Year == year)$TotalArea) +
       scale_fill_manual(
         values = colors,
-        limits = c("Cereals", "Legumes", "Plantations", "Other", "Fallow", "Fruits & Vegetables")
+        limits = c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")
       ) +
       labs(fill = "Crop group") +
       xlab("Cropland area (Mha)") +
