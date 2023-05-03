@@ -28,7 +28,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     rep <- rep[rep$scenario %in%c("SSP1bau","SSP1PLUSbau", "SSP2bau","SSP2fsdp","SSP3bau","SSP4bau", "SSP5bau", "FSDP"), ]
   } else if (scens=="bundles") {
     rep <- convertReportFSDP(repReg, scengroup = c("FSECa","FSECb","FSECc", "FSECd","FSECe"), subset = FALSE)
-    scenOrder <- c("AgroMngmt","NatureSparing","Livelihoods","Diet","ExternalPressures", "FSDP", "BAU")
+    scenOrder <- c("BAU","Diet","Livelihoods","NatureSparing","AgroMngmt","SSP2fsdp","ExternalPressures","FSDP")
     scenOrder <- intersect(scenOrder,levels(factor(rep$scenario)))
     scenNames <- as.data.table(m4fsdp::getScenarios())
     scenNames <- scenNames[get("modelrun") %in% scenOrder,]
@@ -85,7 +85,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   names(safe_colorblind_palette) <- names(scenOrder)
 
   #override.linetype <- c(3,3,3,3,3,1,1)
-  override.linetype <- rev(c("dashed","dashed","dashed","dashed","dashed","solid","solid"))
+  override.linetype <- c("solid","dashed","dashed","dashed","dashed","solid","dashed","solid")
   names(override.linetype) <- names(scenOrder)
 
   override.linetype <- assignScenarioLinetype(scenOrder)
@@ -230,7 +230,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       } else {
         for(v in levels(b$variable)) {
           p <- p + geom_line(data = b[get("variable") == v,],aes(color = get("scenario"), linetype = get("scenset")), size = 1) #+ facet_wrap("region_class")
-          p <- p + geom_label(data = b[get("variable") == v & period == 2015,],aes(label = stringr::str_wrap(get("variable"), 18)), size = 3) #+ facet_wrap("region_class")
+          p <- p + geom_label(data = b[get("variable") == v & period == 2015,],aes(label = stringr::str_wrap(get("variable"), 14)), size = 3, nudge_y = 0) #+ facet_wrap("region_class")
         }
       }
       p <- p + scale_x_continuous(NULL,breaks = c(2000,2025,2050), expand = c(0,0)) +
@@ -248,7 +248,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       p <- p + theme(plot.tag = element_text(size = 13, margin = margin(b = -8.5, unit = "pt")))
       if (showlegend) {
         p <- p + theme(legend.key.width = unit(1.9,"cm"))
-        p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype,size = 1), reverse = TRUE),
+        p <- p + guides(color = guide_legend(order = 1, title.position = "top",ncol = 1, title = "Scenario", override.aes = list(linetype = override.linetype,size = 1), reverse = FALSE),
                         shape = guide_legend(order = 2, title.position = "top",ncol = 1, title = "Scenario"),
                         linetype = "none")
       } else {
