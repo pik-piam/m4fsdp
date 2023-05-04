@@ -182,7 +182,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       b[b$period < muteBefore, "value" := NA]
       b <- droplevels(b)
       units <- levels(b$unit)
-      unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
+      #unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
+      unitHist <- units
       if (is.null(hist)) {
         h <- val[val$variable %in% var & val$unit == unitHist & val$scenario == "historical" &
                    val$period >= 2000 & val$period <= 2020, ]
