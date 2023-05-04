@@ -178,6 +178,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
       )
 
     if (!combined) {
+      CropShrReg <- CropShrReg + ggtitle(paste(getScenarios()[which(getScenarios()[,1]==scenario),2], year))
       if (!is.null(file)) {
         if (panel == "row") {
           ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_REG_", file), CropShrReg, width = 9, height = 3, scale = 1)
@@ -218,6 +219,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
 
     if (!is.null(file)) {
       if (!combined) {
+        CropShrGlo <- CropShrGlo + ggtitle(paste(getScenarios()[which(getScenarios()[,1]==scenario),2], year))
         ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_GLO_", file), CropShrGlo, width = 12, height = 6, scale = 1)
       } else {
         ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_", file), CropShrAll, width = 6, height = 7, scale = 1.4)
@@ -236,7 +238,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     for (yr in plotyears) {
       if (!(yr == "2020" && scen != "BAU")) {
         gdx <- paste(outFolder, gdxFolder[grep(scen, gdxFolder)], "fulldata.gdx", sep = "/")
-        .plotCropShr(gdx = gdx, file = file, scenario = scen, year = yr, combined = TRUE)
+        .plotCropShr(gdx = gdx, file = file, scenario = scen, year = yr, combined = combined)
       }
     }
   }
