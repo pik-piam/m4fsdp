@@ -2,8 +2,8 @@ Type: Package
 Package: m4fsdp
 Title: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
     for FSDP project
-Version: 0.43.9
-Date: 2023-05-04
+Version: 0.43.10
+Date: 2023-05-05
 Authors@R: c(
     person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = c("aut", "cre")),
     person("Jan Philipp", "Dietrich", , "dietrich@pik-potsdam.de", role = "aut"),
@@ -12,7 +12,7 @@ Authors@R: c(
 Description: Output routines for extracting results from the MAgPIE
     framework (versions 4.x) for the FSDP project.
 License: LGPL-3 | file LICENSE
-URL: https://github.com/pik-piam/m4fsdp, https://doi.org/?
+URL: https://github.com/pik-piam/m4fsdp, https://doi.org/10.5281/zenodo.7899913
 BugReports: https://github.com/pik-piam/m4fsdp/issues
 Depends:
     gdx (>= 1.30),
