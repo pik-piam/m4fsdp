@@ -374,8 +374,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Nutrient Surplus
-  title <- "j) Nutrient Surplus"
-  unit  <- "kg N per ha"
+  title   <- "j) Nutrient Surplus"
+  unit    <- "kg N per ha"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
   bb    <- asRaster(b, countries2)

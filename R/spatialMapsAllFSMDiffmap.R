@@ -18,7 +18,8 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @importFrom utils write.csv read.csv
 #' @importFrom terra project rast
 
-spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL, subset=c("FSTsdp_minus_BASEssp2")) {
+spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL,
+                                     subset = c("FSTsdp_minus_BASEssp2")) {
   ### projections
   # https://semba-blog.netlify.app/01/26/2020/world-map-and-map-projections/
 
@@ -75,14 +76,14 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   # load polygons
   pop <- readRDS(system.file(package = "m4fsdp", "extdata", "pop.rds"))
-  pop <- pop[which(pop$scenario=="BAU 2050"), ]
+  pop <- pop[which(pop$scenario == "BAU 2050"), ]
   pop$scenario <- subset
-  pop<-pop[,c("model","scenario","iso_a3","period","pop")]
+  pop <- pop[,c("model", "scenario", "iso_a3", "period", "pop")]
   pop$scenario <- factor(pop$scenario)
   agEmpl <- readRDS(system.file(package = "m4fsdp", "extdata", "agEmpl.rds"))
-  agEmpl <- agEmpl[which(agEmpl$scenario=="BAU 2050"), ]
+  agEmpl <- agEmpl[which(agEmpl$scenario == "BAU 2050"), ]
   agEmpl$scenario <- subset
-  agEmpl<-agEmpl[,c("model","scenario","iso_a3","period","agEmpl")]
+  agEmpl<-agEmpl[, c("model", "scenario", "iso_a3", "period", "agEmpl")]
   agEmpl$scenario <- factor(agEmpl$scenario)
 
   # theme for maps
@@ -103,8 +104,8 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
           plot.caption = element_text(hjust = 1, margin = unit(c(0, 0, 0, 0), "pt")))
 
   ## regional/country data
-  labelX <- -5000000
-  labelY <- -6500000
+  labelX  <- -5000000
+  labelY  <- -6500000
   cropAll <- function(all) {
     all <- st_crop(all, xmin = -13500000, xmax = 18796780,ymin = -6990985, ymax = 13296170)
     return(all)
@@ -130,7 +131,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
     return(z)
   }
 
-  bdiff=function(b,subset){
+  bdiff <- function(b, subset) {
     if("value"%in%dimnames(b)[[2]]){
       if("iso_a3"%in%dimnames(b)[[2]]){
         b[, "value" := get("value") - get("value")[get("scenario") == "BAU"],
@@ -150,15 +151,15 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   }
 
   # plotDUMMY:
-  title <- "DUMMY - data seems missing"
-  unit <- "DUMMY"
+  title   <- "DUMMY - data seems missing"
+  unit    <- "DUMMY"
   caption <- "Cartogram projections"
-  b     <- repIso[, .(value = value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
+  b       <- repIso[, .(value = value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
   b[, value := 0]
-  b=bdiff(b=b,subset=subset)
-  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
-  all <- merge(pop, b, all.x = TRUE)
-  all <- cropAll(all)
+  b       <- bdiff(b = b, subset = subset)
+  label   <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
+  all     <- merge(pop, b, all.x = TRUE)
+  all     <- cropAll(all)
 
   plotDUMMY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2, ) +
@@ -177,10 +178,10 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   caption <- "Population-weighted cartogram"
   b     <- repIso[, .(value = value[variable == "Nutrition|Anthropometrics|People underweight"] /
                         value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
-  b=bdiff(b=b,subset=subset)
+  b     <- bdiff(b = b, subset = subset)
   label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
-  all <- merge(pop, b, all.x = TRUE)
-  all <- cropAll(all)
+  all   <- merge(pop, b, all.x = TRUE)
+  all   <- cropAll(all)
 
 
   plotUNDERWEIGHT <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
@@ -242,14 +243,14 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "l) Ag. Expenditures"
-  unit <- "USD per capita"
+  title   <- "l) Ag. Expenditures"
+  unit    <- "USD per capita"
   caption <- "Population-weighted cartogram"
-  b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
-  b=bdiff(b=b,subset=subset)
-  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
-  all <- merge(pop, b, all.x = TRUE)
-  all <- cropAll(all)
+  b       <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
+  b       <- bdiff(b = b, subset = subset)
+  label   <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),0)," to ",round(max(b$value,na.rm = TRUE),0))
+  all     <- merge(pop, b, all.x = TRUE)
+  all     <- cropAll(all)
 
   plotEXPENDITURE <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
@@ -263,15 +264,15 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testExpenditures.png",plotEXPENDITURE)
 
   # Inclusion: Share of Population with Incomes less than 3.20$/Day
-  title <- "m) Poverty"
-  unit <- "population share with income <3.20$/day"
+  title   <- "m) Poverty"
+  unit    <- "population share with income <3.20$/day"
   caption <- "Population-weighted cartogram"
-  b     <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
+  b       <- repIso[, .(value = value[variable == "Income|Number of People Below 3p20 USDppp11/day"] /
                     value[variable == "Population"]), by = .(model, scenario, iso_a3, period)]
-  b=bdiff(b=b,subset=subset)
-  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
-  all <- merge(pop, b, all.x = TRUE)
-  all <- cropAll(all)
+  b       <- bdiff(b=b,subset=subset)
+  label   <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
+  all     <- merge(pop, b, all.x = TRUE)
+  all     <- cropAll(all)
 
   plotPOVERTY <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
@@ -307,18 +308,18 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title <- "n) Agricultural Employment"
-  unit <- "population share per world region"
+  title   <- "n) Agricultural Employment"
+  unit    <- "population share per world region"
   caption <- "Population-weighted cartogram"
 
   b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",
                              "Labor|Employment|Share of working age population employed in agriculture")]/100), # new var name
                   by = .(model, scenario, region, period)]
-  b=bdiff(b=b,subset=subset)
-  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
+  b     <- bdiff(b = b, subset = subset)
+  label <- paste0("Data range: ", round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
   all   <- merge(reg2iso, b)
   all   <- merge(pop, all, all.x = TRUE)
-  all <- cropAll(all)
+  all   <- cropAll(all)
 
   plotEMPLOYMENT <- ggplot(all) + facet_wrap(vars(scenario), ncol = 3) +
     geom_sf(aes(fill = value), show.legend = TRUE, color = "white", size = 0.2) +
@@ -381,8 +382,9 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   unit <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Shannon crop diversity (index)", ])
-  b=bdiff(b=b,subset=subset)
-  label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),2)," to ",round(max(b$.value,na.rm = TRUE),2))
+  b     <- bdiff(b = b, subset = subset)
+  label <- paste0("Data range: ", round(min(b$.value, na.rm = TRUE), 2)," to ",
+                                  round(max(b$.value, na.rm = TRUE), 2))
   bb    <- asRaster(b, countries2)
 
   plotCROPDIV <- ggplot(bb) +
@@ -398,11 +400,11 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotCROPDIV.png",plotCROPDIV)
 
   # Environment: Nutrient Surplus
-  title <- "f) Nutrient Surplus"
-  unit <- "kg N per ha"
+  title   <- "f) Nutrient Surplus"
+  unit    <- "kg N per ha"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
-  b=bdiff(b=b,subset=subset)
+  b     <- bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),0)," to ",round(max(b$.value,na.rm = TRUE),0))
   bb    <- asRaster(b, countries2)
 
@@ -417,21 +419,31 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
              hjust = 0, vjust = 0, color = "white", size = 12 / .pt, fill = "black", label.size = 0)
   #ggsave("plotNITROGEN.png",plotNITROGEN)
 
-  # Environment: Water Withdrawal to Availability Ratio
-  title <- "g) Water Stress"
-  unit <- "withrawal to availability ratio"
+  # Environment: Water Environmental Flow Violations
+  title   <- "g) Water Environmental Flow Violations"
+  unit    <- "m^3 / ha"
   caption <- "Projection: Mollweide"
-  b     <- droplevels(repGrid[variable == "water stress and violations", ])
-  b=bdiff(b=b,subset=subset)
-  label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),0)," to ",round(max(b$.value,na.rm = TRUE),0))
-  bb    <- asRaster(b, countries2)
+  b       <- droplevels(repGrid[variable == "water environmental flow violations volume (m3/ha)", ])
+  b       <- bdiff(b = b, subset = subset)
+  label   <- paste0("Data range: ",
+                    round(min(b$.value, na.rm = TRUE), 0), " to ",
+                    round(max(b$.value, na.rm = TRUE), 0))
+  bb      <- asRaster(b, countries2)
 
   plotWATER <- ggplot(bb) +
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
-    scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "RdYlGn")), na.value = "grey90", limits = c(-1, 1), oob = scales::squish) +
+    scale_fill_gradientn(unit, colors = rev(brewer.pal(9, "Greens")), na.value = "grey90",
+                         limits = c(round(min(b$.value, na.rm = TRUE), 0) / 100,
+                                    round(max(b$.value, na.rm = TRUE), 0)),
+                         oob = scales::squish) +
     myTheme +
-    labs(title = title, caption = caption) + theme(plot.caption = element_text(angle = c(90),vjust = 0.995,color = "white",margin = margin(-185,0,0,0), size = 12)) +
+    labs(title = title, caption = caption) +
+    theme(plot.caption = element_text(angle = c(90),
+                                      vjust = 0.995,
+                                      color = "white",
+                                      margin = margin(-185, 0, 0, 0),
+                                      size = 12)) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 20, barheight = 0.4)) +
     annotate(geom = "label", x = labelXGrid, y = labelYGrid, label = label,
              hjust = 0, vjust = 0, color = "white", size = 12 / .pt, fill = "black", label.size = 0)
@@ -444,10 +456,11 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land"] * 1000 /
                         value[variable == "Resources|Land Cover"]), by = .(model, scenario, region, period)]
-  b=bdiff(b=b,subset=subset)
-  label <- paste0("Data range: ",round(min(b$value,na.rm = TRUE),2)," to ",round(max(b$value,na.rm = TRUE),2))
-  all <- merge(reg2iso, b)
-  all <- merge(countries2, all)
+  b     <- bdiff(b = b, subset = subset)
+  label <- paste0("Data range: ", round(min(b$value, na.rm = TRUE), 2),
+                  " to ", round(max(b$value, na.rm = TRUE), 2))
+  all   <- merge(reg2iso, b)
+  all   <- merge(countries2, all)
 
   plotGHG <- ggplot(all) +
     facet_wrap(vars(scenario), ncol = 3) +
@@ -467,7 +480,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   unit <- "deg C"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
-  b=bdiff(b=b,subset=subset)
+  b     <- bdiff(b=b,subset=subset)
   label <- paste0("Data range: ",round(min(b$.value,na.rm = TRUE),2)," to ",round(max(b$.value,na.rm = TRUE),2))
   bb    <- asRaster(b, countries2)
 
