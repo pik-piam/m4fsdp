@@ -438,7 +438,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotWATER.png",plotWATER)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "h) Annual GWP100 GHG Emissions"
+  title <- "h) Annual AFOLU GHG Emissions"
   unit <- "ton CO2eq per ha"
   caption <- "Projection: Mollweide"
 
