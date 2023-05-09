@@ -413,7 +413,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "l) Annual Greenhouse Gas Emissions (GWP100)"
+  title <- "l) Annual AFOLU GHG emissions"
   unit  <- "ton CO2eq per ha"
   caption <- "Projection: Mollweide"
 

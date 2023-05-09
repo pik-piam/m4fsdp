@@ -137,7 +137,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     map[8, ] <- c("LAM", "MIR")
     map[9, ] <- c("MEA", "MIR")
     map[10, ] <- c("NEA", "MIR")
-    map[11, ] <- c("NEU", "MIR")
+    map[11, ] <- c("NEU", "HIR")
     map[12, ] <- c("OAS", "MIR")
     map[13, ] <- c("SSA", "LIR")
     map[14, ] <- c("USA", "HIR")
@@ -279,7 +279,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 2)
   p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Env. Water Flow Violations", tag = "k)")
-  p8 <- plotVal(rep, var = "GHG Emissions", tag = "l)",lowLimit = NA)
+  p8 <- plotVal(rep, var = "AFOLU GHG Emissions", tag = "l)",lowLimit = NA)
   p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
 
   p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")

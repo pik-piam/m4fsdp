@@ -119,7 +119,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
     map[8, ] <- c("LAM", "MIR")
     map[9, ] <- c("MEA", "MIR")
     map[10, ] <- c("NEA", "MIR")
-    map[11, ] <- c("NEU", "MIR")
+    map[11, ] <- c("NEU", "HIR")
     map[12, ] <- c("OAS", "MIR")
     map[13, ] <- c("SSA", "LIR")
     map[14, ] <- c("USA", "HIR")

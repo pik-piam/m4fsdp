@@ -64,7 +64,7 @@ if (!file.exists(file.path(outFolder, "supplPlots"))) {
 # }
 
 LIR <- c("SSA", "IND")
-HIR <- c("USA", "CAZ", "ANZ", "EUR", "JKO", "NEU")
+HIR <- c("USA", "CAZ","CAN", "ANZ", "EUR", "JKO", "NEU")
 ROW <- c("CHA", "BRA", "LAM", "MEA", "NEA", "OAS", "REF")
 
 if (!is.null(caseRegion)) {
