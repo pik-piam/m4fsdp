@@ -423,7 +423,7 @@ plotEmissReg <- ggplot(emissReg, aes(y = scenarioname)) +
   scale_fill_manual("AFOLU emission type", values = c("#1b9e77", "#d95f02", "#7570b3"),
                     labels = function(x) parse(text = x)) +
   geom_vline(xintercept = 0, linetype = "dotted") +
-  stat_summary(fun = "sum", colour = "black", size = 1, geom = "point", mapping = aes(group = scenarioname, x = cum)) +
+  stat_summary(fun = "sum", colour = "black", size = 1, geom = "point", mapping = aes(group = scenarioname, x = value)) +
   theme(legend.position = "bottom") +
   theme(strip.text.y = element_text(size = 14), axis.text.y = element_text(size = 12)) +
   guides(fill = guide_legend("AFOLU emission type", ncol = 4, title.position = "left", byrow = TRUE, reverse = FALSE)) +

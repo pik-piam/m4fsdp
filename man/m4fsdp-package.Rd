@@ -12,7 +12,7 @@ Output routines for extracting results from the MAgPIE framework (versions 4.x) 
 Useful links:
 \itemize{
   \item \url{https://github.com/pik-piam/m4fsdp}
-  \item \doi{10.5281/zenodo.7899913}
+  \item \url{https://doi.org/10.5281/zenodo.7899913}
   \item Report bugs at \url{https://github.com/pik-piam/m4fsdp/issues}
 }
 
@@ -24,6 +24,8 @@ Authors:
 \itemize{
   \item Jan Philipp Dietrich \email{dietrich@pik-potsdam.de}
   \item Florian Humpenoeder \email{humpenoeder@pik-potsdam.de}
+  \item David Chen \email{davidch@pik-potsdam.de}
+  \item Debbora Leip \email{dleip@pik-potsdam.de}
 }
 
 }
