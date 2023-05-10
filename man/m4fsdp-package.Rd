@@ -22,10 +22,14 @@ Useful links:
 
 Authors:
 \itemize{
+  \item David Chen \email{davidch@pik-potsdam.de}
+  \item Michael Crawford \email{crawford@pik-potsdam.de}
+  \item Debbora Leip \email{leip@pik-potsdam.de}
+  \item Patrick von Jeetze \email{vjeetze@pik-potsdam.de}
+  \item Felicitas Beier \email{beier@pik-potsdam.de}
+  \item Edna Molina Bacca \email{mbacca@pik-potsdan.de}
   \item Jan Philipp Dietrich \email{dietrich@pik-potsdam.de}
   \item Florian Humpenoeder \email{humpenoeder@pik-potsdam.de}
-  \item David Chen \email{davidch@pik-potsdam.de}
-  \item Debbora Leip \email{dleip@pik-potsdam.de}
 }
 
 }

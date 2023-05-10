@@ -10,9 +10,10 @@
 #' @param val rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @return plots in "output" folder
 #' @param reg2iso rds file or data.frame with Mapping, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @author Florian Humpenoeder
 #' @param rev revision (e.g. "v28"). NULL will automatically detect the most recent version.
+#' @param dirFsdp path to outputfolder of the FSDP run (to create the milestones table). NULL will automatically detect the most recent version
 #' @importFrom utils glob2rx
 
-plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NULL, val = NULL, reg2iso = NULL, rev = NULL) {
+plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NULL, val = NULL, reg2iso = NULL, rev = NULL, dirFsdp = NULL) {
 
   if(is.null(reg)) {
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_reg.rds"))
@@ -41,6 +42,18 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   if(is.null(reg2iso)) {
     a <- list.files(outputfolder,pattern = glob2rx("reg2iso.rds"))
     reg2iso <- file.path(outputfolder,a[order(a,decreasing = TRUE)][1])
+  }
+
+  if(is.null(dirFsdp)) {
+    if (grepl("HRc1000", reg) & !grepl("HRc1000", outputfolder)) {
+      a <- list.dirs(paste0(outputfolder, "/HRc1000"), recursive = FALSE)
+      a <- a[grep("FSECe_FSDP", a)]
+      dirFsdp <- file.path(outputfolder, "HRc1000", a[order(a, decreasing = TRUE)][1])
+    } else {
+      a <- list.dirs(outputfolder, recursive = FALSE)
+      a <- a[grep("FSECe_FSDP", a)]
+      dirFsdp <- file.path(outputfolder, a[order(a, decreasing = TRUE)][1])
+    }
   }
 
   #get revision
@@ -78,6 +91,8 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   try(validationFSDP(repReg = reg, val = val, regionSel = "aggregate", folder = file.path(outputfolder), scens = "BAU_FSEC"))
   message("Dashboard...")
   try(dashboardFSDP(repReg = reg, repIso = iso, repGrid = grid, outputDir = file.path(outputfolder), file = paste0(rev, "_FSDP_dashboard.html")))
+  message("Milestones table...")
+  try(milestoneTable(dirFsdp, outFolder = file.path(outputfolder), file = paste0(rev, "_FSDP_milestones.csv")))
   message("Finished")
 
   }

@@ -4,7 +4,7 @@ type: software
 title: |-
   m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
       for FSDP project
-version: 0.44.0
+version: 0.45.0
 date-released: '2023-05-10'
 abstract: Output routines for extracting results from the MAgPIE framework (versions
   4.x) for the FSDP project.
@@ -12,18 +12,30 @@ authors:
 - family-names: Bodirsky
   given-names: Benjamin Leon
   email: bodirsky@pik-potsdam.de
+- family-names: Chen
+  given-names: David
+  email: davidch@pik-potsdam.de
+- family-names: Crawford
+  given-names: Michael
+  email: crawford@pik-potsdam.de
+- family-names: Leip
+  given-names: Debbora
+  email: leip@pik-potsdam.de
+- family-names: von Jeetze
+  given-names: Patrick
+  email: vjeetze@pik-potsdam.de
+- family-names: Beier
+  given-names: Felicitas
+  email: beier@pik-potsdam.de
+- family-names: Molina Bacca
+  given-names: Edna
+  email: mbacca@pik-potsdan.de
 - family-names: Dietrich
   given-names: Jan Philipp
   email: dietrich@pik-potsdam.de
 - family-names: Humpenoeder
   given-names: Florian
   email: humpenoeder@pik-potsdam.de
-- family-names: Chen
-  given-names: David
-  email: davidch@pik-potsdam.de
-- family-names: Leip
-  given-names: Debbora
-  email: dleip@pik-potsdam.de
 license: LGPL-3.0
 repository-code: https://github.com/pik-piam/m4fsdp
 doi: 10.5281/zenodo.7899913
