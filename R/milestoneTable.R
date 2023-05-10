@@ -34,7 +34,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
                     "Labor productivity in LICs",
                     "Labor productivity in MICs",
                     "Labor productivity in HICs",
-                    "Decrease in mortality from dietary risks compared to 2020",
+                    "Mortality from dietary risks compared to 2020",
                     "Cropland areas without sufficient landscape habitats")
 
     units <- c("Percentage change",
@@ -58,7 +58,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
                "kUSD/worker",
                "kUSD/worker",
                "kUSD/worker",
-               "Percent",
+               "Percentage change",
                "Mha")
 
     res <- data.frame(matrix(ncol = 6, nrow = 23))
@@ -207,9 +207,9 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
     # 15. Decrease in mortality
     health <- reportRds[reportRds$variable == "Health|Years of life lost|Disease" & reportRds$region == "World" & reportRds$period %in% c(2020, 2030, 2040, 2050), ]
-    health$percDiff <- (health$value[health$period == 2020] - health$value) / health$value[health$period == 2020] * 100
+    health$percChange <- health$value / health$value[health$period == 2020] * 100
 
-    res[res$Milestone == "Decrease in mortality from dietary risks compared to 2020", 3:6] <- health$percDiff
+    res[res$Milestone == "Mortality from dietary risks compared to 2020", 3:6] <- health$percChange
 
     # 16. Cropland areas without sufficient landscape habitats
     cropland <- land(gdx, level = "cell")[, , "crop"]
