@@ -243,7 +243,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("testYOLL.png",plotYOLL)
 
   # Inclusion: Expenditure for agr. products per capita
-  title   <- "l) Ag. Expenditures"
+  title   <- "l) Expenditure on Ag. Products"
   unit    <- "USD per capita"
   caption <- "Population-weighted cartogram"
   b       <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
@@ -360,7 +360,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Environment: Biodiversity Intactness Index
-  title <- "d) Biodiversity Intactness Index"
+  title <- "d) Biodiversity Intactness"
   unit <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])

@@ -226,7 +226,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "d) Ag. Expenditures"
+  title <- "d) Expenditure on Ag. Products"
   unit <- "USD per capita"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
@@ -335,8 +335,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
 
   # Environment: Biodiversity Intactness Index
-  title <- "h) Biodiversity Intactness Index"
-  unit  <- ""
+  title <- "h) Biodiversity Intactness"
+  unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
   bb    <- asRaster(b, countries2)

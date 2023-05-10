@@ -270,12 +270,12 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p2 <- plotVal(rep, var = "Obesity", tag = "b)")
   p3 <- plotVal(rep, var = "Premature Mortality", tag = "c)")
 
-  p10 <- plotVal(rep, var = "Ag. Expenditures", tag = "d)", muteBefore = 2005)
+  p10 <- plotVal(rep, var = "Expenditure on Ag. Products", tag = "d)", muteBefore = 2005)
   p11 <- plotVal(rep, var = "Poverty", tag = "e)", muteBefore = 2010)
   p12 <- plotVal(rep, var = "Ag. Employment", tag = "f)")
   p13 <- plotVal(rep, var = "Ag. Wages", tag = "g)")
 
-  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot Landscapes"), tag = "h)", lowLimit = 65, highLimit = 90, varName = "Biodiversity")
+  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot Landscapes"), tag = "h)", lowLimit = 65, highLimit = 90, varName = "Biodiversity Intactness")
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 2)
   p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Env. Water Flow Violations", tag = "k)")
