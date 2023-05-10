@@ -88,7 +88,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     demand <- toolAggregate(demand, rel = mapping, from = "reg", to = "aggregate")
 
     perCapitaDemand <- demand / popReg
-    perCapitaDemandRel <- perCapitaDemand / collapseDim(perCapitaDemand[, 2020, ])
+    perCapitaDemandRel <- perCapitaDemand / collapseDim(perCapitaDemand[, 2020, ]) * 100 # as percentage
 
     res[res$Milestone == "Consumption of livestock products in HICs", 3:6] <- perCapitaDemandRel["HIR", c(2020, 2030, 2040, 2050), ]
     res[res$Milestone == "Consumption of livestock products in MICs", 3:6] <- perCapitaDemandRel["MIR", c(2020, 2030, 2040, 2050), ]
@@ -100,8 +100,8 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     productionLivst <- dimSums(production[, , livst], dim = 3)
     productionOthers <- production[, , "others"]
 
-    prodLivstRel <- productionLivst / collapseDim(productionLivst[, 2020, ])
-    prodOthersRel <- productionOthers / collapseDim(productionOthers[, 2020, ])
+    prodLivstRel <- productionLivst / collapseDim(productionLivst[, 2020, ]) * 100 # as percentage
+    prodOthersRel <- productionOthers / collapseDim(productionOthers[, 2020, ]) * 100 # as percentage
 
     res[res$Milestone == "Production of livestock products, global", 3:6] <- prodLivstRel[, c(2020, 2030, 2040, 2050), ]
     res[res$Milestone == "Production of fruits, vegetables and nuts, global", 3:6] <- prodOthersRel[, c(2020, 2030, 2040, 2050), ]
@@ -113,7 +113,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     waste <- toolAggregate(waste, rel = mapping, from = "reg", to = "aggregate")
 
     wastePerCapita <- waste / popReg
-    wasteRel <- waste / collapseDim(waste[, 2020, ])
+    wastePerCapitaRel <- wastePerCapita / collapseDim(wastePerCapita[, 2020, ]) * 100 # as percentage
 
     res[res$Milestone == "Food waste in HICs", 3:6] <- wasteRel["HIR", c(2020, 2030, 2040, 2050), ]
     res[res$Milestone == "Food waste in MICs", 3:6] <- wasteRel["MIR", c(2020, 2030, 2040, 2050), ]
@@ -128,7 +128,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     # 5. SNUPE
     snupe <- readGDX(gdx, "ov_nr_eff", react = "silent", format = "first_found", select = list(type = "level"))
     inputs <- readGDX(gdx, "ov50_nr_inputs", react = "silent", format = "first_found", select = list(type = "level"))
-    snupe <- dimSums(snupe * inputs / dimSums(inputs, dim = 1), dim = 1)
+    snupe <- dimSums(snupe * inputs / dimSums(inputs, dim = 1), dim = 1) * 100 # as percentage
 
     res[res$Milestone == "Soil Nitrogen Uptake Efficiency, global", 3:6] <- snupe[, c(2020, 2030, 2040, 2050), ]
 
@@ -192,9 +192,9 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     # 14. Labor productivity
     wages <- readGDX(gdx, "pm_hourly_costs")[, , "baseline", drop = TRUE]
     employment <- reportAgEmployment(gdx)["GLO", , , invert = TRUE]
-    hours <- totalHoursWorked(gdx, level = "reg")
+    totalHours <- totalHoursWorked(gdx, level = "reg")
 
-    totalCosts <- wages * employment * hours
+    totalCosts <- wages * totalHours
     laborProd <- toolAggregate(totalCosts, rel = mapping, from = "reg", to = "aggregate") / 
                         toolAggregate(employment, rel = mapping, from = "reg", to = "aggregate")
 
