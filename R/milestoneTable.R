@@ -115,8 +115,8 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     wastePerCapita <- waste / popReg
     wastePerCapitaRel <- wastePerCapita / collapseDim(wastePerCapita[, 2020, ]) * 100 # as percentage
 
-    res[res$Milestone == "Food waste in HICs", 3:6] <- wasteRel["HIR", c(2020, 2030, 2040, 2050), ]
-    res[res$Milestone == "Food waste in MICs", 3:6] <- wasteRel["MIR", c(2020, 2030, 2040, 2050), ]
+    res[res$Milestone == "Food waste in HICs", 3:6] <- wastePerCapitaRel["HIR", c(2020, 2030, 2040, 2050), ]
+    res[res$Milestone == "Food waste in MICs", 3:6] <- wastePerCapitaRel["MIR", c(2020, 2030, 2040, 2050), ]
 
 
     # 4. Inorganic fertilizer
@@ -139,8 +139,8 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
     # 7. Anthropogenic LUC emissions & AFOLU emissions 
     emissions <- reportEmissions(gdx)["GLO", , ]
-    luc <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
-    afolu <- emissions[, , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"] / 1000 # to giga tonnes
+    afolu <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
+    luc <- emissions[, , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"] / 1000 # to giga tonnes
 
     res[res$Milestone == "Anthropogenic LUC emissions, global", 3:6] <- luc[, c(2020, 2030, 2040, 2050), ]
     res[res$Milestone == "AFOLU emissions, global", 3:6] <- afolu[, c(2020, 2030, 2040, 2050), ]
