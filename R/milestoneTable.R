@@ -43,7 +43,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
                "Percentage change",
                "Percentage change",
                "Percentage change",
-               "Percentage change",
+               "Mt",
                "Percent", 
                "Mha",
                "Gt",
@@ -55,9 +55,9 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
                "Mio people",
                "Mha",
                "Index",
-               "USD/worker",
-               "USD/worker",
-               "USD/worker",
+               "kUSD/worker",
+               "kUSD/worker",
+               "kUSD/worker",
                "Percent",
                "Mha")
 
@@ -121,9 +121,8 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
     # 4. Inorganic fertilizer
     fertilizer <- reportSDG6(gdx)["GLO", , "Fertilizer use", pmatch = TRUE]
-    fertilizerRel <- fertilizer / collapseDim(fertilizer[, 2020, ])
 
-    res[res$Milestone == "Inorganic fertilizer, global", 3:6] <- fertilizerRel[, c(2020, 2030, 2040, 2050), ]
+    res[res$Milestone == "Inorganic fertilizer, global", 3:6] <- fertilizer[, c(2020, 2030, 2040, 2050), ]
 
 
     # 5. SNUPE
@@ -141,7 +140,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     # 7. Anthropogenic LUC emissions & AFOLU emissions 
     emissions <- reportEmissions(gdx)["GLO", , ]
     luc <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
-    afolu <- emissions[, , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"]
+    afolu <- emissions[, , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"] / 1000 # to giga tonnes
 
     res[res$Milestone == "Anthropogenic LUC emissions, global", 3:6] <- luc[, c(2020, 2030, 2040, 2050), ]
     res[res$Milestone == "AFOLU emissions, global", 3:6] <- afolu[, c(2020, 2030, 2040, 2050), ]
@@ -173,7 +172,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
     # 11. Alternative Livelihoods for people formerly working in agriculture
     empl <- reportAgEmployment(gdx)["GLO", , ]
-    empl <- empl - collapseDim(empl[, 2020, ])
+    empl <- collapseDim(empl[, 2020, ]) - empl
 
     res[res$Milestone == "Alternative Livelihoods for people formerly working in agriculture", 3:6] <- empl[, c(2020, 2030, 2040, 2050), ]
 
@@ -198,6 +197,8 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     totalCosts <- wages * employment * hours
     laborProd <- toolAggregate(totalCosts, rel = mapping, from = "reg", to = "aggregate") / 
                         toolAggregate(employment, rel = mapping, from = "reg", to = "aggregate")
+
+    laborProd <- laborProd / 1000 # from USD/worker to k USD/worker
 
     res[res$Milestone == "Labor productivity in LICs", 3:6] <- laborProd["LIR", c(2020, 2030, 2040, 2050), ]
     res[res$Milestone == "Labor productivity in MICs", 3:6] <- laborProd["MIR", c(2020, 2030, 2040, 2050), ]
