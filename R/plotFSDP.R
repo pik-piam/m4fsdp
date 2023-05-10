@@ -48,11 +48,11 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
     if (grepl("HRc1000", reg) & !grepl("HRc1000", outputfolder)) {
       a <- list.dirs(paste0(outputfolder, "/HRc1000"), recursive = FALSE)
       a <- a[grep("FSECe_FSDP", a)]
-      dirFsdp <- file.path(outputfolder, "HRc1000", a[order(a, decreasing = TRUE)][1])
+      dirFsdp <- a[order(a, decreasing = TRUE)][1]
     } else {
       a <- list.dirs(outputfolder, recursive = FALSE)
       a <- a[grep("FSECe_FSDP", a)]
-      dirFsdp <- file.path(outputfolder, a[order(a, decreasing = TRUE)][1])
+      dirFsdp <- a[order(a, decreasing = TRUE)][1]
     }
   }
 
