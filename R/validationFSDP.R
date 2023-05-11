@@ -245,7 +245,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
   # Validation land
   p1 <- plotVal(var = "Resources|Land Cover|+|Cropland", varName = "Land Cover|Cropland",
-                hist = c("FAO_crop_past","MAgPIEown","LUH2v2"), histName = c("FAO","mod. LUH2v2","orig. LUH2v2"))
+                hist = c("FAO_crop_past","MAgPIEown","LUH2v2"), histName = c("FAO","mod. LUH2v2","orig. LUH2v2")) 
   p2 <- plotVal(var = "Resources|Land Cover|+|Pastures and Rangelands", varName = "Land Cover|Pastures and Rangelands",
                 hist = c("FAO_crop_past","MAgPIEown","LUH2v2"), histName = c("FAO","mod. LUH2v2","orig. LUH2v2"))
   p3 <- plotVal(var = "Resources|Land Cover|Forest|+|Managed Forest",
@@ -257,11 +257,29 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
   p6 <- plotVal(var = "Resources|Land Cover|+|Urban Area",
                 varName = "Urban land", hist = c("MAgPIEown","LUH2v2"), histName = c("mod. LUH2v2", "orig. LUH2v2"))
 
-  combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
-  combined <- combined + plot_layout(guides = ifelse(showHistLegend,"keep","collect"), ncol = 2) & theme(legend.position = "bottom", legend.box = ifelse(scens == "BAU_FSEC","horizontal","vertical"))
+  combined <- p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a") 
+  combined <- combined + plot_layout(guides = ifelse(showHistLegend,"keep","collect"), ncol = 2) & theme(legend.position = "bottom", legend.box = ifelse(scens == "BAU_FSEC","horizontal","vertical")) 
   ggsave(filename = file.path(folder, paste(rev, "valLand.png", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
   ggsave(filename = file.path(folder, paste(rev, "valLand.pdf", sep = "_")), combined,
+         width = 10, height = 10, scale = 1.3)
+
+  # Validation emissions
+  p1 <- plotVal(var = "Emissions|CO2|Land|+|Land-use Change", varName = "CO2 emissions from land-use change",
+                hist = c("FAO_EmisLUC", "EDGAR_LU"), histName = c("FAO", "EDGAR")) +
+        scale_y_continuous(expand = c(0, 0), limits = c(NA, NA)) 
+  p2 <- plotVal(var = "Emissions|CH4|Land|+|Agriculture", varName = "CH4 emissions from agriculture",
+                hist = c("FAO_EmisAg", "EDGAR_LU"), histName = c("FAO", "EDGAR")) +
+        scale_y_continuous(expand = c(0, 0), limits = c(NA, NA)) 
+  p3 <- plotVal(var = "Emissions|N2O|Land|+|Agriculture", varName = "N2O emissions from agriculture", 
+                hist = c("FAO_EmisAg", "EDGAR_LU"), histName = c("FAO", "EDGAR")) +
+        scale_y_continuous(expand = c(0, 0), limits = c(NA, NA)) 
+
+  combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
+  combined <- combined + plot_layout(guides = ifelse(showHistLegend,"keep","collect"), ncol = 2) & theme(legend.position = "bottom", legend.box = ifelse(scens == "BAU_FSEC","horizontal","vertical"))
+  ggsave(filename = file.path(folder, paste(rev, "valEmissions.png", sep = "_")), combined,
+         width = 10, height = 10, scale = 1.3)
+  ggsave(filename = file.path(folder, paste(rev, "valEmissions.pdf", sep = "_")), combined,
          width = 10, height = 10, scale = 1.3)
 
   # Validation Yields and TC
