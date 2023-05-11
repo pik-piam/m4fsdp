@@ -266,7 +266,7 @@ validationFSDP <- function(repReg, val, regionSel = "aggregate", folder = "outpu
 
   # Validation emissions
   p1 <- plotVal(var = "Emissions|CO2|Land|+|Land-use Change", varName = "CO2 emissions from land-use change",
-                hist = c("FAO_EmisLUC", "EDGAR_LU", "Gasser et al 2020"), histName = c("FAO", "EDGAR", "Gasser 2020")) +
+                hist = c("FAO_EmisLUC", "EDGAR_LU", "Gasser et al 2020"), histName = c("FAO", "EDGAR", "Gasser et al. 2020")) +
         scale_y_continuous(expand = c(0, 0), limits = c(NA, NA)) 
   p2 <- plotVal(var = "Emissions|CH4|Land|+|Agriculture", varName = "CH4 emissions from agriculture",
                 hist = c("FAO_EmisAg", "EDGAR_LU"), histName = c("FAO", "EDGAR")) +
