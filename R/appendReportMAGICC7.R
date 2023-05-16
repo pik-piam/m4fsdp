@@ -21,7 +21,7 @@
 appendReportMAGICC7 <- function(resultsPath, scenario, dir = ".") {
 
   results <- read_excel(resultsPath) %>%
-    filter(str_detect(.data$Scenario, scenario))
+    filter(str_detect(.data$Scenario, paste0(scenario, "$")))
 
   # -----------------------------------------------------------------------------------------------------------------
   # Filter MAGICC7 dataset to only exceedance probability and median temperature
