@@ -259,7 +259,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       return(p)
     } else {
       warning(paste0("Missing Variable: ",var))
-      return(ggplot(get("mtcars"), aes(x = get("wt"), y = get("mpg"))) + geom_blank()+ggtitle("DUMMY / Placeholder"))
+  #    return(ggplot(get("mtcars"), aes(x = get("wt"), y = get("mpg"))) + geom_blank()+ggtitle("DUMMY / Placeholder"))
     }
 
   }
@@ -269,7 +269,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p2 <- plotVal(rep, var = "Obesity", tag = "b)")
   p3 <- plotVal(rep, var = "Premature Mortality", tag = "c)")
 
-  p10 <- plotVal(rep, var = "Ag. Expenditures", tag = "d)", muteBefore = 2005)
+  p10 <- plotVal(rep, var = "Expenditure on Ag. Products", tag = "d)", muteBefore = 2005)
   p11 <- plotVal(rep, var = "Poverty", tag = "e)", muteBefore = 2010)
   p12 <- plotVal(rep, var = "Ag. Employment", tag = "f)")
   p13 <- plotVal(rep, var = "Ag. Wages", tag = "g)")
@@ -278,14 +278,14 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 2)
   p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Env. Water Flow Violations", tag = "k)")
-  p8 <- plotVal(rep, var = "GHG Emissions", tag = "l)",lowLimit = NA)
-  p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
+  p8 <- plotVal(rep, var = "AFOLU GHG Emissions", tag = "l)",lowLimit = NA)
+ # p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
 
-  p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
+ p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
   p15 <- plotVal(rep, var = "Production Costs", tag = "o)")
 
   group1 <- p1 + p2 + p3 + guide_area() + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom")
-  group2 <- p4 + p5 + p6 + p7 + p8 + p9 + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
+  group2 <- p4 + p5 + p6 + p7 + p8 + plot_annotation(title = "Environment", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
   group3 <- p10 + p11 + p12 + p13 + plot_annotation(title = "Inclusion", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
   group4 <- p14 + p15 + plot_annotation(title = "Economy", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "none")
 
