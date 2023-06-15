@@ -129,10 +129,11 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   labelYGrid <- -6500000
   xlimMoll   <- c(-11007870, 16007870)
   asRaster   <- function(x, countries2) {
-    x[is.na(.value), .value:= 999]
+    tmp=copy(x)
+    tmp[is.na(.value), .value:= 999]
     z <- rast()
-    for (i in levels(x$scenario)) {
-      y <- rast(droplevels(x[scenario == i, ])[, c("x", "y", ".value")], crs = "+proj=latlon")
+    for (i in levels(tmp$scenario)) {
+      y <- rast(droplevels(tmp[scenario == i, ])[, c("x", "y", ".value")], crs = "+proj=latlon")
       names(y) <- i
       z <- c(z, y, warn = FALSE)
     }
@@ -226,7 +227,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Inclusion: Expenditure for agr. products per capita
-  title <- "d) Ag. Expenditures"
+  title <- "d) Expenditure on Ag. Products"
   unit <- "USD per capita"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repIso[, .(value = value[variable == "Household Expenditure|Food|Expenditure"]), by = .(model, scenario, iso_a3, period)]
@@ -335,8 +336,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
 
   # Environment: Biodiversity Intactness Index
-  title <- "h) Biodiversity Intactness Index"
-  unit  <- ""
+  title <- "h) Biodiversity Intactness"
+  unit  <- "index"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "BII (index)", ])
   bb    <- asRaster(b, countries2)
@@ -366,16 +367,19 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     geom_raster(aes(x = x, y = y, fill = value)) + facet_wrap(~scenario) +
     geom_sf(data = countries2, color = "white", fill = NA, size = 0.2) + coord_sf(xlim = xlimMoll) +
     #scale_fill_gradientn(unit, colors = brewer.pal(9, "YlOrBr")[-1], na.value = "grey90", limits = c(1, 3), oob = scales::squish, breaks = c(1,1.5,2,2.5,3), labels = c("<1",1.5,2,2.5,">3")) + #trans = "log1p"
-    scale_fill_gradientn(unit, colors = rev(c("#f0d700","#b8fc56","#aaf185","#7ade99","#87eac8","#6fbccc","#748cb3","#706c9e","#6c4b8c")), na.value = "grey90", limits = c(1, 3), oob = scales::squish, breaks = c(1,1.5,2,2.5,3), labels = c("<1",1.5,2,2.5,">3")) + #trans = "log1p"
+    #scale_fill_gradientn(unit, colors = rev(c("#f0d700","#b8fc56","#aaf185","#7ade99","#87eac8","#6fbccc","#748cb3","#706c9e","#6c4b8c")), na.value = "grey90", limits = c(1, 3), oob = scales::squish, breaks = c(1,1.5,2,2.5,3), labels = c("<1",1.5,2,2.5,">3")) + #trans = "log1p"
+    scale_fill_gradientn(unit, colors = rev(c("#229002ff","#e7d423ff","#8e82ffff","#3f3fcaff")), na.value = "grey90", limits = c(1, 3), oob = scales::squish, breaks = c(1,1.5,2,2.5,3), labels = c("<1",1.5,2,2.5,">3")) + #trans = "log1p"
     myTheme +
-    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value),2)," to ",round(max(b$.value),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
+    labs(title = title, caption = c(paste0("Data range: ",round(min(b$.value,na.rm=TRUE),2)," to ",round(max(b$.value,na.rm=TRUE),2)),caption)) + theme(plot.caption = element_text(hjust=c(0, 1))) +
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
+  ggsave("test44.png",plotCROPDIV)
+
 
   # Environment: Nutrient Surplus
-  title <- "j) Nutrient Surplus"
-  unit  <- "kg N per ha"
+  title   <- "j) Nutrient Surplus"
+  unit    <- "kg N per ha"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "nutrientSurplus (kg N per ha)", ])
   bb    <- asRaster(b, countries2)
@@ -413,7 +417,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
-  title <- "l) Annual Greenhouse Gas Emissions (GWP100)"
+  title <- "l) Annual AFOLU GHG emissions"
   unit  <- "ton CO2eq per ha"
   caption <- "Projection: Mollweide"
 
@@ -435,7 +439,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Global Surface Temp
-  title <- "m) Global Surface Temperature"
+  title <- "m) Global Surface Warming"
   unit  <- "deg C"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])

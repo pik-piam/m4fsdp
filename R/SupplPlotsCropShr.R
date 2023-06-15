@@ -109,7 +109,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     names(plotData) <- c("Cell", "Region", "Year", "Crop", "CropShare", "CropGroup", "TotalArea", "CerealRank")
 
     # Sort data and calculate bar positions
-    plotData <- plotData %>%
+    plotDataReg <- plotData %>%
       arrange(Year, Region, CerealRank) %>%
       group_by(Year, Region, Crop, CropGroup) %>%
       mutate(BarPos = 0.5 * (cumsum(TotalArea) + cumsum(c(0, TotalArea[-length(TotalArea)]))))
@@ -147,9 +147,9 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
           y = CropShare, x = BarPos,
           fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")))
         ),
-        data = filter(plotData, Year == year)
+        data = filter(plotDataReg, Year == year)
       ) +
-      geom_col(position = "fill", width = filter(plotData, Year == year)$TotalArea) +
+      geom_col(position = "fill", width = filter(plotDataReg, Year == year)$TotalArea) +
       scale_fill_manual(
         values = colors,
         limits = c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")
@@ -178,6 +178,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
       )
 
     if (!combined) {
+      CropShrReg <- CropShrReg + ggtitle(paste(getScenarios()[which(getScenarios()[,1]==scenario),2], year))
       if (!is.null(file)) {
         if (panel == "row") {
           ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_REG_", file), CropShrReg, width = 9, height = 3, scale = 1)
@@ -191,14 +192,14 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
       ggplot(
         aes(
           y = CropShare, x = BarPos,
-          fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other", "Fallow", "Fruits & Vegetables")))
+          fill = factor(CropGroup, levels = rev(c("Cereals", "Legumes", "Plantations", "Other",  "Fruits & Vegetables", "Fallow")))
         ),
         data = filter(plotDataGlo, Year == year)
       ) +
       geom_col(position = "fill", width = filter(plotDataGlo, Year == year)$TotalArea) +
       scale_fill_manual(
         values = colors,
-        limits = c("Cereals", "Legumes", "Plantations", "Other", "Fallow", "Fruits & Vegetables")
+        limits = c("Cereals", "Legumes", "Plantations", "Other", "Fruits & Vegetables", "Fallow")
       ) +
       labs(fill = "Crop group") +
       xlab("Cropland area (Mha)") +
@@ -211,13 +212,14 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
 
     CropShrAll <- CropShrGlo +
       theme(legend.position = "none") +
-      ggtitle(paste(scenario, year)) +
+      ggtitle(paste(getScenarios()[which(getScenarios()[,1]==scenario),2], year)) +
       theme(plot.title = element_text(size = 14)) +
       CropShrReg +
       plot_layout(guides = "keep", ncol = 1, byrow = FALSE)
 
     if (!is.null(file)) {
       if (!combined) {
+        CropShrGlo <- CropShrGlo + ggtitle(paste(getScenarios()[which(getScenarios()[,1]==scenario),2], year))
         ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_GLO_", file), CropShrGlo, width = 12, height = 6, scale = 1)
       } else {
         ggsave(filename = paste0(suppFolder, rev, "_", scenario, "_", year, "_", file), CropShrAll, width = 6, height = 7, scale = 1.4)
@@ -236,7 +238,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
     for (yr in plotyears) {
       if (!(yr == "2020" && scen != "BAU")) {
         gdx <- paste(outFolder, gdxFolder[grep(scen, gdxFolder)], "fulldata.gdx", sep = "/")
-        .plotCropShr(gdx = gdx, file = file, scenario = scen, year = yr, combined = TRUE)
+        .plotCropShr(gdx = gdx, file = file, scenario = scen, year = yr, combined = combined)
       }
     }
   }

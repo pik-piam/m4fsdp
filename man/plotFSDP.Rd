@@ -11,7 +11,8 @@ plotFSDP(
   grid = NULL,
   val = NULL,
   reg2iso = NULL,
-  rev = NULL
+  rev = NULL,
+  dirFsdp = NULL
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ plotFSDP(
 \item{reg2iso}{rds file or data.frame with Mapping, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @author Florian Humpenoeder}
 
 \item{rev}{revision (e.g. "v28"). NULL will automatically detect the most recent version.}
+
+\item{dirFsdp}{path to outputfolder of the FSDP run (to create the milestones table). NULL will automatically detect the most recent version}
 }
 \description{
 Creates all FSDP plots

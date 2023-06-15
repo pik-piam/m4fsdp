@@ -75,9 +75,9 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     return(rep)
   }
   rep <- renameRep(rep,var,regionSel)
-  rep[get("scenset") %in% c("FSECc","FSECe"), "scenset" := "SSP2 BAU / FSDP"]
-  rep[get("scenset") %in% c("FSECb"), "scenset" := "Bundles"]
-  rep$scenset <- factor(rep$scenset, c("SSP2 BAU / FSDP", "Bundles"))
+  rep[get("scenset") %in% c("FSECc","FSECe","FSECd"), "scenset" := "Solid"]
+  rep[get("scenset") %in% c("FSECb"), "scenset" := "Dashed"]
+  rep$scenset <- factor(rep$scenset, c("Solid", "Dashed"))
 
   val <- renameRep(val,var,regionSel)
 
@@ -137,7 +137,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
     map[8, ] <- c("LAM", "MIR")
     map[9, ] <- c("MEA", "MIR")
     map[10, ] <- c("NEA", "MIR")
-    map[11, ] <- c("NEU", "MIR")
+    map[11, ] <- c("NEU", "HIR")
     map[12, ] <- c("OAS", "MIR")
     map[13, ] <- c("SSA", "LIR")
     map[14, ] <- c("USA", "HIR")
@@ -182,7 +182,8 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
       b[b$period < muteBefore, "value" := NA]
       b <- droplevels(b)
       units <- levels(b$unit)
-      unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
+      #unitHist <- levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
+      unitHist <- units
       if (is.null(hist)) {
         h <- val[val$variable %in% var & val$unit == unitHist & val$scenario == "historical" &
                    val$period >= 2000 & val$period <= 2020, ]
@@ -274,12 +275,14 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p12 <- plotVal(rep, var = "Ag. Employment", tag = "f)")
   p13 <- plotVal(rep, var = "Ag. Wages", tag = "g)")
 
-  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot Landscapes"), tag = "h)", lowLimit = 65, highLimit = 90, varName = "Biodiversity")
+  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot Landscapes"), tag = "h)", lowLimit = 65, highLimit = 90, varName = "Biodiversity Intactness")
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 2)
   p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Env. Water Flow Violations", tag = "k)")
   p8 <- plotVal(rep, var = "AFOLU GHG Emissions", tag = "l)",lowLimit = NA)
+
  # p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
+
 
  p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
   p15 <- plotVal(rep, var = "Production Costs", tag = "o)")
