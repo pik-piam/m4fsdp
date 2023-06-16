@@ -4,8 +4,8 @@ type: software
 title: |-
   m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
       for FSDP project
-version: 0.48.2
-date-released: '2023-05-16'
+version: 0.48.2.9001
+date-released: '2023-06-16'
 abstract: Output routines for extracting results from the MAgPIE framework (versions
   4.x) for the FSDP project.
 authors:
