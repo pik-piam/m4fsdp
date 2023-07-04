@@ -86,7 +86,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
     # 1. Consumption of livestock products (per capita)
     consumption <- reportKcal(gdx, level = "reg")[, , "Livestock products", pmatch = TRUE]
-    consumption <- toolAggregate(consumption, rel = mapping, from = "reg", to = "aggregate")
+    consumption <- toolAggregate(consumption, rel = mapping, weight = pop, from = "reg", to = "aggregate")
 
     consumptionRel <- consumption / collapseDim(consumption[, 2020, ])
 
