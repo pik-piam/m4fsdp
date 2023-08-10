@@ -18,6 +18,8 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @importFrom utils write.csv read.csv
 #' @importFrom terra project rast
 
+options("sp_evolution_status" = 2) # use sf instead of rgdal and rgeos in sp
+
 spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL,
                                      subset = c("FSTsdp_minus_BASEssp2")) {
   ### projections
