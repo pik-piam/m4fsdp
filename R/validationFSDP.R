@@ -286,12 +286,12 @@ validationFSDP <-  function(repReg,
             h <-
               val[val$variable == var &
                     val$unit == unitHist & val$scenario == "historical" &
-                    val$period >= 2000 & val$period <= 2020,]
+                    val$period >= 1980 & val$period <= 2020,]
           } else {
             h <-
               val[val$variable == var &
                     val$unit == unitHist & val$scenario == "historical" &
-                    val$period >= 2000 &
+                    val$period >= 1980 &
                     val$period <= 2020 & val$model %in% hist,]
             h <- droplevels(h)
             if (!is.null(histName)) {
@@ -326,7 +326,7 @@ validationFSDP <-  function(repReg,
             w2 <-
               val[val$variable == weight &
                     val$scenario == "historical" & val$model == histweight &
-                    val$period >= 2000 & val$period <= 2020,]
+                    val$period >= 1980 & val$period <= 2020,]
             w2 <- droplevels(w2)
             w2 <-
               w2[, c("region",
@@ -383,7 +383,7 @@ validationFSDP <-  function(repReg,
           p <- ggplot(b, aes(x = get("period"), y = get("value")))
           p <-
             p + labs(title = varName) + ylab(unitName) + xlab(NULL) + themeMy(rotateX = 90)
-          p <- p + scale_x_continuous(NULL, breaks = c(2000, 2025, 2050)) +
+          p <- p + scale_x_continuous(NULL, breaks = c(1980, 2000, 2025, 2050)) +
             scale_y_continuous(expand = c(0, 0), limits = c(0, NA))
           if (nrow(h) > 0)
             p <-
@@ -403,6 +403,7 @@ validationFSDP <-  function(repReg,
             p + guides(
               color = guide_legend(
                 order = 1,
+                ncol = 1,
                 title.position = "top",
                 override.aes = list(
                   linetype = override.linetype,
@@ -411,7 +412,7 @@ validationFSDP <-  function(repReg,
                 ),
                 reverse = TRUE
               ),
-              shape = guide_legend(order = 2, title.position = "top"),
+              shape = guide_legend(order = 2, nrow = 2, title.position = "top"),
               linetype = "none"
             )
           return(p)
