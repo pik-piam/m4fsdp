@@ -451,15 +451,13 @@ validationFSDP <-  function(repReg,
         hist = "FAOmassbalance"
       )
     p5 <-
-      plotVal(var = "Demand|++|Crops", varName = "Total crop demand including food and feed")
-    p6 <-
       plotVal(var = "Demand|++|Livestock products", varName = "Total livestock product demand")
     #p7 <- plotVal(var = "Income|Number of People Below 3p20 USDppp11/day", varName = "Number of people under 3.20 USDppp11/day poverty line")
     #p8 <- plotVal(var = "Income|Gini Coefficient", varName = "Gini Coefficient", weight = "Population")
     #poverty validation requires new input data validation
 
     combined <-
-      p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
+      p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
                              ncol = 2) &
@@ -603,7 +601,7 @@ validationFSDP <-  function(repReg,
     p4 <-
       plotVal(var = "Production|Crops|+|Sugar crops", varName = "Sugar crop production")
     p5 <-
-      plotVal(var = "Production|Crops|+|Fruits", varName = "Fruits production")
+      plotVal(var = "Production|Crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
@@ -633,7 +631,7 @@ validationFSDP <-  function(repReg,
     p1 <-
       plotVal(var = "Production|+|Livestock products", varName = "Livestock production")
     p2 <-
-      plotVal(var = "Production|+|Secondary products	", varName = "Primary-processed production")
+      plotVal(var = "Production|+|Secondary products", varName = "Primary-processed production")
     p3 <-
       plotVal(var = "Production|+|Pasture", varName = "Grazed and mowed grass")
     p4 <-
