@@ -134,11 +134,11 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
     # 6. Manure recycling quota, excluding field losses
     # "what share of the manure excreted in confinements gets recycled to croplands"
-    recycledManure <- reportNitrogenBudgetCropland(gdx)["GLO", , "Resources|Nitrogen|Cropland Budget|Inputs|+|Manure (Mt Nr/yr)"]
+    recycledManure <- reportNitrogenBudgetCropland(gdx)["GLO", , "Resources|Nitrogen|Cropland Budget|Inputs|+|Manure Recycled from Confinements (Mt Nr/yr)"]
     excretedManure <- reportManure(gdx)["GLO", , "Resources|Nitrogen|Manure|++|Manure In Confinements (Mt Nr/yr)"]
     manureQuota <- recycledManure / excretedManure * 100 # as percentage
 
-    res[res$Milestone == "Manure recycling quota, excluding field losses, global", 3:6] <- manureQuota[, c(2020, 2030, 2040, 2050), ]    
+    res[res$Milestone == "Manure recycling quota, excluding field losses, global", 3:6] <- manureQuota[, c(2020, 2030, 2040, 2050), ]
 
 
     # 7. Rewetting of peatlands
@@ -147,7 +147,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     res[res$Milestone == "Rewetted formerly drained peatlands, global", 3:6] <- peatland[, c(2020, 2030, 2040, 2050), ]
 
 
-    # 8. Anthropogenic LUC emissions & AFOLU emissions 
+    # 8. Anthropogenic LUC emissions & AFOLU emissions
     emissions <- reportEmissions(gdx)["GLO", , ]
     luc <- emissions[, , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"] / 1000 # to giga tonnes
     afolu <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
@@ -160,19 +160,19 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     aff <- dimSums(land(gdx, level = "glo",types = "forestry",subcategories = c("forestry"),sum = FALSE)[, , c("aff", "ndc")], dim = 3)
     aff <- aff - collapseDim(aff[, 2020, ])
 
-    res[res$Milestone == "Afforestation compared to 2020, global", 3:6] <- aff[, c(2020, 2030, 2040, 2050), ]    
+    res[res$Milestone == "Afforestation compared to 2020, global", 3:6] <- aff[, c(2020, 2030, 2040, 2050), ]
 
 
     # 10. Total forest area & Total other semi-natural vegetation
     land <- dimSums(land(gdx), dim = 1)
     totalForest <- dimSums(land[, , c("forestry", "primforest", "secdforest")], dim = 3)
     other <- land[, , "other"]
-    
+
     res[res$Milestone == "Total forest area, global", 3:6] <- totalForest[, c(2020, 2030, 2040, 2050), ]
     res[res$Milestone == "Total other semi-natural vegetation, global", 3:6] <- other[, c(2020, 2030, 2040, 2050), ]
 
 
-    # 11. Timber plantation, global 
+    # 11. Timber plantation, global
     plantations <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|Managed Forest|+|Plantations (million ha)"]
 
     res[res$Milestone == "Timber plantations, global", 3:6] <- plantations[, c(2020, 2030, 2040, 2050), ]
@@ -208,15 +208,15 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
     # 15. Decrease in mortality
     health <- reportRds[reportRds$variable == "Health|Years of life lost|Disease" & reportRds$region == "World" & reportRds$period %in% c(2020, 2030, 2040, 2050), ]
-    health$relChange <- health$value / health$value[health$period == 2020] 
+    health$relChange <- health$value / health$value[health$period == 2020]
 
     res[res$Milestone == "Mortality from dietary and metabolic risks compared to 2020, global", 3:6] <- health$relChange
 
 
     # 16. Cropland landscapes with low natural habitats (<20% (semi)-natural vegetation in a 0.5*0.5° cell), global
     ## NOTE: The Landscape Habitats measure should lead to 0 cropland areas with insufficient landscape habitats in 2050
-    ## (i.e. no cells with >80% of available cropland actually used as cropland area). This is true on cluster level 
-    ## (as enforced within MAgPIE), but no longer on grid-cell level after disaggregation (4.868673% of total cropland 
+    ## (i.e. no cells with >80% of available cropland actually used as cropland area). This is true on cluster level
+    ## (as enforced within MAgPIE), but no longer on grid-cell level after disaggregation (4.868673% of total cropland
     ## in 2050  are in cells in which more than 80% of available cropland is used as cropland). But on clusterlevel it
     ## is not a good indicator for biodiversity, as the resolution is too coarse --> we don't use this indicator for now.
 

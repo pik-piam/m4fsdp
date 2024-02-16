@@ -601,7 +601,7 @@ validationFSDP <-  function(repReg,
     p4 <-
       plotVal(var = "Production|Crops|+|Sugar crops", varName = "Sugar crop production")
     p5 <-
-      plotVal(var = "Production|Crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
+      plotVal(var = "Production|Crops|Other Crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
@@ -736,19 +736,19 @@ validationFSDP <-  function(repReg,
               varName = "Croparea fallow",
               units = "Mha physical area")
     p3 <-
-      plotVal(var = "Resources|Land Cover|Cropland|Croparea|+|Cereals",
+      plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals",
               varName = "Croparea cereals",
               units = "Mha physical area")
     p4 <-
-      plotVal(var = "Resources|Land Cover|Cropland|Croparea|+|Oil crops",
+      plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
               varName = "Croparea oil crops",
               units = "Mha physical area")
     p5 <-
-      plotVal(var = "Resources|Land Cover|Cropland|Croparea|+|Sugar crops",
+      plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops",
               varName = "Croparea sugar crops",
               units = "Mha physical area")
     p6 <-
-      plotVal(var = "Resources|Land Cover|Cropland|Croparea|+|Fruits Vegetables Nuts",
+      plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|Other Crops|+|Fruits Vegetables Nuts",
               varName = "Croparea fruits vegetables nuts",
               units = "Mha physical area")
 
@@ -778,15 +778,15 @@ validationFSDP <-  function(repReg,
 
     # Nitrogen inputs
     p1 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs", varName = "Total nitrogen inputs")
     p2 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer", varName = "Inorganic fertilizer")
     p3 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops", varName = "Symbiotic fixation")
     p4 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Manure Recycled from Confinements", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Manure Recycled from Confinements", varName = "Manure from confinement")
     p5 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Aboveground Crop Residues", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Aboveground Crop Residues", varName = "Crop residues left on field")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
@@ -815,13 +815,13 @@ validationFSDP <-  function(repReg,
 
     #Nitrogen outputs
     p1 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Harvested Crops", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Harvested Crops", varName = "N in harvested crops")
     p2 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Aboveground Crop Residues", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Aboveground Crop Residues", varName = "N in aboveground residues")
     p3 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Nutrient Surplus", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Nutrient Surplus", varName = "N in nutrient surplus")
     p4 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Soil Organic Matter", varName = "")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Soil Organic Matter", varName = "N change in soil organic matter")
 
     combined <- p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
     combined <-
@@ -858,7 +858,7 @@ validationFSDP <-  function(repReg,
     p4 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|+|Sugar crops", varName = "Average sugar crop yields")
     p5 <-
-      plotVal(var = "Productivity|Yield by physical area|Crops|+|Fruits Vegetables Nuts", varName = "Average yield of fruits, vegetables, nuts")
+      plotVal(var = "Productivity|Yield by physical area|Crops|Other Crops|+|Fruits Vegetables Nuts", varName = "Average yield of fruits, vegetables, nuts")
     p6 <-
       plotVal(
         var = "Productivity|Landuse Intensity Indicator Tau",
