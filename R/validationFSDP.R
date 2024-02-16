@@ -959,7 +959,7 @@ validationFSDP <-  function(repReg,
       histName = c("LPJmL:IPSL", "MATSIRO:IPSL", "MPI-HM:IPSL")
     )
 
-    combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
+    combined <- p1 + p2 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
                              ncol = 2) &
