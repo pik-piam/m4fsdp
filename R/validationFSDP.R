@@ -731,27 +731,27 @@ validationFSDP <-  function(repReg,
     p1 <-
       plotVal(var = "Resources|Land Cover|Cropland|+|Croparea",
               varName = "Croparea cropped",
-              units = "Mha physical area")
+              unitName = "Mha physical area")
     p2 <-
       plotVal(var = "Resources|Land Cover|Cropland|+|Fallow Land",
               varName = "Croparea fallow",
-              units = "Mha physical area")
+              unitName = "Mha physical area")
     p3 <-
       plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals",
               varName = "Croparea cereals",
-              units = "Mha physical area")
+              unitName = "Mha physical area")
     p4 <-
       plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
               varName = "Croparea oil crops",
-              units = "Mha physical area")
+              unitName = "Mha physical area")
     p5 <-
       plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops",
               varName = "Croparea sugar crops",
-              units = "Mha physical area")
+              unitName = "Mha physical area")
     p6 <-
       plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|Other Crops|+|Fruits Vegetables Nuts",
               varName = "Croparea fruits vegetables nuts",
-              units = "Mha physical area")
+              unitName = "Mha physical area")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
