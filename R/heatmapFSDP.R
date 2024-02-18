@@ -20,6 +20,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 #' @importFrom ggtext element_markdown
+#' @importFrom scales trans_new
 
 heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, width = 10.5, height = 9) {
 
@@ -182,12 +183,20 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   #https://github.com/andrewheiss/ath-hugo/blob/main/content/blog/2022-05-09_hurdle-lognormal-gaussian-brms/index.Rmarkdown
   #https://github.com/wilkelab/ggtext/issues/82
 
+  #https://stackoverflow.com/questions/14504869/histogram-with-negative-logarithmic-scale-in-r
+  #https://github.com/tidyverse/ggplot2/issues/1631
+
+  asinh42_trans <- function(){
+    scales::trans_new(name = 'asinh42', transform = function(x) asinh(x),
+              inverse = function(x) sinh(x))
+  }
+
   m <- ggplot(b, aes(y = get("scenario"), x = 1)) + theme_minimal() +
     theme(panel.border = element_rect(colour = NA, fill = NA)) +
     geom_tile_interactive(aes(fill = valuefill,
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), colour = "white") +
-    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "white",
+    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "white", trans = asinh42_trans(),
                                      na.value = "grey95", high = "#fc8d59", breaks = c(-1, -0.5, 0, 0.5, 1), limit = c(-1, 1),
                                      labels = c("best", "better", "none", "worse", "worst")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
