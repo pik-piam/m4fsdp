@@ -871,27 +871,27 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Productivity|Yield by physical area|+|Crops",
               varName = "Average yields",
               weight = "Resources|Land Cover|Cropland|+|Croparea",
-              histweight = "Ostberg2023_FAO_LUH2v2")
+              histweight = "Ostberg2023")
     p2 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|+|Cereals",
               varName = "Average cereal yields",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals",
-              histweight = "Ostberg2023_FAO_LUH2v2")
+              histweight = "Ostberg2023")
     p3 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|+|Oil crops",
               varName = "Average oil crop yields",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
-              histweight = "Ostberg2023_FAO_LUH2v2")
+              histweight = "Ostberg2023")
     p4 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|+|Sugar crops",
               varName = "Average sugar crop yields",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops",
-              histweight = "Ostberg2023_FAO_LUH2v2")
+              histweight = "Ostberg2023")
     p5 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|Other crops|+|Fruits Vegetables Nuts",
               varName = "Average yield of fruits, vegetables, nuts",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
-              histweight = "Ostberg2023_FAO_LUH2v2")
+              histweight = "Ostberg2023")
     p6 <-
       plotVal(
         var = "Productivity|Landuse Intensity Indicator Tau",
