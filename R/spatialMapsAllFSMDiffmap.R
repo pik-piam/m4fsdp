@@ -17,11 +17,12 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @import ggplot2 data.table patchwork cartogram sf RColorBrewer rnaturalearth quitte
 #' @importFrom utils write.csv read.csv
 #' @importFrom terra project rast
-
-options("sp_evolution_status" = 2) # use sf instead of rgdal and rgeos in sp
+#' @importFrom withr local_options
 
 spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL,
                                      subset = c("FSTsdp_minus_BASEssp2")) {
+
+  withr::local_options("sp_evolution_status" = 2) # use sf instead of rgdal and rgeos in sp
   ### projections
   # https://semba-blog.netlify.app/01/26/2020/world-map-and-map-projections/
 
