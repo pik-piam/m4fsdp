@@ -556,17 +556,29 @@ validationFSDP <-  function(repReg,
 
     # Feed efficiency
     p1 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|Ruminant meat and dairy", varName = "Ruminant feed conversion efficiency")
+      plotVal(var = "Productivity|Feed conversion efficiency|Ruminant meat and dairy",
+              varName = "Ruminant feed conversion efficiency",
+              weight = "Production|+|Livestock products")
     p2 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|Monogastric meat", varName = "Monogastric feed conversion efficiency")
+      plotVal(var = "Productivity|Feed conversion efficiency|Monogastric meat",
+              varName = "Monogastric feed conversion efficiency",
+              weight = "Production|+|Livestock products")
     p3 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|Poultry meat and eggs", varName = "Poultry feed conversion efficiency")
+      plotVal(var = "Productivity|Feed conversion efficiency|Poultry meat and eggs",
+              varName = "Poultry feed conversion efficiency",
+              weight = "Production|+|Livestock products")
     p4 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|+|Cereal Intensity", varName = "Cereal feed intensity per animal product")
+      plotVal(var = "Productivity|Feed conversion efficiency|+|Cereal Intensity",
+              varName = "Cereal feed intensity per animal product",
+              weight = "Production|+|Livestock products")
     p5 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|+|Oilcrop intensity", varName = "Oilcrop feed intensity per animal product")
+      plotVal(var = "Productivity|Feed conversion efficiency|+|Oilcrop intensity",
+              varName = "Oilcrop feed intensity per animal product",
+              weight = "Production|+|Livestock products")
     p6 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|+|Pasture intensity", varName = "Pasture feed intensity per animal product")
+      plotVal(var = "Productivity|Feed conversion efficiency|+|Pasture intensity",
+              varName = "Pasture feed intensity per animal product",
+              weight = "Production|+|Livestock products")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
@@ -602,7 +614,7 @@ validationFSDP <-  function(repReg,
     p4 <-
       plotVal(var = "Production|Crops|+|Sugar crops", varName = "Sugar crop production")
     p5 <-
-      plotVal(var = "Production|Crops|Other Crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
+      plotVal(var = "Production|Crops|Other crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
@@ -749,7 +761,7 @@ validationFSDP <-  function(repReg,
               varName = "Croparea sugar crops",
               unitName = "Mha physical area")
     p6 <-
-      plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|Other Crops|+|Fruits Vegetables Nuts",
+      plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
               varName = "Croparea fruits vegetables nuts",
               unitName = "Mha physical area")
 
@@ -851,15 +863,25 @@ validationFSDP <-  function(repReg,
     # Yields
 
     p1 <-
-      plotVal(var = "Productivity|Yield by physical area|+|Crops", varName = "Average yields")
+      plotVal(var = "Productivity|Yield by physical area|+|Crops",
+              varName = "Average yields",
+              weight = "Resources|Land Cover|Cropland|+|Croparea")
     p2 <-
-      plotVal(var = "Productivity|Yield by physical area|Crops|+|Cereals", varName = "Average cereal yields")
+      plotVal(var = "Productivity|Yield by physical area|Crops|+|Cereals",
+              varName = "Average cereal yields",
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals")
     p3 <-
-      plotVal(var = "Productivity|Yield by physical area|Crops|+|Oil crops", varName = "Average oil crop yields")
+      plotVal(var = "Productivity|Yield by physical area|Crops|+|Oil crops",
+              varName = "Average oil crop yields",
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops")
     p4 <-
-      plotVal(var = "Productivity|Yield by physical area|Crops|+|Sugar crops", varName = "Average sugar crop yields")
+      plotVal(var = "Productivity|Yield by physical area|Crops|+|Sugar crops",
+              varName = "Average sugar crop yields",
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops")
     p5 <-
-      plotVal(var = "Productivity|Yield by physical area|Crops|Other Crops|+|Fruits Vegetables Nuts", varName = "Average yield of fruits, vegetables, nuts")
+      plotVal(var = "Productivity|Yield by physical area|Crops|Other crops|+|Fruits Vegetables Nuts",
+              varName = "Average yield of fruits, vegetables, nuts",
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts")
     p6 <-
       plotVal(
         var = "Productivity|Landuse Intensity Indicator Tau",
