@@ -733,7 +733,7 @@ validationFSDP <-  function(repReg,
               varName = "Croparea cropped",
               unitName = "Mha physical area")
     p2 <-
-      plotVal(var = "Resources|Land Cover|Cropland|+|Fallow Land",
+      plotVal(var = "Resources|Land Cover|Cropland|+|Fallow Cropland",
               varName = "Croparea fallow",
               unitName = "Mha physical area")
     p3 <-
@@ -821,10 +821,10 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Aboveground Crop Residues", varName = "N in aboveground residues")
     p3 <-
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Nutrient Surplus", varName = "N in nutrient surplus")
-    p4 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Soil Organic Matter", varName = "N change in soil organic matter")
+    #p4 <-
+    #  plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Soil Organic Matter", varName = "N change in soil organic matter")
 
-    combined <- p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
+    combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
                              ncol = 2) &
