@@ -114,8 +114,7 @@ validationFSDP <-  function(repReg,
     }
 
     rev <- tail(levels(rep$version), n = 1)
-    if (!is.data.frame(val))
-      val <- readRDS(val)
+    if (!is.data.frame(val)) val <- readRDS(val)
     val[region == "World", region := "GLO"]
 
 
@@ -558,27 +557,33 @@ validationFSDP <-  function(repReg,
     p1 <-
       plotVal(var = "Productivity|Feed conversion efficiency|Ruminant meat and dairy",
               varName = "Ruminant feed conversion efficiency",
-              weight = "Production|+|Livestock products")
+              weight = "Production|+|Livestock products",
+              histweight = "FAO")
     p2 <-
       plotVal(var = "Productivity|Feed conversion efficiency|Monogastric meat",
               varName = "Monogastric feed conversion efficiency",
-              weight = "Production|+|Livestock products")
+              weight = "Production|+|Livestock products",
+              histweight = "FAO")
     p3 <-
       plotVal(var = "Productivity|Feed conversion efficiency|Poultry meat and eggs",
               varName = "Poultry feed conversion efficiency",
-              weight = "Production|+|Livestock products")
+              weight = "Production|+|Livestock products",
+              histweight = "FAO")
     p4 <-
       plotVal(var = "Productivity|Feed conversion efficiency|+|Cereal Intensity",
               varName = "Cereal feed intensity per animal product",
-              weight = "Production|+|Livestock products")
+              weight = "Production|+|Livestock products",
+              histweight = "FAO")
     p5 <-
       plotVal(var = "Productivity|Feed conversion efficiency|+|Oilcrop intensity",
               varName = "Oilcrop feed intensity per animal product",
-              weight = "Production|+|Livestock products")
+              weight = "Production|+|Livestock products",
+              histweight = "FAO")
     p6 <-
       plotVal(var = "Productivity|Feed conversion efficiency|+|Pasture intensity",
               varName = "Pasture feed intensity per animal product",
-              weight = "Production|+|Livestock products")
+              weight = "Production|+|Livestock products",
+              histweight = "FAO")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
@@ -865,23 +870,28 @@ validationFSDP <-  function(repReg,
     p1 <-
       plotVal(var = "Productivity|Yield by physical area|+|Crops",
               varName = "Average yields",
-              weight = "Resources|Land Cover|Cropland|+|Croparea")
+              weight = "Resources|Land Cover|Cropland|+|Croparea",
+              histweight = "Ostberg2023_FAO_LUH2v2")
     p2 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|+|Cereals",
               varName = "Average cereal yields",
-              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals")
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals",
+              histweight = "Ostberg2023_FAO_LUH2v2")
     p3 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|+|Oil crops",
               varName = "Average oil crop yields",
-              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops")
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
+              histweight = "Ostberg2023_FAO_LUH2v2")
     p4 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|+|Sugar crops",
               varName = "Average sugar crop yields",
-              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops")
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops",
+              histweight = "Ostberg2023_FAO_LUH2v2")
     p5 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|Other crops|+|Fruits Vegetables Nuts",
               varName = "Average yield of fruits, vegetables, nuts",
-              weight = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts")
+              weight = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
+              histweight = "Ostberg2023_FAO_LUH2v2")
     p6 <-
       plotVal(
         var = "Productivity|Landuse Intensity Indicator Tau",
@@ -1015,16 +1025,21 @@ validationFSDP <-  function(repReg,
         histName = "Dietrich 2012"
       )
     p2 <- plotVal(var = "Costs|TC",
-                  weight = "Population")
+                  weight = "Population",
+                  histweight = "WDI-UN_PopDiv-MI")
     p3 <- plotVal(var = "Agricultural Research Intensity",
-                  weight = "Population")
+                  weight = "Population",
+                  histweight = "WDI-UN_PopDiv-MI")
     p4 <- plotVal(var = "SDG|SDG02|Investment in AgR&D",
-                  weight = "Population")
+                  weight = "Population",
+                  histweight = "WDI-UN_PopDiv-MI")
     p5 <- plotVal(var = "Prices|Index2020|Agriculture|Food products",
-                  weight = "Population")
+                  weight = "Population",
+                  histweight = "WDI-UN_PopDiv-MI")
     p6 <-
       plotVal(var = "Prices|Index2020|Agriculture|Food products|Plant-based",
-              weight = "Population")
+              weight = "Population",
+              histweight = "WDI-UN_PopDiv-MI")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
