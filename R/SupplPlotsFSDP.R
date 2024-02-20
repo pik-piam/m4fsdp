@@ -453,7 +453,7 @@ landVar <- c("Resources|Land Cover|+|Cropland",
              "Resources|Land Cover|Forest|Managed Forest|+|Plantations",
              "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC",
              "Resources|Land Cover|Forest|Managed Forest|+|Afforestation",
-             "Resources|Land Cover|Cropland|+|Bioenergy crops",
+             "Resources|Land Cover|Cropland|Croparea|+|Bioenergy crops",
             "Resources|Land Cover|+|Other Land",
              "Resources|Land Cover|+|Urban Area")
 names(landVar) <- c("Cropland", "Pasture", "Primary Forest", "Secondary Forest", "Timber",
@@ -539,11 +539,11 @@ if (!is.null(outFolder)) {
 # sugar beet + sunflower/raps + potato as OTHER,
 # Bioenergy + sugarcane + oilpalm = plantations (Bioenergy, sugar cane, Oilpalm)
 
-cropVar <- c(scens[grep("Cropland\\|Crops\\|Cereals\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|Crops\\|Oil crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|Crops\\|Sugar crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|Crops\\|Other crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+cropVar <- c(scens[grep("Cropland\\|Croparea\\|Crops\\|Cereals\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|Crops\\|Oil crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|Crops\\|Sugar crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|Crops\\|Other crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              "Resources|Land Cover|Cropland|+|Fallow Cropland")
 
 cereals <- cropVar[grep("Cereals", cropVar)]
