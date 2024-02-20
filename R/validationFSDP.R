@@ -617,12 +617,10 @@ validationFSDP <-  function(repReg,
     p3 <-
       plotVal(var = "Production|Crops|+|Oil crops", varName = "Oil crop production")
     p4 <-
-      plotVal(var = "Production|Crops|+|Sugar crops", varName = "Sugar crop production")
-    p5 <-
       plotVal(var = "Production|Crops|Other crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
 
     combined <-
-      p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
+      p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
                              ncol = 2) &
@@ -762,16 +760,12 @@ validationFSDP <-  function(repReg,
               varName = "Croparea oil crops",
               unitName = "Mha physical area")
     p5 <-
-      plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops",
-              varName = "Croparea sugar crops",
-              unitName = "Mha physical area")
-    p6 <-
       plotVal(var = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
               varName = "Croparea fruits vegetables nuts",
               unitName = "Mha physical area")
 
     combined <-
-      p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
+      p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
                              ncol = 2) &
@@ -883,16 +877,11 @@ validationFSDP <-  function(repReg,
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
               histweight = "Ostberg2023")
     p4 <-
-      plotVal(var = "Productivity|Yield by physical area|Crops|+|Sugar crops",
-              varName = "Average sugar crop yields",
-              weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Sugar crops",
-              histweight = "Ostberg2023")
-    p5 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|Other crops|+|Fruits Vegetables Nuts",
               varName = "Average yield of fruits, vegetables, nuts",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
               histweight = "Ostberg2023")
-    p6 <-
+    p5 <-
       plotVal(
         var = "Productivity|Landuse Intensity Indicator Tau",
         varName = "Landuse Intensity Indicator Tau",
@@ -901,6 +890,12 @@ validationFSDP <-  function(repReg,
         hist = "dietrich_et_al_2012_updated",
         histName = "Dietrich 2012"
       )
+
+    p6 <-
+      plotVal(var = "Productivity|Yield by physical area|+|Pasture",
+              varName = "Average sugar crop yields",
+              weight = "Resources|Land Cover|Pastures and Rangelands",
+              histweight = "MAgPIEown")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
