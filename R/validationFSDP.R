@@ -652,8 +652,11 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Production|+|Pasture", varName = "Grazed and mowed grass")
     p4 <-
       plotVal(var = "Timber|Volumetric|Production|Roundwood", varName = "Roundwood production")
+    p5 <-
+      plotVal(var = "Production|+|Bioenergy Crops", varName = "Short-rotation bioenergy trees and grasses",
+              hist = "")
 
-    combined <- p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
+    combined <- p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
                              ncol = 2) &
@@ -887,8 +890,8 @@ validationFSDP <-  function(repReg,
         varName = "Landuse Intensity Indicator Tau",
         weight = "Resources|Land Cover|+|Cropland",
         histweight = "FAO_crop_past",
-        hist = "dietrich_et_al_2012_updated",
-        histName = "Dietrich 2012"
+        hist = "dietrich_et_al_2012",
+        histName = "Dietrich et al 2012"
       )
 
     p6 <-
@@ -1016,8 +1019,8 @@ validationFSDP <-  function(repReg,
         varName = "Landuse Intensity Indicator Tau",
         weight = "Resources|Land Cover|+|Cropland",
         histweight = "FAO_crop_past",
-        hist = "dietrich_et_al_2012_updated",
-        histName = "Dietrich 2012"
+        hist = "dietrich_et_al_2012",
+        histName = "Dietrich et al 2012"
       )
     p2 <- plotVal(var = "Costs|TC",
                   weight = "Population",
