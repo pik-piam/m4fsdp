@@ -619,7 +619,7 @@ validationFSDP <-  function(repReg,
     p4 <-
       plotVal(var = "Production|Crops|Other crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
 
-    combined <-
+    combined <-y
       p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
@@ -653,8 +653,7 @@ validationFSDP <-  function(repReg,
     p4 <-
       plotVal(var = "Timber|Volumetric|Production|Roundwood", varName = "Roundwood production")
     p5 <-
-      plotVal(var = "Production|+|Bioenergy Crops", varName = "Short-rotation bioenergy trees and grasses",
-              hist = "")
+      plotVal(var = "Production|+|Bioenergy crops", varName = "Short-rotation bioenergy trees and grasses")
 
     combined <- p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
     combined <-
@@ -897,7 +896,7 @@ validationFSDP <-  function(repReg,
     p6 <-
       plotVal(var = "Productivity|Yield by physical area|+|Pasture",
               varName = "Average sugar crop yields",
-              weight = "Resources|Land Cover|Pastures and Rangelands",
+              weight = "Resources|Land Cover|+|Pastures and Rangelands",
               histweight = "MAgPIEown")
 
     combined <-
