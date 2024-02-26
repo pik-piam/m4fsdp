@@ -541,14 +541,14 @@ validationFSDP <-  function(repReg,
       filename = file.path(folder, paste(rev, "valFeedDemand.png", sep = "_")),
       combined,
       width = 10,
-      height = 10,
+      height = 6.7,
       scale = 1.3
     )
     ggsave(
       filename = file.path(folder, paste(rev, "valFeedDemand.pdf", sep = "_")),
       combined,
       width = 10,
-      height = 10,
+      height = 6.7,
       scale = 1.3
     )
 
@@ -619,7 +619,7 @@ validationFSDP <-  function(repReg,
     p4 <-
       plotVal(var = "Production|Crops|Other crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
 
-    combined <-y
+    combined <-
       p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
     combined <-
       combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
@@ -632,14 +632,14 @@ validationFSDP <-  function(repReg,
       filename = file.path(folder, paste(rev, "valCropProduction.png", sep = "_")),
       combined,
       width = 10,
-      height = 10,
+      height = 6.7,
       scale = 1.3
     )
     ggsave(
       filename = file.path(folder, paste(rev, "valCropProduction.pdf", sep = "_")),
       combined,
       width = 10,
-      height = 10,
+      height = 6.7,
       scale = 1.3
     )
 
@@ -849,14 +849,14 @@ validationFSDP <-  function(repReg,
       filename = file.path(folder, paste(rev, "valNitrogenOutputs.png", sep = "_")),
       combined,
       width = 10,
-      height = 10,
+      height = 6.7,
       scale = 1.3
     )
     ggsave(
       filename = file.path(folder, paste(rev, "valNitrogenOutputs.pdf", sep = "_")),
       combined,
       width = 10,
-      height = 10,
+      height = 6.7,
       scale = 1.3
     )
 
@@ -1000,14 +1000,14 @@ validationFSDP <-  function(repReg,
       filename = file.path(folder, paste(rev, "valWater.png", sep = "_")),
       combined,
       width = 10,
-      height = 6,
+      height = 3.34,
       scale = 1.3
     )
     ggsave(
       filename = file.path(folder, paste(rev, "valWater.pdf", sep = "_")),
       combined,
       width = 10,
-      height = 6,
+      height = 3.34,
       scale = 1.3
     )
 
