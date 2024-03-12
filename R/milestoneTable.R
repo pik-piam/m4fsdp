@@ -69,22 +69,22 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   dairy <- consumption[, , c("Dairy"), pmatch = TRUE]
   poultryEggs <- dimSums(consumption[, , c("Poultry",  "Eggs"), pmatch = TRUE], dim = 3)
 
-  res <- .addRow(res, "Total per-capita food supply", "kcal/capita/day", totalConsumption, lmh = TRUE)
+  res <- .addRow(res, "Total per-capita food supply", "kcal/capita/day", totalConsumption, lmh = TRUE, digits = 0)
 
-  res <- .addRow(res, "Per-capita supply of cereals", "kcal/capita/day", cereals, lmh = TRUE)
-  res <- .addRow(res, "Per-capita supply of legumes", "kcal/capita/day", legumes, lmh = TRUE)
-  res <- .addRow(res, "Per-capita supply of fruits, vegetables and nuts", "kcal/capita/day", fruitVegNuts, lmh = TRUE)
-  # res <- .addRow(res, "Per-capita supply of sugar crops", "kcal/capita/day", sugarCrops, lmh = TRUE)
+  res <- .addRow(res, "Per-capita supply of cereals", "kcal/capita/day", cereals, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of legumes", "kcal/capita/day", legumes, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of fruits, vegetables and nuts", "kcal/capita/day", fruitVegNuts, lmh = TRUE, digits = 0)
+  # res <- .addRow(res, "Per-capita supply of sugar crops", "kcal/capita/day", sugarCrops, lmh = TRUE, digits = 0)
 
-  res <- .addRow(res, "Per-capita supply of alcoholic beverages", "kcal/capita/day", alcohol, lmh = TRUE)
-  res <- .addRow(res, "Per-capita supply of sugar", "kcal/capita/day", sugar, lmh = TRUE)
-  # res <- .addRow(res, "Per-capita supply of other secondary products", "kcal/capita/day", otherSecondary, lmh = TRUE)
+  res <- .addRow(res, "Per-capita supply of alcoholic beverages", "kcal/capita/day", alcohol, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of sugar", "kcal/capita/day", sugar, lmh = TRUE, digits = 0)
+  # res <- .addRow(res, "Per-capita supply of other secondary products", "kcal/capita/day", otherSecondary, lmh = TRUE, digits = 0)
 
-  # res <- .addRow(res, "Per-capita supply of fish", "kcal/capita/day", fish, lmh = TRUE)
-  res <- .addRow(res, "Per-capita supply of monogastric meat", "kcal/capita/day", monogastric, lmh = TRUE)
-  res <- .addRow(res, "Per-capita supply of ruminant meat", "kcal/capita/day", ruminant, lmh = TRUE)
-  res <- .addRow(res, "Per-capita supply of dairy products", "kcal/capita/day", dairy, lmh = TRUE)
-  res <- .addRow(res, "Per-capita supply of poultry and eggs", "kcal/capita/day", poultryEggs, lmh = TRUE)
+  # res <- .addRow(res, "Per-capita supply of fish", "kcal/capita/day", fish, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of monogastric meat", "kcal/capita/day", monogastric, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of ruminant meat", "kcal/capita/day", ruminant, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of dairy products", "kcal/capita/day", dairy, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of poultry and eggs", "kcal/capita/day", poultryEggs, lmh = TRUE, digits = 0)
 
 
   ## Intake of specific products + total intake (per capita)
@@ -108,22 +108,22 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   dairy <- intake[, , c("Dairy"), pmatch = TRUE]
   poultryEggs <- dimSums(intake[, , c("Poultry",  "Eggs"), pmatch = TRUE], dim = 3)
 
-  res <- .addRow(res, "Total per-capita food intake", "kcal/capita/day", totalIntake, lmh = TRUE)
+  res <- .addRow(res, "Total per-capita food intake", "kcal/capita/day", totalIntake, lmh = TRUE, digits = 0)
 
-  res <- .addRow(res, "Per-capita intake of cereals", "kcal/capita/day", cereals, lmh = TRUE)
-  res <- .addRow(res, "Per-capita intake of legumes", "kcal/capita/day", legumes, lmh = TRUE)
-  res <- .addRow(res, "Per-capita intake of fruits, vegetables and nuts", "kcal/capita/day", fruitVegNuts, lmh = TRUE)
+  res <- .addRow(res, "Per-capita intake of cereals", "kcal/capita/day", cereals, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of legumes", "kcal/capita/day", legumes, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of fruits, vegetables and nuts", "kcal/capita/day", fruitVegNuts, lmh = TRUE, digits = 0)
   # res <- .addRow(res, "Per-capita intake of sugar crops", "kcal/capita/day", sugarCrops, lmh = TRUE)
 
-  res <- .addRow(res, "Per-capita intake of alcoholic beverages", "kcal/capita/day", alcohol, lmh = TRUE)
-  res <- .addRow(res, "Per-capita intake of sugar", "kcal/capita/day", sugar, lmh = TRUE)
-  # res <- .addRow(res, "Per-capita intake of other secondary products", "kcal/capita/day", otherSecondary, lmh = TRUE)
+  res <- .addRow(res, "Per-capita intake of alcoholic beverages", "kcal/capita/day", alcohol, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of sugar", "kcal/capita/day", sugar, lmh = TRUE, digits = 0)
+  # res <- .addRow(res, "Per-capita intake of other secondary products", "kcal/capita/day", otherSecondary, lmh = TRUE, digits = 0)
 
-  # res <- .addRow(res, "Per-capita intake of fish", "kcal/capita/day", fish, lmh = TRUE)
-  res <- .addRow(res, "Per-capita intake of monogastric meat", "kcal/capita/day", monogastric, lmh = TRUE)
-  res <- .addRow(res, "Per-capita intake of ruminant meat", "kcal/capita/day", ruminant, lmh = TRUE)
-  res <- .addRow(res, "Per-capita intake of dairy products", "kcal/capita/day", dairy, lmh = TRUE)
-  res <- .addRow(res, "Per-capita intake of poultry and eggs", "kcal/capita/day", poultryEggs, lmh = TRUE)
+  # res <- .addRow(res, "Per-capita intake of fish", "kcal/capita/day", fish, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of monogastric meat", "kcal/capita/day", monogastric, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of ruminant meat", "kcal/capita/day", ruminant, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of dairy products", "kcal/capita/day", dairy, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of poultry and eggs", "kcal/capita/day", poultryEggs, lmh = TRUE, digits = 0)
 
 
   ## Production of livestock & nuts, fruits and vegetables
@@ -135,8 +135,8 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   # prodLivstRel <- productionLivst / collapseDim(productionLivst[, 2020, ])
   # prodOthersRel <- productionOthers / collapseDim(productionOthers[, 2020, ])
 
-  res <- .addRow(res, "Production of livestock products, global", "Mt DM", productionLivst)
-  res <- .addRow(res, "Production of fruits, vegetables and nuts, global", "Mt DM", productionOthers)
+  res <- .addRow(res, "Production of livestock products, global", "Mt DM", productionLivst, digits = 0)
+  res <- .addRow(res, "Production of fruits, vegetables and nuts, global", "Mt DM", productionOthers, digits = 0)
 
 
   ## Food waste (per capita)
@@ -173,11 +173,11 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   yPasture <- toolAggregate(yPasture, rel = mapping, weight = aPasture, from = "reg", to = "aggregate")
   yBioenergy <- toolAggregate(yBioenergy, rel = mapping, weight = aBioenergy, from = "reg", to = "aggregate")
 
-  res <- .addRow(res, "Cereal yields with fixed area weights from 2020, global", "t DM/ha", yCereal, lmh = TRUE)
-  res <- .addRow(res, "Oil crop yields with fixed area weights from 2020, global", "t DM/ha", yOilcrops, lmh = TRUE)
-  res <- .addRow(res, "Fruits, vergetables and nuts yields with fixed area weights from 2020, global", "t DM/ha", yFruitsVegNuts, lmh = TRUE)
-  res <- .addRow(res, "Pasture yields with fixed area weights from 2020, global", "t DM/ha", yPasture, lmh = TRUE)
-  res <- .addRow(res, "Short rotation bioenergy crop yields with fixed area weights from 2020, global", "t DM/ha", yBioenergy, lmh = TRUE)
+  res <- .addRow(res, "Cereal yields with fixed area weights from 2020, global", "t DM/ha", yCereal, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Oil crop yields with fixed area weights from 2020, global", "t DM/ha", yOilcrops, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Fruits, vergetables and nuts yields with fixed area weights from 2020, global", "t DM/ha", yFruitsVegNuts, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Pasture yields with fixed area weights from 2020, global", "t DM/ha", yPasture, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Short rotation bioenergy crop yields with fixed area weights from 2020, global", "t DM/ha", yBioenergy, lmh = TRUE, digits = 1)
 
 
   ## Feed conversion
@@ -190,9 +190,9 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   monogastric <- feed[, , "Productivity|Feed conversion|Monogastric meat (GE per GE)"]
   poultry <- feed[, , "Productivity|Feed conversion|Poultry meat and eggs (GE per GE)"]
 
-  res <- .addRow(res, "Feed conversion for ruminant meat and dairy, global", "GE per GE", rumDairy, lmh = TRUE)
-  res <- .addRow(res, "Feed conversion for monogastric meat, global", "GE per GE", monogastric, lmh = TRUE)
-  res <- .addRow(res, "Feed conversion for poultry meat and eggs, global", "GE per GE", poultry, lmh = TRUE)
+  res <- .addRow(res, "Feed conversion for ruminant meat and dairy, global", "GE per GE", rumDairy, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Feed conversion for monogastric meat, global", "GE per GE", monogastric, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Feed conversion for poultry meat and eggs, global", "GE per GE", poultry, lmh = TRUE, digits = 1)
 
 
   ## Land use intensity Tau
@@ -212,34 +212,34 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   aLegumes <- dimSums(areas[, , c("Pulses (", "Groundnuts (", "Soybean ("), pmatch = TRUE], dim = 3)
   aTotal <- areas[, , "Croparea (", pmatch = TRUE]
 
-  res <- .addRow(res, "Area used for bioenergy crops, global", "Mha", aBioenergy)
-  res <- .addRow(res, "Area used for fruits, vegetables and nuts, global", "Mha", aFruitsVegNuts)
-  res <- .addRow(res, "Area used for legumes, global", "Mha", aLegumes)
-  res <- .addRow(res, "Total cropland area, global", "Mha", aTotal)
+  res <- .addRow(res, "Area used for bioenergy crops, global", "Mha", aBioenergy, digits = 0)
+  res <- .addRow(res, "Area used for fruits, vegetables and nuts, global", "Mha", aFruitsVegNuts, digits = 0)
+  res <- .addRow(res, "Area used for legumes, global", "Mha", aLegumes, digits = 0)
+  res <- .addRow(res, "Total cropland area, global", "Mha", aTotal, digits = 0)
 
   ## Irrigated area
   water <- reportAAI(gdx)["GLO", , ]
 
-  res <- .addRow(res, "Irrigated cropland area, global", "Mha", water)
+  res <- .addRow(res, "Irrigated cropland area, global", "Mha", water, digits = 0)
 
 
   ## Afforestation compared to 2020, global
   aff <- dimSums(land(gdx, level = "glo", types = "forestry", subcategories = c("forestry"), sum = FALSE)[, , c("aff", "ndc")], dim = 3)
   aff <- aff - collapseDim(aff[, 2020, ])
 
-  res <- .addRow(res, "Afforestation compared to 2020, global", "Mha", aff)
+  res <- .addRow(res, "Afforestation compared to 2020, global", "Mha", aff, digits = 0)
 
 
   ## Total managed forest area
   managed <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|+|Managed Forest (million ha)"]
 
-  res <- .addRow(res, "Managed forest area, global", "Mha", managed)
+  res <- .addRow(res, "Managed forest area, global", "Mha", managed, digits = 0)
 
 
   ## Natural forest area
   forest <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|+|Natural Forest (million ha)"]
 
-  res <- .addRow(res, "Natural forest area (primary + secondary), global", "Mha", forest)
+  res <- .addRow(res, "Natural forest area (primary + secondary), global", "Mha", forest, digits = 0)
 
 
   ## Total forest area & Total other semi-natural vegetation
@@ -247,33 +247,33 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   totalForest <- dimSums(land[, , c("forestry", "primforest", "secdforest")], dim = 3)
   other <- land[, , "other"]
 
-  res <- .addRow(res, "Total forest area, global", "Mha", totalForest)
-  res <- .addRow(res, "Total other semi-natural vegetation, global", "Mha", other)
+  res <- .addRow(res, "Total forest area, global", "Mha", totalForest, digits = 0)
+  res <- .addRow(res, "Total other semi-natural vegetation, global", "Mha", other, digits = 0)
 
 
   ## Timber plantation, global
   plantations <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|Managed Forest|+|Plantations (million ha)"]
 
-  res <- .addRow(res, "Timber plantations, global", "Mha", plantations)
+  res <- .addRow(res, "Timber plantations, global", "Mha", plantations, digits = 0)
 
 
   ## Timber demand for construction
   timber <- reportTimber(gdx)["GLO", , "Timber|Volumetric|Demand|Roundwood (Mm3/yr)"]
 
-  res <- .addRow(res, "Demand for roundwood, global", "Mm3/yr", timber)
+  res <- .addRow(res, "Demand for roundwood, global", "Mm3/yr", timber, digits = 0)
 
 
   ## Rewetting of peatlands
   peatland <- reportPeatland(gdx)["GLO", , "Rewetted", pmatch = TRUE]
 
-  res <- .addRow(res, "Rewetted formerly drained peatlands, global", "Mha", peatland)
+  res <- .addRow(res, "Rewetted formerly drained peatlands, global", "Mha", peatland, digits = 0)
 
 
   ## Protected Areas
   protected <- dimSums(reportProtectedArea(gdx), dim = 3)["GLO", , ]
   protected <- protected - collapseDim(protected[, 2020, ])
 
-  res <- .addRow(res, "Protected areas compared to 2020, global", "Mha", protected)
+  res <- .addRow(res, "Protected areas compared to 2020, global", "Mha", protected, digits = 0)
 
 
   ## Inorganic fertilizer
@@ -281,7 +281,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   nBudgetPast <- reportNitrogenBudgetPasture(gdx)["GLO", , "Fertilizer", pmatch = TRUE]
   fertilizer <- nBudgetCrop + nBudgetPast
 
-  res <- .addRow(res, "Inorganic fertilizer on cropland and pastures, global", "Mt N/yr", fertilizer)
+  res <- .addRow(res, "Inorganic fertilizer on cropland and pastures, global", "Mt N/yr", fertilizer, digits = 0)
 
 
   ## SNUPE
@@ -289,7 +289,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   inputs <- readGDX(gdx, "ov50_nr_inputs", react = "silent", format = "first_found", select = list(type = "level"))
   snupe <- dimSums(snupe * inputs / dimSums(inputs, dim = 1), dim = 1) * 100 # as percentage
 
-  res <- .addRow(res, "Soil Nitrogen Uptake Efficiency (SNUpE), global", "Percent", snupe)
+  res <- .addRow(res, "Soil Nitrogen Uptake Efficiency (SNUpE), global", "Percent", snupe, digits = 0)
 
 
   ## Manure recycling quota, excluding field losses
@@ -298,22 +298,22 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   excretedManure <- reportManure(gdx)["GLO", , "Resources|Nitrogen|Manure|++|Manure In Confinements (Mt Nr/yr)"]
   manureQuota <- recycledManure / excretedManure * 100 # as percentage
 
-  res <- .addRow(res, "Manure recycling quota, excluding field losses, global", "Percent", manureQuota)
+  res <- .addRow(res, "Manure recycling quota, excluding field losses, global", "Percent", manureQuota, digits = 0)
 
 
   ## Nitrogen surplus
   nSurp <- reportNitrogenPollution(gdx, dir = scenarioFolder)["GLO", , ]
 
-  res <- .addRow(res, "Nitrogen surplus from cropland, global", "Mt N/yr", nSurp[, , "Cropland", pmatch = TRUE])
-  res <- .addRow(res, "Nitrogen surplus from pasture, global", "Mt N/yr", nSurp[, , "Pasture", pmatch = TRUE])
-  res <- .addRow(res, "Nitrogen surplus from animal waste management, global", "Mt N/yr", nSurp[, , "Animal Waste", pmatch = TRUE])
-  res <- .addRow(res, "Nitrogen surplus from semi-natural vegetation, global", "Mt N/yr", nSurp[, , "Non-agricultural land", pmatch = TRUE])
+  res <- .addRow(res, "Nitrogen surplus from cropland, global", "Mt N/yr", nSurp[, , "Cropland", pmatch = TRUE], digits = 0)
+  res <- .addRow(res, "Nitrogen surplus from pasture, global", "Mt N/yr", nSurp[, , "Pasture", pmatch = TRUE], digits = 0)
+  res <- .addRow(res, "Nitrogen surplus from animal waste management, global", "Mt N/yr", nSurp[, , "Animal Waste", pmatch = TRUE], digits = 0)
+  res <- .addRow(res, "Nitrogen surplus from semi-natural vegetation, global", "Mt N/yr", nSurp[, , "Non-agricultural land", pmatch = TRUE], digits = 0)
 
 
   ## Soil organic carbon
   soc <- reportSOM(gdx)["GLO", , "Resources|Soil Carbon|Actual|Stock|SOC in top 30 cm (Mt C)"]
 
-  res <- .addRow(res, "Soil organic carbon in top 30 cm, global", "Mt C", soc)
+  res <- .addRow(res, "Soil organic carbon in top 30 cm, global", "Mt C", soc, digits = 0)
 
 
   ## Anthropogenic LUC emissions & AFOLU emissions
@@ -321,8 +321,8 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   luc <- emissions[, , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"] / 1000 # to giga tonnes
   afolu <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
 
-  res <- .addRow(res, "Anthropogenic LUC emissions, global", "Gt CO2/yr", luc)
-  res <- .addRow(res, "AFOLU emissions, global", "Gt CO2eq/yr", afolu)
+  res <- .addRow(res, "Anthropogenic LUC emissions, global", "Gt CO2/yr", luc, digits = 1)
+  res <- .addRow(res, "AFOLU emissions, global", "Gt CO2eq/yr", afolu, digits = 1)
 
 
   ## Labor productivity
@@ -334,7 +334,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   totalRevenues <- toolAggregate(dimSums(prodQuantity * foodPriceIni, dim = 3), rel = mapping, from = "reg", to = "aggregate")
   laborProd <- totalRevenues / employment
 
-  res <- .addRow(res, "Labor productivity", "USD_05MER/worker", laborProd, lmh = TRUE)
+  res <- .addRow(res, "Labor productivity", "USD_05MER/worker", laborProd, lmh = TRUE, digits = 0)
 
 
   ## Alternative Livelihoods for people formerly working in agriculture (aka reduction in ag empl)
@@ -353,7 +353,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
   emplShare <- (empl / popWa) * 100
 
-  res <- .addRow(res, "Share of working age population employed in agriculture, global", "Percent", emplShare, lmh = TRUE)
+  res <- .addRow(res, "Share of working age population employed in agriculture, global", "Percent", emplShare, lmh = TRUE, digits = 0)
 
 
   ## Gini index
@@ -373,7 +373,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
   yll$YLLpc <- yll$value / yll$Pop * 365
 
-  res <- .addRow(res, "Days per year lost due dietary and metabolic risks per capita, global", "years", yll$YLLpc)
+  res <- .addRow(res, "Lifetime per capita lost due to dietary and metabolic risks, global", "Days per year", yll$YLLpc)
 
 
   ## Cropland landscapes with low natural habitats (<20% (semi)-natural vegetation in a 0.5*0.5° cell), global
