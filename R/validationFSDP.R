@@ -555,32 +555,32 @@ validationFSDP <-  function(repReg,
 
     # Feed efficiency
     p1 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|Ruminant meat and dairy",
+      plotVal(var = "Productivity|Feed conversion|Ruminant meat and dairy",
               varName = "Ruminant feed conversion efficiency",
               weight = "Production|+|Livestock products",
               histweight = "FAO")
     p2 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|Monogastric meat",
+      plotVal(var = "Productivity|Feed conversion|Monogastric meat",
               varName = "Monogastric feed conversion efficiency",
               weight = "Production|+|Livestock products",
               histweight = "FAO")
     p3 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|Poultry meat and eggs",
+      plotVal(var = "Productivity|Feed conversion|Poultry meat and eggs",
               varName = "Poultry feed conversion efficiency",
               weight = "Production|+|Livestock products",
               histweight = "FAO")
     p4 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|+|Cereal Intensity",
+      plotVal(var = "Productivity|Feed conversion|+|Cereal Intensity",
               varName = "Cereal feed intensity per animal product",
               weight = "Production|+|Livestock products",
               histweight = "FAO")
     p5 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|+|Oilcrop intensity",
+      plotVal(var = "Productivity|Feed conversion|+|Oilcrop intensity",
               varName = "Oilcrop feed intensity per animal product",
               weight = "Production|+|Livestock products",
               histweight = "FAO")
     p6 <-
-      plotVal(var = "Productivity|Feed conversion efficiency|+|Pasture intensity",
+      plotVal(var = "Productivity|Feed conversion|+|Pasture intensity",
               varName = "Pasture feed intensity per animal product",
               weight = "Production|+|Livestock products",
               histweight = "FAO")
@@ -895,7 +895,7 @@ validationFSDP <-  function(repReg,
 
     p6 <-
       plotVal(var = "Productivity|Yield by physical area|Pasture",
-              varName = "Average sugar crop yields",
+              varName = "Average pasture biomass grazed or mowed",
               weight = "Resources|Land Cover|+|Pastures and Rangelands",
               histweight = "MAgPIEown")
 
