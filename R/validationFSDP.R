@@ -562,7 +562,7 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Demand|Feed|+|Crop residues",
               varName = "Feed demand for crop residues",
               hist = "FAO",
-              histName = "based on Bodirsky et al 2014")
+              histName = "based on Bodirsky et al 2014 and FAOSTAT 2016")
 
     combined <- p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
     combined <-
@@ -594,42 +594,42 @@ validationFSDP <-  function(repReg,
               varName = "Ruminant feed conversion efficiency",
               weight = "Production|+|Livestock products",
               histweight = "FAO",
-              hist = "FAO",
-              histName = "based on FAOSTAT CBS 2016")
+              hist = "Weindl_et_al2017",
+              histName = "based on Weindl et al 2017 and FAOSTAT CBS 2016")
     p2 <-
       plotVal(var = "Productivity|Feed conversion|Monogastric meat",
               varName = "Monogastric feed conversion efficiency",
               weight = "Production|+|Livestock products",
               histweight = "FAO",
-              hist = "FAO",
-              histName = "based on FAOSTAT CBS 2016")
+              hist = "Weindl_et_al2017",
+              histName = "based on Weindl et al 2017 and FAOSTAT CBS 2016")
     p3 <-
       plotVal(var = "Productivity|Feed conversion|Poultry meat and eggs",
               varName = "Poultry feed conversion efficiency",
               weight = "Production|+|Livestock products",
               histweight = "FAO",
-              hist = "FAO",
-              histName = "based on FAOSTAT CBS 2016")
+              hist = "Weindl_et_al2017",
+              histName = "based on Weindl et al 2017 and FAOSTAT CBS 2016")
     p4 <-
       plotVal(var = "Productivity|Feed conversion|+|Cereal Intensity",
               varName = "Cereal feed intensity per animal product",
               weight = "Production|+|Livestock products",
               histweight = "FAO",
-              hist = "FAO",
+              hist = "Weindl_et_al2017",
               histName = "based on FAOSTAT CBS 2016")
     p5 <-
       plotVal(var = "Productivity|Feed conversion|+|Oilcrop intensity",
               varName = "Oilcrop feed intensity per animal product",
               weight = "Production|+|Livestock products",
               histweight = "FAO",
-              hist = "FAO",
+              hist = "Weindl_et_al2017",
               histName = "based on FAOSTAT CBS 2016")
     p6 <-
       plotVal(var = "Productivity|Feed conversion|+|Pasture intensity",
               varName = "Pasture feed intensity per animal product",
               weight = "Production|+|Livestock products",
               histweight = "FAO",
-              hist = "FAO",
+              hist = "Weindl_et_al2017",
               histName = "based on Weindl et al 2017")
 
     combined <-
@@ -869,27 +869,27 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs",
               varName = "Total nitrogen inputs",
               hist = c("Bodirsky"),
-              histName = c("based on Bodirsky et al 2014"))
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016"))
     p2 <-
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer",
               varName = "Inorganic fertilizer",
-              hist = c("Bodirsky", "Lassaletta2014"),
-              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
+              hist = c("Bodirsky", "Lassaletta2014", "FAO"),
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016", "Lassaletta et al 2014", "FAOSTAT GCE 2016"))
     p3 <-
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops",
               varName = "Symbiotic fixation",
               hist = c("Bodirsky", "Lassaletta2014"),
-              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016", "Lassaletta et al 2014"))
     p4 <-
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Manure Recycled from Confinements",
               varName = "Manure from confinement",
-              hist = c("Bodirsky", "Lassaletta2014"),
-              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
+              hist = c("Bodirsky", "Lassaletta2014", "FAO"),
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016", "Lassaletta et al 2014", "FAOSTAT GCE 2016"))
     p5 <-
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Aboveground Crop Residues",
               varName = "Crop residues left on field",
               hist = c("Bodirsky", "FAO"),
-              histName = c("based on Bodirsky et al 2014", "FAOSTAT Emissions from Crops"))
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016", "FAOSTAT GCE 2016"))
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
@@ -921,17 +921,17 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Harvested Crops",
               varName = "N in harvested crops",
               hist = c("Bodirsky", "Lassaletta2014"),
-              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016", "Lassaletta et al 2014"))
     p2 <-
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Aboveground Crop Residues",
               varName = "N in aboveground residues",
               hist = c("Bodirsky"),
-              histName = c("based on Bodirsky et al 2014"))
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016"))
     p3 <-
       plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Nutrient Surplus",
               varName = "N in nutrient surplus",
               hist = c("Bodirsky"),
-              histName = c("based on Bodirsky et al 2014"))
+              histName = c("based on Bodirsky et al 2014 and FAOSTAT 2016"))
     #p4 <-
     #  plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Soil Organic Matter", varName = "N change in soil organic matter")
 
@@ -1028,7 +1028,7 @@ validationFSDP <-  function(repReg,
         var = "Emissions|CO2|Land|+|Land-use Change",
         varName = "CO2 emissions from land-use change",
         hist = c("FAO_EmisLUC", "EDGAR_LU", "Gasser et al 2020"),
-        histName = c("FAO", "EDGAR", "Gasser et al. 2020")
+        histName = c("FAOSTAT 2016", "EDGAR 2017", "Gasser et al. 2020")
       ) +
       scale_y_continuous(expand = c(0, 0), limits = c(NA, NA))
     p2 <-
@@ -1036,7 +1036,7 @@ validationFSDP <-  function(repReg,
         var = "Emissions|CH4|Land|+|Agriculture",
         varName = "CH4 emissions from agriculture",
         hist = c("FAO_EmisAg", "EDGAR_LU"),
-        histName = c("FAO", "EDGAR")
+        histName = c("FAOSTAT 2021", "EDGAR 2017")
       ) +
       scale_y_continuous(expand = c(0, 0), limits = c(NA, NA))
     p3 <-
@@ -1044,7 +1044,7 @@ validationFSDP <-  function(repReg,
         var = "Emissions|N2O|Land|+|Agriculture",
         varName = "N2O emissions from agriculture",
         hist = c("FAO_EmisAg", "EDGAR_LU"),
-        histName = c("FAO", "EDGAR")
+        histName = c("FAOSTAT 2021", "EDGAR 2017")
       ) +
       scale_y_continuous(expand = c(0, 0), limits = c(NA, NA))
 
