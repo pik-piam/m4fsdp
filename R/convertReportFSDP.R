@@ -84,6 +84,7 @@ convertReportFSDP <- function(rep, scengroup = NULL, subset = FALSE, varlist = N
     names(rep)[names(rep) == "region"] <- "iso_a3"
   }
   names(rep)[names(rep) == "country"] <- "iso_a3"
+  names(rep)[names(rep) == "iso"] <- "iso_a3"
 
   return(rep)
 }
