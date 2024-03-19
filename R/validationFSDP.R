@@ -440,7 +440,8 @@ validationFSDP <-  function(repReg,
         weight = "Population",
         histweight = "WDI-UN_PopDiv-MI",
         varName = "Per-capita calorie supply from crops",
-        hist = "FAOmassbalance"
+        hist = "FAOmassbalance",
+        histName = "based on FAOSTAT FBS 2016"
       )
     p4 <-
       plotVal(
@@ -448,10 +449,14 @@ validationFSDP <-  function(repReg,
         varName = "Per-capita calorie supply from livestock products",
         weight = "Population",
         histweight = "WDI-UN_PopDiv-MI",
-        hist = "FAOmassbalance"
+        hist = "FAOmassbalance",
+        histName = "based on FAOSTAT FBS 2016"
       )
     p5 <-
-      plotVal(var = "Demand|++|Livestock products", varName = "Total livestock product demand")
+      plotVal(var = "Demand|++|Livestock products",
+              varName = "Total livestock product demand",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     #p7 <- plotVal(var = "Income|Number of People Below 3p20 USDppp11/day", varName = "Number of people under 3.20 USDppp11/day poverty line")
     #p8 <- plotVal(var = "Income|Gini Coefficient", varName = "Gini Coefficient", weight = "Population")
     #poverty validation requires new input data validation
@@ -483,17 +488,35 @@ validationFSDP <-  function(repReg,
 
     # Crop demand
     p1 <-
-      plotVal(var = "Demand|++|Crops", varName = "Total demand for crops")
+      plotVal(var = "Demand|++|Crops",
+              varName = "Total demand for crops",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p2 <-
-      plotVal(var = "Demand|Food|+|Crops", varName = "Food demand for crops")
+      plotVal(var = "Demand|Food|+|Crops",
+              varName = "Food demand for crops",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p3 <-
-      plotVal(var = "Demand|Feed|+|Crops", varName = "Feed demand for crops")
+      plotVal(var = "Demand|Feed|+|Crops",
+              varName = "Feed demand for crops",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p4 <-
-      plotVal(var = "Demand|Seed|+|Crops", varName = "Seed demand for crops")
+      plotVal(var = "Demand|Seed|+|Crops",
+              varName = "Seed demand for crops",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p5 <-
-      plotVal(var = "Demand|Material|+|Crops", varName = "Material demand for crops")
+      plotVal(var = "Demand|Material|+|Crops",
+              varName = "Material demand for crops",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p6 <-
-      plotVal(var = "Demand|Processing|+|Crops", varName = "Processing demand for crops")
+      plotVal(var = "Demand|Processing|+|Crops",
+              varName = "Processing demand for crops",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
@@ -521,13 +544,25 @@ validationFSDP <-  function(repReg,
 
     # Feed demand
     p1 <-
-      plotVal(var = "Demand|Feed|+|Crops", varName = "Feed demand for crops")
+      plotVal(var = "Demand|Feed|+|Crops",
+              varName = "Feed demand for crops",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p2 <-
-      plotVal(var = "Demand|Feed|+|Pasture", varName = "Feed demand for pasture")
+      plotVal(var = "Demand|Feed|+|Pasture",
+              varName = "Feed demand for pasture",
+              hist = "FAO",
+              histName = "based on Weindl et al 2017")
     p3 <-
-      plotVal(var = "Demand|Feed|+|Secondary products", varName = "Feed demand for primary-processed products")
+      plotVal(var = "Demand|Feed|+|Secondary products",
+              varName = "Feed demand for primary-processed products",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p4 <-
-      plotVal(var = "Demand|Feed|+|Crop residues", varName = "Feed demand for crop residues")
+      plotVal(var = "Demand|Feed|+|Crop residues",
+              varName = "Feed demand for crop residues",
+              hist = "FAO",
+              histName = "based on Bodirsky et al 2014")
 
     combined <- p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
     combined <-
@@ -558,32 +593,44 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Productivity|Feed conversion|Ruminant meat and dairy",
               varName = "Ruminant feed conversion efficiency",
               weight = "Production|+|Livestock products",
-              histweight = "FAO")
+              histweight = "FAO",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p2 <-
       plotVal(var = "Productivity|Feed conversion|Monogastric meat",
               varName = "Monogastric feed conversion efficiency",
               weight = "Production|+|Livestock products",
-              histweight = "FAO")
+              histweight = "FAO",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p3 <-
       plotVal(var = "Productivity|Feed conversion|Poultry meat and eggs",
               varName = "Poultry feed conversion efficiency",
               weight = "Production|+|Livestock products",
-              histweight = "FAO")
+              histweight = "FAO",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p4 <-
       plotVal(var = "Productivity|Feed conversion|+|Cereal Intensity",
               varName = "Cereal feed intensity per animal product",
               weight = "Production|+|Livestock products",
-              histweight = "FAO")
+              histweight = "FAO",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p5 <-
       plotVal(var = "Productivity|Feed conversion|+|Oilcrop intensity",
               varName = "Oilcrop feed intensity per animal product",
               weight = "Production|+|Livestock products",
-              histweight = "FAO")
+              histweight = "FAO",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p6 <-
       plotVal(var = "Productivity|Feed conversion|+|Pasture intensity",
               varName = "Pasture feed intensity per animal product",
               weight = "Production|+|Livestock products",
-              histweight = "FAO")
+              histweight = "FAO",
+              hist = "FAO",
+              histName = "based on Weindl et al 2017")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
@@ -611,13 +658,25 @@ validationFSDP <-  function(repReg,
 
     # Crop production
     p1 <-
-      plotVal(var = "Production|+|Crops", varName = "Total crop production")
+      plotVal(var = "Production|+|Crops",
+              varName = "Total crop production",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p2 <-
-      plotVal(var = "Production|Crops|+|Cereals", varName = "Cereal production")
+      plotVal(var = "Production|Crops|+|Cereals",
+              varName = "Cereal production",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p3 <-
-      plotVal(var = "Production|Crops|+|Oil crops", varName = "Oil crop production")
+      plotVal(var = "Production|Crops|+|Oil crops",
+              varName = "Oil crop production",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p4 <-
-      plotVal(var = "Production|Crops|Other crops|+|Fruits Vegetables Nuts", varName = "Fruits Vegetables Nuts production")
+      plotVal(var = "Production|Crops|Other crops|+|Fruits Vegetables Nuts",
+              varName = "Fruits Vegetables Nuts production",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
 
     combined <-
       p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
@@ -645,15 +704,30 @@ validationFSDP <-  function(repReg,
 
     # Other production
     p1 <-
-      plotVal(var = "Production|+|Livestock products", varName = "Livestock production")
+      plotVal(var = "Production|+|Livestock products",
+              varName = "Livestock production",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p2 <-
-      plotVal(var = "Production|+|Secondary products", varName = "Primary-processed production")
+      plotVal(var = "Production|+|Secondary products",
+              varName = "Primary-processed production of oils, sugar, alcohol and byproducts",
+              hist = "FAO",
+              histName = "based on FAOSTAT CBS 2016")
     p3 <-
-      plotVal(var = "Production|+|Pasture", varName = "Grazed and mowed grass")
+      plotVal(var = "Production|+|Pasture",
+              varName = "Grazed and mowed grass",
+              hist = "FAO",
+              histName = "based on Weindl et al 2017")
     p4 <-
-      plotVal(var = "Timber|Volumetric|Production|Roundwood", varName = "Roundwood production")
+      plotVal(var = "Timber|Volumetric|Production|Roundwood",
+              varName = "Roundwood production",
+              hist = "FAO",
+              histName = "based on FAOSTAT FO 2021")
     p5 <-
-      plotVal(var = "Production|+|Bioenergy crops", varName = "Short-rotation bioenergy trees and grasses")
+      plotVal(var = "Production|+|Bioenergy crops",
+              varName = "Short-rotation bioenergy trees and grasses",
+              hist = "FAO",
+              histName = "")
 
     combined <- p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
     combined <-
@@ -792,15 +866,30 @@ validationFSDP <-  function(repReg,
 
     # Nitrogen inputs
     p1 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs", varName = "Total nitrogen inputs")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs",
+              varName = "Total nitrogen inputs",
+              hist = c("Bodirsky"),
+              histName = c("based on Bodirsky et al 2014"))
     p2 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer", varName = "Inorganic fertilizer")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Fertilizer",
+              varName = "Inorganic fertilizer",
+              hist = c("Bodirsky", "Lassaletta2014"),
+              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
     p3 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops", varName = "Symbiotic fixation")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops",
+              varName = "Symbiotic fixation",
+              hist = c("Bodirsky", "Lassaletta2014"),
+              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
     p4 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Manure Recycled from Confinements", varName = "Manure from confinement")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Manure Recycled from Confinements",
+              varName = "Manure from confinement",
+              hist = c("Bodirsky", "Lassaletta2014"),
+              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
     p5 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Aboveground Crop Residues", varName = "Crop residues left on field")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Inputs|+|Recycled Aboveground Crop Residues",
+              varName = "Crop residues left on field",
+              hist = c("Bodirsky", "FAO"),
+              histName = c("based on Bodirsky et al 2014", "FAOSTAT Emissions from Crops"))
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
@@ -829,11 +918,20 @@ validationFSDP <-  function(repReg,
 
     #Nitrogen outputs
     p1 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Harvested Crops", varName = "N in harvested crops")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Harvested Crops",
+              varName = "N in harvested crops",
+              hist = c("Bodirsky", "Lassaletta2014"),
+              histName = c("based on Bodirsky et al 2014", "Lassaletta et al 2014"))
     p2 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Aboveground Crop Residues", varName = "N in aboveground residues")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Withdrawals|+|Aboveground Crop Residues",
+              varName = "N in aboveground residues",
+              hist = c("Bodirsky"),
+              histName = c("based on Bodirsky et al 2014"))
     p3 <-
-      plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Nutrient Surplus", varName = "N in nutrient surplus")
+      plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Nutrient Surplus",
+              varName = "N in nutrient surplus",
+              hist = c("Bodirsky"),
+              histName = c("based on Bodirsky et al 2014"))
     #p4 <-
     #  plotVal(var = "Resources|Nitrogen|Cropland Budget|Balance|+|Soil Organic Matter", varName = "N change in soil organic matter")
 

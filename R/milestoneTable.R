@@ -313,7 +313,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   ## Soil organic carbon
   soc <- reportSOM(gdx)["GLO", , "Resources|Soil Carbon|Actual|Stock|SOC in top 30 cm (Mt C)"]
 
-  res <- .addRow(res, "Soil organic carbon in top 30 cm, global", "Mt C", soc, digits = 0)
+  res <- .addRow(res, "Soil organic carbon in top 30 cm, global", "Gt C", soc/1000, digits = 0)
 
 
   ## Anthropogenic LUC emissions & AFOLU emissions
