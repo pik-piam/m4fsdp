@@ -223,7 +223,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
                                              background_y = stripBackground,
                                              by_layer_x = TRUE, by_layer_y = FALSE))
   m <- m + theme(axis.text.y.left = ggtext::element_markdown(),strip.placement = "outside")
-  m <- m + theme(legend.title = element_markdown(hjust = 0, size=9, angle = 90, face = "bold"), legend.text = element_text(hjust = 0))#legend.background = element_rect(colour = "black", size = 0.5)
+  #m <- m + theme(legend.title = element_markdown(hjust = 0, size=9, angle = 90, face = "bold"), legend.text = element_text(hjust = 0))#legend.background = element_rect(colour = "black", size = 0.5)
+  m <- m + theme(legend.title = element_text(hjust = 0, size=9, angle = 90, face = "bold"))
   m <- m + legendPosition
   #if (tableType == 3) m <- m + theme(plot.margin = margin(0, 0, 0, 25, "pt"))
   #ggsave(file, m, scale = 1.2, height = 6, width = 7, bg = "white")
