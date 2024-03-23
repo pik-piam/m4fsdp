@@ -75,8 +75,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   # greying out non-nutrition scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
-                     "NoOverweight", "HalfOverweight", "NoUnderweight", "AllHealth", "DietRotations",
-                     "Population", "ExternalPressures", "AllInclusion", "Diet",
+                     "NoOverweight", "HalfOverweight", "NoUnderweight",
+                     "Population", "ExternalPressures", "Diet",
                      "EconDevelop", "DietHealth") &
       get("variableName") %in% c("Underweight",
                       "Obesity"),
@@ -85,7 +85,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   # greying out non-inclusion scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
-                     "ExternalPressures", "AllInclusion", "EconDevelop", "MinWage") &
+                     "ExternalPressures", "Livelihoods", "EconDevelop", "MinWage") &
       get("variableName") %in% c("Ag. Wages"),
     c("valuefill","value") := NA]
 
