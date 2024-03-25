@@ -33,14 +33,14 @@ SupplPlotsLandConsv <- function(outFolder, file = "suppPlotsLandConsv.png", gdxF
   }
 
   consvPrio <- c(
-    file.path(gdxFolder, "consv_prio_areas_0.5.mz"),
+    file.path(outFolder, gdxFolder, "consv_prio_areas_0.5.mz"),
     "input/consv_prio_areas_0.5.mz",
     "modules/22_land_conservation/input/consv_prio_areas_0.5.mz",
     "../input/consv_prio_areas_0.5.mz"
   )
   consvPrio <- suppressWarnings(consvPrio[min(which(file.exists(consvPrio)))])
 
-  land <- read.magpie(file.path(gdxFolder, "cell.land_0.5.mz"))
+  land <- read.magpie(file.path(outFolder, gdxFolder, "cell.land_0.5.mz"))
   consvPrio_shr <- consvPrio / setYears(dimSums(land[, "y1995", ], dim = 3), NULL)
   consvPrio_shr <- madrat::toolConditionalReplace(consvPrio_shr, conditions = ">1", replaceby = 1)
 
