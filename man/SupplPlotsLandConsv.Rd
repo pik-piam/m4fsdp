@@ -23,6 +23,9 @@ Map with cell share included in land conservation measure
 \description{
 Creates land conservation map
 }
+\details{
+Produces map of land targeted in the food system measure LandConservation
+}
 \author{
 Patrick v. Jeetze
 }
