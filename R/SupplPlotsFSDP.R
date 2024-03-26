@@ -1,5 +1,7 @@
 globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive",
-                  "hours", "Products", "RegionG_f", "selRegion", "perCap", "scenarioname", "crop", "cum"))
+                  "hours", "Products", "RegionG_f", "selRegion", "perCap", "scenset", "weight",
+                   "Resources|Nitrogen|Cropland Budget|Inputs",  "scenarioname", "crop", "cum",
+                  "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops"))
 
 #' @title SupplPlotsFSDP
 #' @description creates supplementary plots for FSDP MAgPIE runs
@@ -19,11 +21,12 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>% distinct
 #' @importFrom patchwork plot_layout
+#' @importFrom tidyr pivot_wider
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom stringr str_detect
 
 SupplPlotsFSDP <- function(repReg, scenarioType = "manuscript", outFolder, calorieSupply = TRUE, caseRegion = NULL) {
-repReg <- "/p/projects/magpie/users/beier/FSECv39/output/v39HRc1000_FSDP_reg.rds"
+
 if (scenarioType == "all") {
   rep <- convertReportFSDP(repReg, scengroup = c("FSECa", "FSECb", "FSECc", "FSECd", "FSECe"), subset = FALSE, varlist = NULL)
 } else if (scenarioType == "a") {
@@ -811,6 +814,8 @@ feedReg <- filter(feed_df, RegionG != "World")
 pshareVar <- "Productivity|Pasture share|Ruminant meat and dairy"
 feedDem <- "Demand|+|Feed" #needed as weight
 
+rshareVar <- "Productivity|Roughage share|Ruminant meat and dairy"
+
 fDem <- filter(scens,
                period <= 2050,
                period > 2015,
@@ -822,17 +827,17 @@ fDem <- filter(scens,
 pshr <- filter(scens,
                   period <= 2050,
                   period > 2015,
-                  variable %in% feedVar) %>%
+                  variable %in% c(pshareVar, rshareVar)) %>%
   droplevels() %>%
   inner_join(fDem)  %>% 
-  group_by(model, scenarioname, scenario, RegionG, period) %>%
+  group_by(model, scenarioname, scenario, variable, RegionG, period) %>%
   summarise(value = weighted.mean(value, w = demand, na.rm = TRUE))
 
 pshrGlo <- filter(pshr, RegionG == "World")
 
-plotpshrGlo <- ggplot(pshrGlo, aes(x = period)) +
+plotpshrGlo <- ggplot(filter(pshrGlo, variable == pshareVar), aes(x = period)) +
    themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
-   ylab("Pasture share in total feed (%)") +
+   ylab("%") +
    geom_line(aes(y = value, color = scenarioname), size =2 )+
   scale_color_manual(values = colors, name = "Scenario") +
                 theme(legend.position = "bottom", legend.text = element_text(size = 14),
@@ -843,33 +848,61 @@ plotpshrGlo <- ggplot(pshrGlo, aes(x = period)) +
    labs(title = "a) Pasture Share in Total Feed, Global")
 plotpshrGlo
 
+
+plotrshrGlo <- ggplot(filter(pshrGlo, variable == rshareVar), aes(x = period)) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(y = value, color = scenarioname), size =2 )+
+  scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 14),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 16)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "b) Roughage Share in Total Feed, Global")
+plotrshrGlo
+
+
 pshrReg <- filter(pshr, RegionG != "World")
 # write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
  if (!is.null(caseRegion)) {
    pshrReg <- pshrReg %>% filter(RegionG == selRegion)
  }
 
- plotpshrReg <- ggplot(pshrReg) +
+ plotpshrReg <- ggplot(filter(pshrReg, variable == pshareVar)) +
   facet_grid(~RegionG) +
    themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
-   ylab("Pasture share in total feed (%)") +
-   geom_line(aes(x = period, y = value, color = scenarioname), size = 2)+
+   ylab("%") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size = 1)+
   scale_color_manual(values = colors, name = "Scenario") +
    guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
    xlab(NULL) +
-   labs(title = "b) Pasture Share in Total Feed, Regional")
-
+   labs(title = "c) Pasture Share in Total Feed, Regional")
  plotpshrReg
-  plotpshr <- plotpshrGlo + plotpshrReg +
-    plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
 
+ plotrshrReg <- ggplot(filter(pshrReg, variable == rshareVar)) +
+  facet_grid(~RegionG) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size = 1)+
+  scale_color_manual(values = colors, name = "Scenario") +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "d) Roughage Share in Total Feed, Regional")
+ plotrshrReg
+
+
+  plotpshr <- (plotpshrGlo + plotrshrGlo) / plotpshrReg /  plotrshrReg +
+    plot_layout(guides = "keep", heights = c(1, 0.7, 0.7))
+plotpshr
+ 
  if (!is.null(outFolder)) {
    ggsave(filename = file.path(outFolder, "supplPlots",
                                "plotPastShr.png"),
-          plotpshr, width = 8, height = 6, scale = 1.5, bg = "white")
+          plotpshr, width = 13 , height = 10, scale = 1.5, bg = "white")
    ggsave(filename = file.path(outFolder, "supplPlots",
                                "plotPastShr.pdf"),
-          plotpshr, width = 8, height = 6, scale = 1.5, bg = "white")
+          plotpshr, width = 13, height = 10, scale = 1.5, bg = "white")
  }
 
 
@@ -960,6 +993,76 @@ if (!is.null(outFolder)) {
 snupWVar  <- c(  "Resources|Nitrogen|Cropland Budget|Inputs", 
               "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops")
               
+
+
+snupW <- filter(scens,
+               period <= 2050,
+               period > 2015,
+               variable %in% snupWVar)  %>% 
+        droplevels()  %>% 
+        pivot_wider(names_from = "variable", values_from = "value") %>% 
+        mutate(weight = `Resources|Nitrogen|Cropland Budget|Inputs` - `Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops`)  %>% 
+        select(model, scenario, region, period, version, scenset, RegionG, scenarioname, weight)
+
+
+snup <- filter(scens,
+                  period <= 2050,
+                  period > 2015,
+                  variable %in% snupeVar) %>%
+  droplevels() %>%
+  inner_join(snupW)  %>% 
+  group_by(model, scenarioname, scenario, variable, RegionG, period) %>%
+  summarise(value = weighted.mean(value, w = weight, na.rm = TRUE))
+
+
+snupGlo <- filter(snup, RegionG == "World")
+
+plotSnupGlo <- ggplot(snupGlo, aes(x = period)) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(y = value, color = scenarioname), size =2 )+
+  scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 14),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 16)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "a) Soil Nitrogen Uptake Efficiency, Global")
+plotSnupGlo
+
+
+snupReg <- filter(snup, RegionG != "World")
+# write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
+ if (!is.null(caseRegion)) {
+   snupReg <- snupReg %>% filter(RegionG == selRegion)
+ }
+
+ plotSnupReg <- ggplot(snupReg) +
+  facet_grid(~RegionG) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size = 1)+
+  scale_color_manual(values = colors, name = "Scenario") +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title= "b) Soil Nitrogen Uptake Efficiency, Regional")
+ plotSnupReg
+
+plotSnup <- plotSnupGlo + plotSnupReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
+
+if (!is.null(outFolder)) {
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotSnup.png"),
+         plotSnup, width = 8, height = 10, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotSnup.pdf"),
+         plotSnup, width = 8, height = 10, scale = 1.5, bg = "white")
+}
+
+
+
+
 
 ############ Water #######
 

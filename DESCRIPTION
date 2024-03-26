@@ -2,11 +2,11 @@ Type: Package
 Package: m4fsdp
 Title: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
     for FSDP project
-Version: 0.53.3
-Date: 2024-03-23
+Version: 0.53.10
+Date: 2024-03-26
 Authors@R: c(
     person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = c("aut", "cre")),
-    person("David", "Chen", , "davidch@pik-potsdam.de", role = "aut"), 
+    person("David", "Chen", , "davidch@pik-potsdam.de", role = "aut"),
     person("Michael", "Crawford", , "crawford@pik-potsdam.de", role = "aut"),
     person("Debbora", "Leip", , "leip@pik-potsdam.de", role = "aut"),
     person("Patrick", "von Jeetze", , "vjeetze@pik-potsdam.de", role = "aut"),
@@ -34,6 +34,7 @@ Imports:
     ggplot2,
     ggtext,
     htmlwidgets,
+    luplot,
     madrat,
     magpie4,
     magpiesets,
