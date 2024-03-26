@@ -481,8 +481,8 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotGHG.png",plotGHG)
 
   # Environment: Global Surface Temp
-  title   <- "i) Global Surface Warming"
-  unit    <- "deg C"
+  title   <- "i) Global Surface Air Warming"
+  unit    <- "°C rel. to 1951-1980"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
   b     <- bdiff(b=b,subset=subset)

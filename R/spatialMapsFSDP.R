@@ -421,7 +421,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
   title <- "l) Annual AFOLU GHG emissions"
-  unit  <- "ton CO2eq per ha"
+  unit  <- "ton CO2eq per ha in AR6 GWP100"
   caption <- "Projection: Mollweide"
 
   b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land"] * 1000 /
@@ -442,8 +442,8 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Environment: Global Surface Temp
-  title <- "m) Global Surface Warming"
-  unit  <- "deg C"
+  title <- "m) Global Surface Air Warming"
+  unit  <- "°C rel. to 1951-1980"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
   bb    <- asRaster(b, countries2)

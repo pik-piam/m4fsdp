@@ -280,7 +280,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Env. Water Flow Violations", tag = "k)")
   p8 <- plotVal(rep, var = "AFOLU GHG Emissions", tag = "l)",lowLimit = NA)
-  p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
+  p9 <- plotVal(rep, var = "Global Surface Air Warming", tag = "m)")
 
   p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
   p15 <- plotVal(rep, var = "Production Costs", tag = "o)")
