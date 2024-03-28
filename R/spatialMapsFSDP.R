@@ -443,7 +443,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
   # Environment: Global Surface Temp
   title <- "m) Global Surface Air Warming"
-  unit  <- "°C rel. to 1951-1980"
+  unit  <- "deg. C rel. to 1951-1980"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
   bb    <- asRaster(b, countries2)

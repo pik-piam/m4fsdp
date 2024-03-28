@@ -121,7 +121,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b[scenario %in% c("SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP3fsdp", "SSP4fsdp", "SSP5fsdp",
                      "Population", "EconDevelop", "TimberCities", "Bioplastics") &
-      get("variableName") %in% c("Global Surface Warming"),
+      get("variableName") %in% c("Global Surface Air Warming"),
     c("valuefill", "value") :=  NA]
 
   b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "scenario", "model", "variable","unit", "period")]

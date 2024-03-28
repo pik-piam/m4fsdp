@@ -456,7 +456,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
   title <- "h) Annual AFOLU GHG Emissions"
-  unit <- "ton CO2eq per ha"
+  unit <- "ton CO2eq per ha in AR6 GWP100"
   caption <- "Projection: Mollweide"
 
   b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land"] * 1000 /
@@ -482,7 +482,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   # Environment: Global Surface Temp
   title   <- "i) Global Surface Air Warming"
-  unit    <- "°C rel. to 1951-1980"
+  unit    <- "deg. C rel. to 1951-1980"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
   b     <- bdiff(b=b,subset=subset)
