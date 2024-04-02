@@ -271,7 +271,7 @@ lineplotFSDP <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bun
   p3 <- plotVal(rep, var = "Premature Mortality", tag = "c)")
 
   p10 <- plotVal(rep, var = "Expenditure on Ag. Products", tag = "d)", muteBefore = 2005)
-  p11 <- plotVal(rep, var = "Poverty", tag = "e)", muteBefore = 2010)
+  p11 <- plotVal(rep, var = "Poverty", tag = "e)", muteBefore = 2015)
   p12 <- plotVal(rep, var = "Ag. Employment", tag = "f)")
   p13 <- plotVal(rep, var = "Ag. Wages", tag = "g)")
 
