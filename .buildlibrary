@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-ValidationKey: '94281415524'
-=======
-ValidationKey: '105230720'
->>>>>>> ff55c9aa3070330abdda918db06f9f1756a64e79
+ValidationKey: '10898800'
 AutocreateReadme: yes
 AcceptedWarnings:
 - 'Warning: package ''.*'' was built under R version'
