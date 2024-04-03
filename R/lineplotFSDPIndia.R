@@ -15,7 +15,7 @@
 #' @importFrom utils write.csv tail
 #' @importFrom stats reorder
 
-lineplotFSDPIndia <- function(repReg, val, regionSel = "GLO", file = NULL, scens="bundles") {
+lineplotFSDPIndia <- function(repReg, val, regionSel = "IND", file = NULL, scens="bundles") {
 
   #### read in data files
   if(scens=="central"){
@@ -79,7 +79,10 @@ lineplotFSDPIndia <- function(repReg, val, regionSel = "GLO", file = NULL, scens
   rep[get("scenset") %in% c("FSECb"), "scenset" := "Dashed"]
   rep$scenset <- factor(rep$scenset, c("Solid", "Dashed"))
 
-#  val <- renameRep(val,var,regionSel)
+  val <- renameRep(val,var,regionSel)
+  povertyYears <- c(2004, 2009, 2011, 2015, 2016, 2017, 2018, 2019)
+  #Filtering poverty data for India for which actual data exists
+  val <- val %>% filter(case_when(variable == "Poverty" ~ period %in% povertyYears, variable != "Poverty"~ period > 1999))
 
   safe_colorblind_palette <- assignScenarioColors(scenOrder)
   names(safe_colorblind_palette) <- names(scenOrder)
@@ -260,7 +263,7 @@ lineplotFSDPIndia <- function(repReg, val, regionSel = "GLO", file = NULL, scens
       return(p)
     } else {
       warning(paste0("Missing Variable: ",var))
-  #    return(ggplot(get("mtcars"), aes(x = get("wt"), y = get("mpg"))) + geom_blank()+ggtitle("DUMMY / Placeholder"))
+      #    return(ggplot(get("mtcars"), aes(x = get("wt"), y = get("mpg"))) + geom_blank()+ggtitle("DUMMY / Placeholder"))
     }
 
   }
@@ -271,21 +274,20 @@ lineplotFSDPIndia <- function(repReg, val, regionSel = "GLO", file = NULL, scens
   p3 <- plotVal(rep, var = "Premature Mortality", tag = "c)")
 
   p10 <- plotVal(rep, var = "Expenditure on Ag. Products", tag = "d)", muteBefore = 2005)
-  x <- filter(rep, period > 2005)
-  p11 <- plotVal(x, var = "Poverty", tag = "e)", muteBefore = 2015)
+  p11 <- plotVal(rep, var = "Poverty", tag = "e)")
   p12 <- plotVal(rep, var = "Ag. Employment", tag = "f)")
   p13 <- plotVal(rep, var = "Ag. Wages", tag = "g)")
 
-  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot Landscapes"), tag = "h)", lowLimit = 65, highLimit = 90, varName = "Biodiversity Intactness")
+  p4 <- plotVal(rep, var = c("All Land Types","Cropland Landscapes","Hotspot & Intact Landscapes"), tag = "h)", lowLimit = 65, highLimit = 100, varName = "Biodiversity Intactness")
   p5 <- plotVal(rep, var = "Croparea Diversity", tag = "i)", lowLimit = 2)
   p6 <- plotVal(rep, var = "Nitrogen Surplus", tag = "j)")
   p7 <- plotVal(rep, var = "Env. Water Flow Violations", tag = "k)")
   p8 <- plotVal(rep, var = "AFOLU GHG Emissions", tag = "l)",lowLimit = NA)
 
- # p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
+  # p9 <- plotVal(rep, var = "Global Surface Warming", tag = "m)")
 
 
- p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
+  p14 <- plotVal(rep, var = "Bioeconomy Supply", tag = "n)")
   p15 <- plotVal(rep, var = "Production Costs", tag = "o)")
 
   group1 <- p1 + p2 + p3 + guide_area() + plot_annotation(title = "Health", theme = theme(title = element_text(face="bold"), plot.background = element_rect(colour = "black", fill=NA, linewidth=2))) + plot_layout(guides = "collect", ncol = 2) & theme(legend.position = "bottom")
