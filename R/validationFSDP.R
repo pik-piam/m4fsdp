@@ -724,10 +724,8 @@ validationFSDP <-  function(repReg,
               hist = "FAO",
               histName = "based on FAOSTAT FO 2021")
     p5 <-
-      plotVal(var = "Production|+|Bioenergy crops",
-              varName = "Short-rotation bioenergy trees and grasses",
-              hist = "FAO",
-              histName = "")
+      plotVal(var = "Production|Bioenergy|2nd generation|++|Bioenergy crops",
+              varName = "Short-rotation bioenergy trees and grasses")
 
     combined <- p1 + p2 + p3 + p4 + p5 + plot_annotation(tag_levels = "a")
     combined <-
