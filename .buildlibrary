@@ -1,10 +1,17 @@
+<<<<<<< HEAD
 ValidationKey: '94281415524'
+=======
+ValidationKey: '105230720'
+>>>>>>> ff55c9aa3070330abdda918db06f9f1756a64e79
 AutocreateReadme: yes
 AcceptedWarnings:
 - 'Warning: package ''.*'' was built under R version'
 - 'Warning: namespace ''.*'' is not available and has been replaced'
+- 'Warning: replacing previous import ‘ggh4x::guide_axis_logticks’ by ‘ggplot2::guide_axis_logticks’
+  when loading ‘m4fsdp’'
 AcceptedNotes:
 - unable to verify current time
 - Imports includes [0-9][0-9] non-default packages
 - installed size is
 allowLinterWarnings: yes
+enforceVersionUpdate: no

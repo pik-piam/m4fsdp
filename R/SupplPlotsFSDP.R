@@ -1,5 +1,7 @@
 globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negative", "model", "percentage", "positive",
-                  "hours", "Products", "RegionG_f", "selRegion", "perCap", "scenarioname", "cum"))
+                  "hours", "Products", "RegionG_f", "selRegion", "perCap", "scenset", "weight",
+                   "Resources|Nitrogen|Cropland Budget|Inputs",  "scenarioname", "crop", "cum",
+                  "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops"))
 
 #' @title SupplPlotsFSDP
 #' @description creates supplementary plots for FSDP MAgPIE runs
@@ -19,7 +21,9 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom stats weighted.mean
 #' @importFrom dplyr case_when filter group_by inner_join mutate summarise rename select %>% distinct
 #' @importFrom patchwork plot_layout
+#' @importFrom tidyr pivot_wider
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom stringr str_detect
 
 SupplPlotsFSDP <- function(repReg, scenarioType = "manuscript", outFolder, calorieSupply = TRUE, caseRegion = NULL) {
 
@@ -184,7 +188,7 @@ food_df <- filter(scens, variable %in% c(cereals, oilCrops, otherCrops,
   summarise(CalorieSupply = weighted.mean(CalorieSupply, w = pop), pop = sum(pop))
 
 food_df <- food_df[-which(food_df$period == 2020 & food_df$scenarioname != "SSP2 BAU"), ] # remove nonBAU 2020 values
-food_df$pop_barwidth <- rescale(food_df$pop, c(0.2, 0.5))   # scale pop for barwidths
+food_df$pop_barwidth <- rescale(food_df$pop, c(0.1, 0.4))   # scale pop for barwidths
 
 if (!is.null(caseRegion)) {
   food_df <- food_df %>% filter(RegionG == selRegion)
@@ -216,13 +220,13 @@ width = filter(food_df[order(food_df$FoodGroup), ],
                                    RegionG == "High-Income \n Regions")$pop_barwidth
   ) +
   geom_col(data = filter(food_df[order(food_df$FoodGroup), ], RegionG == "Middle-Income \n Regions"),
-           aes(x = as.numeric(scenarioname) + 0.25, y = CalorieSupply, group = scenarioname, fill = FoodGroup),
+           aes(x = as.numeric(scenarioname) + 0.28, y = CalorieSupply, group = scenarioname, fill = FoodGroup),
            position = "stack",
 width = filter(food_df[order(food_df$FoodGroup), ],
                          RegionG == "Middle-Income \n Regions")$pop_barwidth
   ) +
   geom_col(data = filter(food_df[order(food_df$FoodGroup), ], RegionG == "Low-Income Regions"),
-           aes(x = as.numeric(scenarioname) + 0.6, y = CalorieSupply, group = scenarioname, fill = FoodGroup),
+           aes(x = as.numeric(scenarioname) + 0.65, y = CalorieSupply, group = scenarioname, fill = FoodGroup),
 width = filter(food_df[order(food_df$FoodGroup), ],
                           RegionG == "Low-Income Regions")$pop_barwidth
   ) +
@@ -261,7 +265,7 @@ agDem <- filter(scens, variable %in% demandCats,
             pop = sum(pop))
 
 agDem <- agDem[-which(agDem$period == 2020 & agDem$scenarioname != "SSP2 BAU"), ] # remove nonBAU 2010 values
-agDem$pop_barwidth <- rescale(agDem$pop, c(0.2, 0.5))   # scale pop for barwidths
+agDem$pop_barwidth <- rescale(agDem$pop, c(0.1, 0.4))   # scale pop for barwidths
 
 if (!is.null(caseRegion)) {
   plotAgDem <- ggplot() +
@@ -284,12 +288,12 @@ plotAgDem <- ggplot() +
            width = filter(agDem,
                           RegionG == "High-Income \n Regions")$pop_barwidth) +
   geom_col(data = filter(agDem, RegionG == "Middle-Income \n Regions"),
-           aes(x = as.numeric(scenarioname) + 0.25, y = value, group = scenarioname, fill = variable),
+           aes(x = as.numeric(scenarioname) + 0.28, y = value, group = scenarioname, fill = variable),
            position = "stack",
            width = filter(agDem,
                           RegionG == "Middle-Income \n Regions")$pop_barwidth) +
   geom_col(data = filter(agDem, RegionG == "Low-Income Regions"),
-           aes(x = as.numeric(scenarioname) + 0.6, y = value, group = scenarioname, fill = variable),
+           aes(x = as.numeric(scenarioname) + 0.65, y = value, group = scenarioname, fill = variable),
            position = "stack",
            width = filter(agDem,
                           RegionG == "Low-Income Regions")$pop_barwidth) +
@@ -453,7 +457,7 @@ landVar <- c("Resources|Land Cover|+|Cropland",
              "Resources|Land Cover|Forest|Managed Forest|+|Plantations",
              "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC",
              "Resources|Land Cover|Forest|Managed Forest|+|Afforestation",
-             "Resources|Land Cover|Cropland|+|Bioenergy crops",
+             "Resources|Land Cover|Cropland|Croparea|+|Bioenergy crops",
             "Resources|Land Cover|+|Other Land",
              "Resources|Land Cover|+|Urban Area")
 names(landVar) <- c("Cropland", "Pasture", "Primary Forest", "Secondary Forest", "Timber",
@@ -532,18 +536,17 @@ if (!is.null(outFolder)) {
          plotLandReg, width = 9, height = 7, scale = 1.5, bg = "white")
 }
 
-
 ### Crop Area ##########
 
 # Take soy and groundnut out of oil crops into pulses as legumes,
 # sugar beet + sunflower/raps + potato as OTHER,
 # Bioenergy + sugarcane + oilpalm = plantations (Bioenergy, sugar cane, Oilpalm)
 
-cropVar <- c(scens[grep("Cropland\\|Crops\\|Cereals\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|Crops\\|Oil crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|Crops\\|Sugar crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|Crops\\|Other crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             scens[grep("Cropland\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+cropVar <- c(scens[grep("Cropland\\|Croparea\\|Crops\\|Cereals\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|Crops\\|Oil crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|Crops\\|Sugar crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|Crops\\|Other crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
+             scens[grep("Cropland\\|Croparea\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              "Resources|Land Cover|Cropland|+|Fallow Cropland")
 
 cereals <- cropVar[grep("Cereals", cropVar)]
@@ -636,6 +639,274 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
           plotCropReg, width = 8, height = 6, scale = 1.5, bg = "white")
  }
 
+#                                #
+   ### # # Y i e l d s # # ######
+#                                #
+
+yldVar <- c("Productivity|Yield by physical area|Crops|Cereals",
+            "Productivity|Yield by physical area|Crops|Oil crops",
+            "Productivity|Yield by physical area|Crops|Other crops|Fruits Vegetables Nuts",                                       
+            "Productivity|Yield by physical area|Pasture",
+            "Productivity|Yield by physical area|Bioenergy crops")
+names(yldVar) <- c("Cereals", "Oil Crops", "Fruits and \n Vegetables", "Pasture", "Bioenergy grasses \n and trees")
+
+areaVar <- c("Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals", 
+                                  "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
+                                  "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
+                                  "Resources|Land Cover|+|Pastures and Rangelands",
+                                  "Resources|Land Cover|Cropland|Croparea|+|Bioenergy crops")
+names(areaVar) <- c("Cereals", "Oil Crops", "Fruits and \n Vegetables", "Pasture", "Bioenergy grasses \n and trees")
+
+#2020 area weights for aggregation
+area_df <- filter(scens,
+                  period == 2020,
+                  variable %in% areaVar) %>% 
+            mutate(variable = factor(variable, levels = areaVar,
+                         labels = names(areaVar)))  %>% 
+  droplevels()  %>% 
+  mutate(crop = (sub(".*\\|", "", variable)))  %>% 
+  rename("area" = value)  %>% 
+  select(!c(period, variable, unit))
+
+yld_df <- filter(scens,
+                  period <= 2050,
+                  period > 2015,
+                  variable %in% yldVar, 
+                  !RegionG == "World") %>%
+          mutate(variable = factor(variable, levels = yldVar,
+                 labels = names(yldVar)))  %>% 
+  droplevels() %>%
+  mutate(crop = (sub(".*\\|", "", variable))) %>% 
+  inner_join(area_df) %>% 
+  mutate(crop = factor(crop, levels = c("Cereals", "Oil Crops", 
+                                                "Fruits and \n Vegetables", "Pasture",
+                                                "Bioenergy grasses \n and trees"))) 
+
+
+yldGlo <- yld_df  %>% 
+          group_by(model, scenarioname, scenario, crop, period) %>%
+          summarise(value = weighted.mean(value, w = area))
+
+plotYldGlo <- ggplot(yldGlo, aes(x = period)) +
+   facet_wrap(~crop, nrow = 2, scales = "free") +
+   themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
+   ylab("Crop yields in t/ha") +
+   geom_line(aes(y = value, color = scenarioname), size =2 )+
+   scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 18),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 18)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "a) Global crop yields, fixed 2020 area weight")
+plotYldGlo
+
+
+yldReg <- yld_df  %>%  group_by(model, RegionG, scenarioname, scenario, crop, period) %>%
+          summarise(value = weighted.mean(value, w = area))
+
+ if (!is.null(caseRegion)) {
+   yldReg <- yldReg %>% filter(RegionG == selRegion)
+ }
+
+ plotYldReg <- ggplot(yldReg) +
+  facet_grid(crop~RegionG, scales = "free") +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("Crop yields in t/ha") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size =1)+
+   scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 18),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 20)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "b) Regionally weighted crop yields")
+
+ plotYldReg
+plotYld <- plotYldGlo + plotYldReg +
+    plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 2))
+
+ if (!is.null(outFolder)) {
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotYield.png"),
+          plotYld, width = 15, height = 14, scale = 1.5, bg = "white")
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotYield.pdf"),
+          plotYld, width = 15, height = 14, scale = 1.5, bg = "white")
+ }
+
+#                                #
+   ### # # Feed Efficiency # # ######
+#         
+
+feedVar <- "Productivity|Feed conversion"
+livstProd <- "Production|+|Livestock products" #needed as weight
+
+lProd <- filter(scens,
+               period <= 2050,
+               period > 2015,
+               variable %in% livstProd)  %>% 
+        droplevels()  %>% 
+  rename("prod" = value)  %>% 
+  select(!c(variable, unit))
+
+feed_df <- filter(scens,
+                  period <= 2050,
+                  period > 2015,
+                  variable %in% feedVar) %>%
+  droplevels() %>%
+  inner_join(lProd)  %>% 
+  group_by(model, scenario, scenarioname, period, RegionG) %>%
+  summarise(value = weighted.mean(value, w = prod, na.rm = TRUE))
+
+feedGlo <- filter(feed_df, RegionG == "World")
+
+plotFeedGlo <- ggplot(feedGlo, aes(x = period)) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("Feed conversion (t Feed / t Livestock))") +
+   geom_line(aes(y = value, color = scenarioname), size =2 )+
+   scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 14),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 16)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "a) Global Feed Conversion")
+plotFeedGlo
+
+feedReg <- filter(feed_df, RegionG != "World") 
+# write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
+ if (!is.null(caseRegion)) {
+   feedReg <- feedReg %>% filter(RegionG == selRegion)
+ }
+
+ plotFeedReg <- ggplot(feedReg) +
+  #facet_wrap(RegionG~scenarioname, nrow = 2) +
+  facet_grid(~RegionG) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("Feed conversion (t Feed / t Livestock)") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size = 2)+
+  scale_color_manual(values = colors, name = "Scenario") +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "b) Regional Feed Conversion")
+
+ plotFeedReg
+  plotFeed <- plotFeedGlo + plotFeedReg +
+    plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
+
+ if (!is.null(outFolder)) {
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotFeed.png"),
+          plotFeed, width = 12, height = 8, scale = 1.5, bg = "white")
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotFeed.pdf"),
+          plotFeed, width = 12, height = 8, scale = 1.5, bg = "white")
+ }
+
+
+### #               # ###
+
+### # pasture share # ###
+
+### #               # ###
+
+pshareVar <- "Productivity|Pasture share|Ruminant meat and dairy"
+feedDem <- "Demand|+|Feed" #needed as weight
+
+rshareVar <- "Productivity|Roughage share|Ruminant meat and dairy"
+
+fDem <- filter(scens,
+               period <= 2050,
+               period > 2015,
+               variable %in% feedDem)  %>% 
+        droplevels()  %>% 
+  rename("demand" = value)  %>% 
+  select(!c(variable, unit))
+
+pshr <- filter(scens,
+                  period <= 2050,
+                  period > 2015,
+                  variable %in% c(pshareVar, rshareVar)) %>%
+  droplevels() %>%
+  inner_join(fDem)  %>% 
+  group_by(model, scenarioname, scenario, variable, RegionG, period) %>%
+  summarise(value = weighted.mean(value, w = demand, na.rm = TRUE))
+
+pshrGlo <- filter(pshr, RegionG == "World")
+
+plotpshrGlo <- ggplot(filter(pshrGlo, variable == pshareVar), aes(x = period)) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(y = value, color = scenarioname), size =2 )+
+  scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 14),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 16)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "a) Pasture Share in Total Feed, Global")
+plotpshrGlo
+
+
+plotrshrGlo <- ggplot(filter(pshrGlo, variable == rshareVar), aes(x = period)) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(y = value, color = scenarioname), size =2 )+
+  scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 14),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 16)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "b) Roughage Share in Total Feed, Global")
+plotrshrGlo
+
+
+pshrReg <- filter(pshr, RegionG != "World")
+# write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
+ if (!is.null(caseRegion)) {
+   pshrReg <- pshrReg %>% filter(RegionG == selRegion)
+ }
+
+ plotpshrReg <- ggplot(filter(pshrReg, variable == pshareVar)) +
+  facet_grid(~RegionG) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size = 1)+
+  scale_color_manual(values = colors, name = "Scenario") +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "c) Pasture Share in Total Feed, Regional")
+ plotpshrReg
+
+ plotrshrReg <- ggplot(filter(pshrReg, variable == rshareVar)) +
+  facet_grid(~RegionG) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size = 1)+
+  scale_color_manual(values = colors, name = "Scenario") +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "d) Roughage Share in Total Feed, Regional")
+ plotrshrReg
+
+
+  plotpshr <- (plotpshrGlo + plotrshrGlo) / plotpshrReg /  plotrshrReg +
+    plot_layout(guides = "keep", heights = c(1, 0.7, 0.7))
+plotpshr
+ 
+ if (!is.null(outFolder)) {
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotPastShr.png"),
+          plotpshr, width = 13 , height = 10, scale = 1.5, bg = "white")
+   ggsave(filename = file.path(outFolder, "supplPlots",
+                               "plotPastShr.pdf"),
+          plotpshr, width = 13, height = 10, scale = 1.5, bg = "white")
+ }
+
+
+
 
 ####### Nitrogen##############
 
@@ -713,6 +984,84 @@ if (!is.null(outFolder)) {
                               "plotNitr.pdf"),
          plotNitr, width = 8, height = 10, scale = 1.5, bg = "white")
 }
+
+
+# ########### SNUPE ########### snupe snupe
+#  to be done after variable enters reporting
+# 
+ snupeVar <- "Resources|Nitrogen|Cropland Budget|Soil Nitrogen Uptake Efficiency"
+snupWVar  <- c(  "Resources|Nitrogen|Cropland Budget|Inputs", 
+              "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops")
+              
+
+
+snupW <- filter(scens,
+               period <= 2050,
+               period > 2015,
+               variable %in% snupWVar)  %>% 
+        droplevels()  %>% 
+        pivot_wider(names_from = "variable", values_from = "value") %>% 
+        mutate(weight = `Resources|Nitrogen|Cropland Budget|Inputs` - `Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops`)  %>% 
+        select(model, scenario, region, period, version, scenset, RegionG, scenarioname, weight)
+
+
+snup <- filter(scens,
+                  period <= 2050,
+                  period > 2015,
+                  variable %in% snupeVar) %>%
+  droplevels() %>%
+  inner_join(snupW)  %>% 
+  group_by(model, scenarioname, scenario, variable, RegionG, period) %>%
+  summarise(value = weighted.mean(value, w = weight, na.rm = TRUE))
+
+
+snupGlo <- filter(snup, RegionG == "World")
+
+plotSnupGlo <- ggplot(snupGlo, aes(x = period)) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(y = value, color = scenarioname), size =2 )+
+  scale_color_manual(values = colors, name = "Scenario") +
+                theme(legend.position = "bottom", legend.text = element_text(size = 14),
+                      strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+                      axis.text.x = element_text(size = 16)) +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title = "a) Soil Nitrogen Uptake Efficiency, Global")
+plotSnupGlo
+
+
+snupReg <- filter(snup, RegionG != "World")
+# write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
+ if (!is.null(caseRegion)) {
+   snupReg <- snupReg %>% filter(RegionG == selRegion)
+ }
+
+ plotSnupReg <- ggplot(snupReg) +
+  facet_grid(~RegionG) +
+   themeSupplReg(base_size = 18, panel.spacing = 3, rotate_x = 90) +
+   ylab("%") +
+   geom_line(aes(x = period, y = value, color = scenarioname), size = 1)+
+  scale_color_manual(values = colors, name = "Scenario") +
+   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE, reverse = FALSE)) +
+   xlab(NULL) +
+   labs(title= "b) Soil Nitrogen Uptake Efficiency, Regional")
+ plotSnupReg
+
+plotSnup <- plotSnupGlo + plotSnupReg +
+  plot_layout(guides = "keep", ncol = 1, byrow = FALSE, heights = c(1, 0.7))
+
+if (!is.null(outFolder)) {
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotSnup.png"),
+         plotSnup, width = 8, height = 10, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotSnup.pdf"),
+         plotSnup, width = 8, height = 10, scale = 1.5, bg = "white")
+}
+
+
+
 
 
 ############ Water #######

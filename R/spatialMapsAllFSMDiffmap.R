@@ -17,9 +17,12 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable", "
 #' @import ggplot2 data.table patchwork cartogram sf RColorBrewer rnaturalearth quitte
 #' @importFrom utils write.csv read.csv
 #' @importFrom terra project rast
+#' @importFrom withr local_options
 
 spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NULL,
                                      subset = c("FSTsdp_minus_BASEssp2")) {
+
+  withr::local_options("sp_evolution_status" = 2) # use sf instead of rgdal and rgeos in sp
   ### projections
   # https://semba-blog.netlify.app/01/26/2020/world-map-and-map-projections/
 
@@ -453,7 +456,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   #Environment: Greenhouse Gases --- IS THIS INCORRECT?!
   title <- "h) Annual AFOLU GHG Emissions"
-  unit <- "ton CO2eq per ha"
+  unit <- "ton CO2eq per ha in AR6 GWP100"
   caption <- "Projection: Mollweide"
 
   b     <- repReg[, .(value = value[variable == "Emissions|GWP100AR6|Land"] * 1000 /
@@ -478,8 +481,8 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotGHG.png",plotGHG)
 
   # Environment: Global Surface Temp
-  title   <- "i) Global Surface Warming"
-  unit    <- "deg C"
+  title   <- "i) Global Surface Air Warming"
+  unit    <- "deg. C rel. to 1951-1980"
   caption <- "Projection: Mollweide"
   b     <- droplevels(repGrid[variable == "Global Surface Temperature (C)", ])
   b     <- bdiff(b=b,subset=subset)

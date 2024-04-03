@@ -20,6 +20,7 @@ globalVariables(c("model", "scenario", "region", "period", "unit", "variable",
 #' @importFrom utils write.csv
 #' @importFrom stats reorder
 #' @importFrom ggtext element_markdown
+#' @importFrom scales trans_new
 
 heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, width = 10.5, height = 9) {
 
@@ -74,8 +75,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   # greying out non-nutrition scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
-                     "NoOverweight", "HalfOverweight", "NoUnderweight", "AllHealth", "DietRotations",
-                     "Population", "ExternalPressures", "AllInclusion", "Diet",
+                     "NoOverweight", "HalfOverweight", "NoUnderweight",
+                     "Population", "ExternalPressures", "Diet",
                      "EconDevelop", "DietHealth") &
       get("variableName") %in% c("Underweight",
                       "Obesity"),
@@ -84,8 +85,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   # greying out non-inclusion scenarios
   b[!scenario %in% c("BAU", "SSP1bau", "SSP2bau", "SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP1fsdp", "SSP2fsdp", "SSP3fsdp", "SSP4fsdp", "SSP5fsdp", "FSDP",
-                     "ExternalPressures", "AllInclusion", "EconDevelop", "MinWage") &
-      get("variableName") %in% c("Ag. wages"),
+                     "ExternalPressures", "Livelihoods", "EconDevelop", "MinWage") &
+      get("variableName") %in% c("Ag. Wages"),
     c("valuefill","value") := NA]
 
   # Adding and greying-out years of life lost for non-dietary scenarios
@@ -120,7 +121,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b[scenario %in% c("SSP3bau", "SSP4bau", "SSP5bau",
                      "SSP3fsdp", "SSP4fsdp", "SSP5fsdp",
                      "Population", "EconDevelop", "TimberCities", "Bioplastics") &
-      get("variableName") %in% c("Global Surface Warming"),
+      get("variableName") %in% c("Global Surface Air Warming"),
     c("valuefill", "value") :=  NA]
 
   b <-  b[,"label" := round(sum(get("value")), get("rounding")), by = c("region", "scenario", "model", "variable","unit", "period")]
@@ -182,12 +183,20 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   #https://github.com/andrewheiss/ath-hugo/blob/main/content/blog/2022-05-09_hurdle-lognormal-gaussian-brms/index.Rmarkdown
   #https://github.com/wilkelab/ggtext/issues/82
 
+  #https://stackoverflow.com/questions/14504869/histogram-with-negative-logarithmic-scale-in-r
+  #https://github.com/tidyverse/ggplot2/issues/1631
+
+  asinh42_trans <- function(){
+    scales::trans_new(name = 'asinh42', transform = function(x) asinh(x),
+              inverse = function(x) sinh(x))
+  }
+
   m <- ggplot(b, aes(y = get("scenario"), x = 1)) + theme_minimal() +
     theme(panel.border = element_rect(colour = NA, fill = NA)) +
     geom_tile_interactive(aes(fill = valuefill,
                               tooltip = paste0("Scenario: ", scenario, "\nIndicator: ", variable),
                               data_id = interaction(variable)), colour = "white") +
-    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "white",
+    scale_fill_gradient2_interactive(midpoint = 0, low = "#91cf60", mid = "white", trans = asinh42_trans(),
                                      na.value = "grey95", high = "#fc8d59", breaks = c(-1, -0.5, 0, 0.5, 1), limit = c(-1, 1),
                                      labels = c("best", "better", "none", "worse", "worst")) +
     geom_text_interactive(aes(label = label, tooltip = paste0("Sceanrio: ", scenario, "\nIndicator: ", variable),
@@ -214,7 +223,8 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
                                              background_y = stripBackground,
                                              by_layer_x = TRUE, by_layer_y = FALSE))
   m <- m + theme(axis.text.y.left = ggtext::element_markdown(),strip.placement = "outside")
-  m <- m + theme(legend.title = element_markdown(hjust = 0, size=9, angle = 90, face = "bold"), legend.text.align = 0,legend.title.align = 1)#legend.background = element_rect(colour = "black", size = 0.5)
+  #m <- m + theme(legend.title = element_markdown(hjust = 0, size=9, angle = 90, face = "bold"), legend.text = element_text(hjust = 0))#legend.background = element_rect(colour = "black", size = 0.5)
+  m <- m + theme(legend.title = element_text(hjust = 0, size=9, angle = 90, face = "bold"))
   m <- m + legendPosition
   #if (tableType == 3) m <- m + theme(plot.margin = margin(0, 0, 0, 25, "pt"))
   #ggsave(file, m, scale = 1.2, height = 6, width = 7, bg = "white")

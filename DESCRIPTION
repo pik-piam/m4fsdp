@@ -2,11 +2,16 @@ Type: Package
 Package: m4fsdp
 Title: MAgPIE outputs R package for MAgPIE version 4.x to create outputs
     for FSDP project
+<<<<<<< HEAD
 Version: 0.48.2.9001
 Date: 2023-06-16
+=======
+Version: 0.53.12
+Date: 2024-03-28
+>>>>>>> ff55c9aa3070330abdda918db06f9f1756a64e79
 Authors@R: c(
     person("Benjamin Leon", "Bodirsky", , "bodirsky@pik-potsdam.de", role = c("aut", "cre")),
-    person("David", "Chen", , "davidch@pik-potsdam.de", role = "aut"), 
+    person("David", "Chen", , "davidch@pik-potsdam.de", role = "aut"),
     person("Michael", "Crawford", , "crawford@pik-potsdam.de", role = "aut"),
     person("Debbora", "Leip", , "leip@pik-potsdam.de", role = "aut"),
     person("Patrick", "von Jeetze", , "vjeetze@pik-potsdam.de", role = "aut"),
@@ -34,6 +39,7 @@ Imports:
     ggplot2,
     ggtext,
     htmlwidgets,
+    luplot,
     madrat,
     magpie4,
     magpiesets,
@@ -49,10 +55,11 @@ Imports:
     stringr,
     terra,
     tidyr,
-    readxl
+    readxl,
+    withr
 Suggests:
     covr,
     flexdashboard,
     testthat
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
