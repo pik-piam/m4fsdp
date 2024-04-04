@@ -10,7 +10,8 @@ SupplPlotsCropShr(
   scenarios = c("BAU", "FSDP"),
   plotyears = c("2020", "2050"),
   panel = "row",
-  combined = TRUE
+  combined = TRUE,
+  HR = TRUE
 )
 }
 \arguments{
@@ -25,6 +26,8 @@ SupplPlotsCropShr(
 \item{panel}{plot regions as "row" or as "matrix"}
 
 \item{combined}{whether regional and global plots should be combined}
+
+\item{HR}{using high resolution data or low resolution data}
 }
 \value{
 Crop share on the y-axis and cropland area in each cluster on the x-axis.

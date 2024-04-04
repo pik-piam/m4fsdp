@@ -86,7 +86,7 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   message("SI extended data ...")
   try(SupplPlotsFSDP(repReg = reg, scenarioType = "manuscript", outFolder = file.path(outputfolder)))
   message("Cropshares ...")
-  try(SupplPlotsCropShr(outputfolder,  file = "supplPlotCropShr.png", scenarios = c("BAU", "FSDP"), plotyears = c("2020", "2050"), combined = FALSE))
+  try(SupplPlotsCropShr(outputfolder,  file = "supplPlotCropShr.png", scenarios = c("BAU", "FSDP"), plotyears = c("2020", "2050"), combined = FALSE, HR = TRUE))
   message("SI validation ...")
   try(validationFSDP(repReg = reg, val = val, regionSel = "aggregate", folder = file.path(outputfolder), scens = "BAU_FSEC"))
   message("Dashboard...")

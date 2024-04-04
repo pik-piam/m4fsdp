@@ -11,6 +11,7 @@ globalVariables(c("gdx", "suppFolder", "Data1", "Value", "Year", "Region", "Crop
 #' @param scenarios scenarios used for plotting
 #' @param plotyears years for the plot
 #' @param combined whether regional and global plots should be combined
+#' @param HR using high resolution data or low resolution data
 #' @details blub
 #' @return Crop share on the y-axis and cropland area in each cluster on the x-axis.
 #' @author Patrick v. Jeetze, Benjamin Bodirsky
@@ -19,7 +20,13 @@ globalVariables(c("gdx", "suppFolder", "Data1", "Value", "Year", "Region", "Crop
 #' @importFrom dplyr case_when filter group_by right_join mutate arrange desc select %>%
 
 SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP"),
-                              plotyears = c("2020", "2050"), panel = "row", combined = TRUE) {
+                              plotyears = c("2020", "2050"),
+                              panel = "row", combined = TRUE, HR = TRUE) {
+  writefolder = outFolder
+  if (HR == TRUE) {
+    outFolder = paste0(outFolder, "/HRc1000/")
+  }
+
   runFolder <- file.path(list.dirs(outFolder, full.names = FALSE, recursive = FALSE))
 
   # Select runs to be displayed
@@ -31,7 +38,7 @@ SupplPlotsCropShr <- function(outFolder, file = NULL, scenarios = c("BAU", "FSDP
   x <- unlist(lapply(strsplit(basename(gdxFolder), "_"), function(x) x[1]))
   if (length(unique(x)) == 1) rev <- unique(x) else stop("version prefix is not identical. Check run outputs")
 
-  suppFolder <- file.path(outFolder, "supplPlots/")
+  suppFolder <- file.path(writefolder, "supplPlots/")
   if (!dir.exists(suppFolder)) {
     dir.create(suppFolder)
   }
