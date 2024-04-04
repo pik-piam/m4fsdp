@@ -2,7 +2,7 @@ modelrun;scenarioname
 SSP2 2020;BASE_SSP2 2020
 SSP2 2050;BASE_SSP2 2050
 Diet;Diets
-DietEmptyCals;Processed 
+DietEmptyCals;LowProcessed
 DietFish;BalancedFish
 DietLegumes;HighLegumes
 DietMonogastrics;LowMonogastrics
@@ -36,9 +36,9 @@ EconDevelop;HumanDevelop
 EnergyTrans;EnergyTrans
 Bioplastics;Bioplastics
 TimberCities;TimberCities
-SSP2fsdp;FST_SSP2_India
-BAU;BASE_SSP2_India
-FSDP;FST_SDP_India
+SSP2fsdp;FST_SSP2
+BAU;BASE_SSP2
+FSDP;FST_SDP
 SSP1bau;BASE_SSP1
 SSP2bau;BASE_SSP2
 SSP3bau;BASE_SSP3
