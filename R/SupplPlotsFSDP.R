@@ -124,6 +124,7 @@ names(colors) <- levels(scens$scenarioname)
 
 
 ####### calorie supply
+message("calorie supply ...")
 kli <- findset("kli")
 kcr <- findset("kcr")
 kfo <- findset("kfo")
@@ -244,6 +245,7 @@ width = filter(food_df[order(food_df$FoodGroup), ],
 }
 
 ### product demand per capita
+message("product demand per capita ...")
 demandCats <- scens[grep("Demand\\|\\+\\|", scens$variable), ]$variable %>%
   unique() %>%
   as.vector()
@@ -321,6 +323,7 @@ if (!is.null(outFolder)) {
 
 
 ###### emissions
+message("emissions ...")
 
 varEmiss <- c("Emissions|CO2|Land|+|Land-use Change",
               "Emissions|CH4|Land|+|Agriculture",
@@ -450,6 +453,7 @@ if (!is.null(outFolder)) {
 
 
 ########## Land Use
+message("landuse ...")
 landVar <- c("Resources|Land Cover|+|Cropland",
              "Resources|Land Cover|+|Pastures and Rangelands",
              "Resources|Land Cover|Forest|Natural Forest|+|Primary Forest",
@@ -537,7 +541,7 @@ if (!is.null(outFolder)) {
 }
 
 ### Crop Area ##########
-
+message("croparea ...")
 # Take soy and groundnut out of oil crops into pulses as legumes,
 # sugar beet + sunflower/raps + potato as OTHER,
 # Bioenergy + sugarcane + oilpalm = plantations (Bioenergy, sugar cane, Oilpalm)
@@ -645,12 +649,12 @@ cropReg <- filter(crop_df, region != "GLO", period == 2050) %>%
 
 yldVar <- c("Productivity|Yield by physical area|Crops|Cereals",
             "Productivity|Yield by physical area|Crops|Oil crops",
-            "Productivity|Yield by physical area|Crops|Other crops|Fruits Vegetables Nuts",                                       
+            "Productivity|Yield by physical area|Crops|Other crops|Fruits Vegetables Nuts",
             "Productivity|Yield by physical area|Pasture",
             "Productivity|Yield by physical area|Bioenergy crops")
 names(yldVar) <- c("Cereals", "Oil Crops", "Fruits and \n Vegetables", "Pasture", "Bioenergy grasses \n and trees")
 
-areaVar <- c("Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals", 
+areaVar <- c("Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals",
                                   "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
                                   "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
                                   "Resources|Land Cover|+|Pastures and Rangelands",
@@ -660,30 +664,30 @@ names(areaVar) <- c("Cereals", "Oil Crops", "Fruits and \n Vegetables", "Pasture
 #2020 area weights for aggregation
 area_df <- filter(scens,
                   period == 2020,
-                  variable %in% areaVar) %>% 
+                  variable %in% areaVar) %>%
             mutate(variable = factor(variable, levels = areaVar,
-                         labels = names(areaVar)))  %>% 
-  droplevels()  %>% 
-  mutate(crop = (sub(".*\\|", "", variable)))  %>% 
-  rename("area" = value)  %>% 
+                         labels = names(areaVar)))  %>%
+  droplevels()  %>%
+  mutate(crop = (sub(".*\\|", "", variable)))  %>%
+  rename("area" = value)  %>%
   select(!c(period, variable, unit))
 
 yld_df <- filter(scens,
                   period <= 2050,
                   period > 2015,
-                  variable %in% yldVar, 
+                  variable %in% yldVar,
                   !RegionG == "World") %>%
           mutate(variable = factor(variable, levels = yldVar,
-                 labels = names(yldVar)))  %>% 
+                 labels = names(yldVar)))  %>%
   droplevels() %>%
-  mutate(crop = (sub(".*\\|", "", variable))) %>% 
-  inner_join(area_df) %>% 
-  mutate(crop = factor(crop, levels = c("Cereals", "Oil Crops", 
+  mutate(crop = (sub(".*\\|", "", variable))) %>%
+  inner_join(area_df) %>%
+  mutate(crop = factor(crop, levels = c("Cereals", "Oil Crops",
                                                 "Fruits and \n Vegetables", "Pasture",
-                                                "Bioenergy grasses \n and trees"))) 
+                                                "Bioenergy grasses \n and trees")))
 
 
-yldGlo <- yld_df  %>% 
+yldGlo <- yld_df  %>%
           group_by(model, scenarioname, scenario, crop, period) %>%
           summarise(value = weighted.mean(value, w = area))
 
@@ -737,17 +741,18 @@ plotYld <- plotYldGlo + plotYldReg +
 
 #                                #
    ### # # Feed Efficiency # # ######
-#         
+#
 
 feedVar <- "Productivity|Feed conversion"
+message("feed conversion ...")
 livstProd <- "Production|+|Livestock products" #needed as weight
 
 lProd <- filter(scens,
                period <= 2050,
                period > 2015,
-               variable %in% livstProd)  %>% 
-        droplevels()  %>% 
-  rename("prod" = value)  %>% 
+               variable %in% livstProd)  %>%
+        droplevels()  %>%
+  rename("prod" = value)  %>%
   select(!c(variable, unit))
 
 feed_df <- filter(scens,
@@ -755,7 +760,7 @@ feed_df <- filter(scens,
                   period > 2015,
                   variable %in% feedVar) %>%
   droplevels() %>%
-  inner_join(lProd)  %>% 
+  inner_join(lProd)  %>%
   group_by(model, scenario, scenarioname, period, RegionG) %>%
   summarise(value = weighted.mean(value, w = prod, na.rm = TRUE))
 
@@ -774,7 +779,7 @@ plotFeedGlo <- ggplot(feedGlo, aes(x = period)) +
    labs(title = "a) Global Feed Conversion")
 plotFeedGlo
 
-feedReg <- filter(feed_df, RegionG != "World") 
+feedReg <- filter(feed_df, RegionG != "World")
 # write.csv(b,file="SI_lu_reg_2100_bar.csv",row.names = FALSE)
  if (!is.null(caseRegion)) {
    feedReg <- feedReg %>% filter(RegionG == selRegion)
@@ -810,7 +815,7 @@ feedReg <- filter(feed_df, RegionG != "World")
 ### # pasture share # ###
 
 ### #               # ###
-
+  message("pasture share ...")
 pshareVar <- "Productivity|Pasture share|Ruminant meat and dairy"
 feedDem <- "Demand|+|Feed" #needed as weight
 
@@ -819,9 +824,9 @@ rshareVar <- "Productivity|Roughage share|Ruminant meat and dairy"
 fDem <- filter(scens,
                period <= 2050,
                period > 2015,
-               variable %in% feedDem)  %>% 
-        droplevels()  %>% 
-  rename("demand" = value)  %>% 
+               variable %in% feedDem)  %>%
+        droplevels()  %>%
+  rename("demand" = value)  %>%
   select(!c(variable, unit))
 
 pshr <- filter(scens,
@@ -829,7 +834,7 @@ pshr <- filter(scens,
                   period > 2015,
                   variable %in% c(pshareVar, rshareVar)) %>%
   droplevels() %>%
-  inner_join(fDem)  %>% 
+  inner_join(fDem)  %>%
   group_by(model, scenarioname, scenario, variable, RegionG, period) %>%
   summarise(value = weighted.mean(value, w = demand, na.rm = TRUE))
 
@@ -895,7 +900,7 @@ pshrReg <- filter(pshr, RegionG != "World")
   plotpshr <- (plotpshrGlo + plotrshrGlo) / plotpshrReg /  plotrshrReg +
     plot_layout(guides = "keep", heights = c(1, 0.7, 0.7))
 plotpshr
- 
+
  if (!is.null(outFolder)) {
    ggsave(filename = file.path(outFolder, "supplPlots",
                                "plotPastShr.png"),
@@ -909,7 +914,7 @@ plotpshr
 
 
 ####### Nitrogen##############
-
+message("nitrogen ...")
 nitrVar <- c("Resources|Nitrogen|Pollution|Surplus|+|Cropland",
              "Resources|Nitrogen|Pollution|Surplus|+|Pasture",
              "Resources|Nitrogen|Pollution|Surplus|+|Animal Waste Management",
@@ -988,20 +993,21 @@ if (!is.null(outFolder)) {
 
 # ########### SNUPE ########### snupe snupe
 #  to be done after variable enters reporting
-# 
+#
+message("snupe ...")
  snupeVar <- "Resources|Nitrogen|Cropland Budget|Soil Nitrogen Uptake Efficiency"
-snupWVar  <- c(  "Resources|Nitrogen|Cropland Budget|Inputs", 
+snupWVar  <- c(  "Resources|Nitrogen|Cropland Budget|Inputs",
               "Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops")
-              
+
 
 
 snupW <- filter(scens,
                period <= 2050,
                period > 2015,
-               variable %in% snupWVar)  %>% 
-        droplevels()  %>% 
-        pivot_wider(names_from = "variable", values_from = "value") %>% 
-        mutate(weight = `Resources|Nitrogen|Cropland Budget|Inputs` - `Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops`)  %>% 
+               variable %in% snupWVar)  %>%
+        droplevels()  %>%
+        pivot_wider(names_from = "variable", values_from = "value") %>%
+        mutate(weight = `Resources|Nitrogen|Cropland Budget|Inputs` - `Resources|Nitrogen|Cropland Budget|Inputs|+|Biological Fixation Symbiotic Crops`)  %>%
         select(model, scenario, region, period, version, scenset, RegionG, scenarioname, weight)
 
 
@@ -1010,7 +1016,7 @@ snup <- filter(scens,
                   period > 2015,
                   variable %in% snupeVar) %>%
   droplevels() %>%
-  inner_join(snupW)  %>% 
+  inner_join(snupW)  %>%
   group_by(model, scenarioname, scenario, variable, RegionG, period) %>%
   summarise(value = weighted.mean(value, w = weight, na.rm = TRUE))
 
@@ -1065,7 +1071,7 @@ if (!is.null(outFolder)) {
 
 
 ############ Water #######
-
+message("water ...")
 waterVar <- "Resources|Water|Withdrawal|Agriculture"
 names(waterVar) <- c("Agricultural Water Withdrawals")
 
@@ -1143,7 +1149,7 @@ if (!is.null(outFolder)) {
 }
 
 ### Health
-
+message("health ...")
 healthVar <-  scens[grep("Nutrition\\|Anthropometrics\\|People", scens$variable), ]$variable %>%  unique()
 names(healthVar) <- c("Normal weight", "Obese", "Overweight", "Underweight")
 
@@ -1290,7 +1296,7 @@ if (!is.null(outFolder)) {
 
 
 ######## EMPLOYMENT ##########
-
+message("employment ...")
 ## Global: Absolute change in employment - global lineplot
 
 empVars <- c("Agricultural employment|Crop and livestock products", # old variable name
@@ -1380,7 +1386,7 @@ if (!is.null(outFolder)) {
 
 
 ##### Hourly Labour Costs ####
-
+message("hourly labor costs ...")
 laborVar <-  as.character(scens$variable[grep("Hourly labor costs$", scens$variable)] %>% unique())
 names(laborVar) <- "Hourly Labor Costs"
 totalHoursVar <- scens$variable[grep("Total Hours Worked", scens$variable)] %>% unique()
@@ -1437,7 +1443,7 @@ if (!is.null(outFolder)) {
 
 
 ######## INEQUALITY INDICATORS ##########
-
+message("inequality ...")
 ineqVar <-  c("Income|Gini Coefficient",
               "Income|Average Income of Lower 40% of Population",
               "Income|Fraction of Population below half of Median Income",
