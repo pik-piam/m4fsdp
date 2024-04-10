@@ -112,7 +112,7 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
 
 
     healthImpacts <- healthImpacts %>%
-        filter(.data$metric %in% c("Years of life lost", "Percent change in Years of life lost")) %>%
+        filter(.data$metric %in% c("Years of life lost", "Attributable deaths")) %>%
         filter(.data$riskFactor == "All risk factors") %>%
         filter(.data$sex == "Both sexes")
 
