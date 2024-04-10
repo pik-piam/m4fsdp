@@ -562,7 +562,7 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Demand|Feed|+|Crop residues",
               varName = "Feed demand for crop residues",
               hist = "FAO",
-              histName = "based on Bodirsky et al 2014 and FAOSTAT 2016")
+              histName = "based on Weindl et al 2017")
 
     combined <- p1 + p2 + p3 + p4 + plot_annotation(tag_levels = "a")
     combined <-
@@ -963,22 +963,27 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Productivity|Yield by physical area|Crops",
               varName = "Average yields",
               weight = "Resources|Land Cover|Cropland|+|Croparea",
-              histweight = "Ostberg2023")
+              histweight = "Ostberg2023",
+              histName = "Ostberg_FAO_Hurtt"
+              )
     p2 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|Cereals",
               varName = "Average cereal yields",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Cereals",
-              histweight = "Ostberg2023")
+              histweight = "Ostberg2023",
+              histName = "Ostberg_FAO_Hurtt")
     p3 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|Oil crops",
               varName = "Average oil crop yields",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|+|Oil crops",
-              histweight = "Ostberg2023")
+              histweight = "Ostberg2023",
+              histName = "Ostberg_FAO_Hurtt")
     p4 <-
       plotVal(var = "Productivity|Yield by physical area|Crops|Other crops|Fruits Vegetables Nuts",
               varName = "Average yield of fruits, vegetables, nuts",
               weight = "Resources|Land Cover|Cropland|Croparea|Crops|Other crops|+|Fruits Vegetables Nuts",
-              histweight = "Ostberg2023")
+              histweight = "Ostberg2023",
+              histName = "Ostberg_FAO_Hurtt")
     p5 <-
       plotVal(
         var = "Productivity|Landuse Intensity Indicator Tau",
@@ -993,7 +998,8 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Productivity|Yield by physical area|Pasture",
               varName = "Average pasture biomass grazed or mowed",
               weight = "Resources|Land Cover|+|Pastures and Rangelands",
-              histweight = "MAgPIEown")
+              histweight = "MAgPIEown",
+              histName = "Weindl_FAO_Hurtt")
 
     combined <-
       p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
