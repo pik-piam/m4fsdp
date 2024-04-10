@@ -313,7 +313,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
   # Inclusion: Share of working age population employed in agriculture
   title   <- "n) Agricultural Employment"
-  unit    <- "pop. share per world region"
+  unit    <- "Pop. share per world region"
   caption <- "Population-weighted cartogram"
 
   b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",

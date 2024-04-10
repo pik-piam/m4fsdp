@@ -293,7 +293,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
   # Inclusion: Share of working age population employed in agriculture
   title <- "f) Agricultural Employment"
-  unit <- "Population share per country"
+  unit <- "Pop. share per world region"
   caption <- "Cartogram projections with areas proportional to population"
 
   b     <- repReg[, .(value = value[variable %in% c("Share of working age population employed in agriculture|Crop and livestock products",
