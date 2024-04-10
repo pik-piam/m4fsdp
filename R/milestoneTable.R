@@ -32,6 +32,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
     return(df)
   }
 
+
   # mapping to economic regions
   lir <- c("SSA", "IND")
   hir <- c("USA", "CAN", "ANZ", "EUR", "JKO", "NEU")
@@ -276,6 +277,15 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   res <- .addRow(res, "Protected areas compared to 2020, global", "Mha", protected, digits = 0)
 
 
+  ## Shannon index
+  shannon <- reportRds[reportRds$variable == "Biodiversity|Shannon crop area diversity index", ]
+  shannon <- as.magpie(shannon)["GLO", , , invert = TRUE]
+
+  cropland <- dimSums(readGDX(gdx, "vm_land")[, , "crop.l"], dim = 1.2)
+  shannon <- toolAggregate(shannon, rel = mapping, weight = cropland, from = "reg", to = "aggregate")
+  res <- .addRow(res, "Croparea diversity Shannon Index", "Index", shannon, lmh = TRUE, digits = 2)
+
+
   ## Inorganic fertilizer
   nBudgetCrop <- reportNitrogenBudgetCropland(gdx)["GLO", , "Fertilizer", pmatch = TRUE]
   nBudgetPast <- reportNitrogenBudgetPasture(gdx)["GLO", , "Fertilizer", pmatch = TRUE]
@@ -358,9 +368,25 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
   ## Gini index
   gini <- reportRds[reportRds$variable == "Income|Gini Coefficient", ]
-  gini <- gini[gini$region == "GLO", ]
+  gini <- as.magpie(gini)["GLO", , ]
 
-  res <- .addRow(res, "Gini, global", "Index", gini[gini$period %in% c(2020, 2030, 2040, 2050), ]$value)
+  res <- .addRow(res, "Gini, global", "Index", gini)
+
+
+  ## People below poverty line
+  poverty <- reportRds[reportRds$variable == "Income|Number of People Below 3p20 USDppp11/day", ]
+  poverty <- as.magpie(poverty)["GLO", , , invert = TRUE]
+  poverty <- toolAggregate(poverty, rel = mapping, from = "reg", to = "aggregate")
+
+  res <- .addRow(res, "People below poverty line", "Mio people", poverty, lmh = TRUE, digits = 0)
+
+
+  ## Mortality
+  mortality <- reportRds[reportRds$variable == "Health|Attributable deaths|Risk|Diet and anthropometrics", ]
+  mortality <- as.magpie(mortality)["GLO", , , invert = TRUE]
+  mortality <- toolAggregate(mortality, rel = mapping, from = "reg", to = "aggregate")
+
+  res <- .addRow(res, "Deaths attributed to dietary risks", "Mio people", mortality, lmh = TRUE, digits = 0)
 
 
   ##  Decrease in mortality
@@ -374,42 +400,6 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   yll$YLLpc <- yll$value / yll$Pop * 365
 
   res <- .addRow(res, "Lifetime per capita lost due to dietary and metabolic risks, global", "Days per year", yll$YLLpc)
-
-
-  ## Cropland landscapes with low natural habitats (<20% (semi)-natural vegetation in a 0.5*0.5° cell), global
-  # NOTE: The Landscape Habitats measure should lead to 0 cropland areas with insufficient landscape habitats in 2050
-  # (i.e. no cells with >80% of available cropland actually used as cropland area). This is true on cluster level
-  # (as enforced within MAgPIE), but no longer on grid-cell level after disaggregation (4.868673% of total cropland
-  # in 2050  are in cells in which more than 80% of available cropland is used as cropland). But on clusterlevel it
-  # is not a good indicator for biodiversity, as the resolution is too coarse --> we don't use this indicator for now.
-
-  # # on cell level
-  # cellCropland <- read.magpie(file.path(scenarioFolder, "cell.land_0.5.mz"))[, , "crop"]
-  # avlCropland <- read.magpie(file.path(scenarioFolder, "avl_cropland_0.5.mz"))[, , "q33_marginal"]
-
-  # cropShr <- cellCropland[, c(2020, 2030, 2040, 2050), ] / avlCropland
-  # cropCells <- cellCropland[, c(2020, 2030, 2040, 2050), ]
-  # cropCells[cropShr[, , "crop"] <= 0.8] <- 0
-
-  # quintShr <- dimSums(cropCells, dim = 1)
-
-  # # share of cropland that is violating the LandscapeHabitat constraint in 2050 (on cell level)
-  # violation2050 <- quintShr[, 2050, ]
-  # cropland2050 <- dimSums(cellCropland[, 2050, ], dim = 1)
-  # shareViolating <- violation2050 / cropland2050
-  # shareViolating * 100
-
-  # # on cluster level
-  # cropland <- land(gdx, level = "cell")[, , "crop"]
-  # avlCropland <- readGDX(gdx, "f30_avl_cropland")[, , "q33_marginal"]
-
-  # cropShr <- cropland[, c(2020, 2030, 2040, 2050), ] / avlCropland
-  # cropShr[cropShr > 1] <- 1
-
-  # cropCells <- cropland[, c(2020, 2030, 2040, 2050), ]
-  # cropCells[cropShr <= 0.8 + 1e-10] <- 0 # using a value slightly over 0.8 to avoid rounding issues
-
-  # quintShr <- dimSums(cropCells, dim = 1)
 
 
   # save results
