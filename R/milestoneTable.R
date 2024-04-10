@@ -382,7 +382,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Mortality
-  mortality <- reportRds[reportRds$variable == "Health|Attributable deaths|Risk|Diet and anthropometrics", ]
+  mortality <- reportRds[reportRds$variable == "Health|Attributable deaths|Disease", ]
   mortality <- as.magpie(mortality)["GLO", , , invert = TRUE]
   mortality <- toolAggregate(mortality, rel = mapping, from = "reg", to = "aggregate")
 
