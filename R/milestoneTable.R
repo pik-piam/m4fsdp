@@ -271,9 +271,9 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Protected Areas
-  protected <- dimSums(reportProtectedArea(gdx), dim = 3)["GLO", , ]
+  protected <- dimSums(reportProtectedArea(gdx), dim = 3)["GLO", , ] / 1000
 
-  res <- .addRow(res, "Protected areas, global", "Mha", protected, digits = 0)
+  res <- .addRow(res, "Protected areas, global", "Gha", protected, digits = 1)
 
 
   ## Shannon index
@@ -351,7 +351,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   empl <- toolAggregate(empl, rel = mapping, from = "reg", to = "aggregate")
   emplRel <- collapseDim(empl[, 2020, ]) - empl
 
-  res <- .addRow(res, "Alternative livelihoods needed for people formerly working in agriculture, difference to 2020", "Mio people", emplRel, lmh = TRUE)
+  res <- .addRow(res, "Alternative livelihoods needed for people formerly working in agriculture, difference to 2020", "Mio people", emplRel, lmh = TRUE, digits = 0)
 
 
   ## Ag. employment share
@@ -386,7 +386,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   mortality <- as.magpie(mortality)["World", , , invert = TRUE]
   mortality <- toolAggregate(mortality, rel = mapping, from = "reg", to = "aggregate")
 
-  res <- .addRow(res, "Deaths attributed to dietary risks", "Mio people", mortality, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Deaths attributed to dietary risks", "Mio people", mortality, lmh = TRUE, digits = 1)
 
 
   ##  Decrease in mortality
@@ -399,7 +399,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
   yll$YLLpc <- yll$value / yll$Pop * 365
 
-  res <- .addRow(res, "Lifetime per capita lost due to dietary and metabolic risks, global", "Days per year", yll$YLLpc)
+  res <- .addRow(res, "Lifetime per capita lost due to dietary and metabolic risks, global", "Days per year", yll$YLLpc, digits = 0)
 
 
   # save results
