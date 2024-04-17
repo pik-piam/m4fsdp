@@ -197,12 +197,12 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Land use intensity Tau
-  tau <- reportTau(gdx)["GLO", , , invert = TRUE]
-  cr <- croparea(gdx, level = "reg", water_aggr = TRUE)
+  #tau <- reportTau(gdx)["GLO", , , invert = TRUE]
+  #cr <- croparea(gdx, level = "reg", water_aggr = TRUE)
 
-  tau <- toolAggregate(tau, rel = mapping, weight = cr, from = "reg", to = "aggregate")
+  #tau <- toolAggregate(tau, rel = mapping, weight = cr, from = "reg", to = "aggregate")
 
-  res <- .addRow(res, "Land use intensity", "Index", tau, lmh = TRUE)
+  #res <- .addRow(res, "Land use intensity", "Index", tau, lmh = TRUE)
 
 
   ## Area used for specific crops + total croparea
