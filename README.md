@@ -1,7 +1,7 @@
 # MAgPIE outputs R package for MAgPIE version 4.x to create outputs
     for FSDP project
 
-R package **m4fsdp**, version **0.57.12**
+R package **m4fsdp**, version **0.57.13**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/m4fsdp)](https://cran.r-project.org/package=m4fsdp) [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7899913.svg)](https://doi.org/10.5281/zenodo.7899913) [![R build status](https://github.com/pik-piam/m4fsdp/workflows/check/badge.svg)](https://github.com/pik-piam/m4fsdp/actions) [![codecov](https://codecov.io/gh/pik-piam/m4fsdp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/pik-piam/m4fsdp) [![r-universe](https://pik-piam.r-universe.dev/badges/m4fsdp)](https://pik-piam.r-universe.dev/builds)
 
@@ -40,7 +40,7 @@ In case of questions / problems please contact Benjamin Leon Bodirsky <bodirsky@
 
 To cite package **m4fsdp** in publications use:
 
-Bodirsky B, Chen D, Crawford M, Leip D, von Jeetze P, Beier F, Molina Bacca E, Dietrich J, Humpenoeder F (2024). _m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi:10.5281/zenodo.7899913 <https://doi.org/10.5281/zenodo.7899913>, R package version 0.57.12, <https://github.com/pik-piam/m4fsdp>.
+Bodirsky B, Chen D, Crawford M, Leip D, von Jeetze P, Beier F, Molina Bacca E, Dietrich J, Humpenoeder F (2024). _m4fsdp: MAgPIE outputs R package for MAgPIE version 4.x to create outputs for FSDP project_. doi: 10.5281/zenodo.7899913 (URL: https://doi.org/10.5281/zenodo.7899913), R package version 0.57.13, <URL: https://github.com/pik-piam/m4fsdp>.
 
 A BibTeX entry for LaTeX users is
 
@@ -50,7 +50,7 @@ A BibTeX entry for LaTeX users is
 for FSDP project},
   author = {Benjamin Leon Bodirsky and David Chen and Michael Crawford and Debbora Leip and Patrick {von Jeetze} and Felicitas Beier and Edna {Molina Bacca} and Jan Philipp Dietrich and Florian Humpenoeder},
   year = {2024},
-  note = {R package version 0.57.12},
+  note = {R package version 0.57.13},
   doi = {10.5281/zenodo.7899913},
   url = {https://github.com/pik-piam/m4fsdp},
 }

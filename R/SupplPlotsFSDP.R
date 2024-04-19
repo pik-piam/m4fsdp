@@ -1099,7 +1099,7 @@ waterGlo <- filter(water_df, region == "GLO")
 plotWaterGlo <- ggplot(waterGlo, aes(x = period)) +
   themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
   ylab("Change compared to 2020 value (in km3)") +
-  geom_line(aes(y = value, color = scenarioname), position = "stack", size = 1.3) +
+  geom_line(aes(y = value, color = scenarioname), size = 1.3) +
 scale_color_manual(values = colors, name = "Scenario") +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(ncol = 2, title.position = "left", byrow = TRUE)) + xlab(NULL) +
