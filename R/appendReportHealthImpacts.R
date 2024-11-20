@@ -11,7 +11,7 @@
 #'
 #' @return NULL
 #'
-#' @importFrom gdx readGDX
+#' @importFrom gdx2 readGDX
 #' @importFrom magclass getSets read.report write.report getItems
 #' @importFrom dplyr %>% mutate select pull filter arrange rename recode
 #' @importFrom stringr str_extract str_replace str_remove str_detect
@@ -24,14 +24,14 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     # -----------------------------------------------------------------------------------------------------------------
     # Format Marco's health impacts dataset
 
-    gdx <- suppressWarnings(readGDX(healthImpacts_gdx, "report_health_s"))
-
-    if (length(getSets(gdx)) == 9 ) { # old versions of health impacts
-        getSets(gdx) <- c("region", "year", "scenario", "metric", "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
-    } else if (length(getSets(gdx)) == 10) { # new version of health impacts
-        getSets(gdx) <- c("region", "year", "mergeScenario", "scenario", "metric", 
-        "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
+    versionNumber <- as.numeric(sub("^v(\\d+).*", "\\1", scenario))
+    if (versionNumber >= 39) {
+        gdx <- readGDX(healthImpacts_gdx, "report_health_s", spatial = "uni_7", temporal = "uni_9")
+        getSets(gdx) <- c("region", "year", "mergeScenario", "scenario", "metric", "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
         gdx <- collapseDim(gdx, dim = "mergeScenario")
+    } else {
+        gdx <- readGDX(healthImpacts_gdx, "report_health_s", spatial = "uni_6", temporal = "uni_8")
+        getSets(gdx) <- c("region", "year", "scenario", "metric", "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
     }
 
     # IMPORTANT NOTE: The variables are misnamed within Marco's datasets. Rather than "deaths avoided" (deaths_avd),
