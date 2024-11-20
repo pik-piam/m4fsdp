@@ -25,8 +25,14 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     # Format Marco's health impacts dataset
 
     gdx <- suppressWarnings(readGDX(healthImpacts_gdx, "report_health_s"))
-    getSets(gdx) <- c("region", "year", "scenario", "metric",
-                      "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
+
+    if (length(getSets(gdx)) == 9 ) { # old versions of health impacts
+        getSets(gdx) <- c("region", "year", "scenario", "metric", "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
+    } else if (length(getSets(gdx)) == 10) { # new version of health impacts
+        getSets(gdx) <- c("region", "year", "mergeScenario", "scenario", "metric", 
+        "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
+        gdx <- collapseDim(gdx, dim = "mergeScenario")
+    }
 
     # IMPORTANT NOTE: The variables are misnamed within Marco's datasets. Rather than "deaths avoided" (deaths_avd),
     # or "years of life lost avoided" (YLL_avd), they are actually "attributable deaths" and "years of life lost".
