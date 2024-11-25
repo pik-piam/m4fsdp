@@ -25,12 +25,36 @@ appendReportHealthImpacts <- function(healthImpacts_gdx, scenario, dir = ".") {
     # Format Marco's health impacts dataset
 
     versionNumber <- as.numeric(sub("^v(\\d+).*", "\\1", scenario))
-    if (versionNumber >= 39) {
-        gdx <- readGDX(healthImpacts_gdx, "report_health_s", spatial = "uni_7", temporal = "uni_9")
+    if (versionNumber == 39) {
+        gdx <- suppressMessages(readGDX(healthImpacts_gdx, "report_health_s", spatial = "uni_7", temporal = "uni_9"))
         getSets(gdx) <- c("region", "year", "mergeScenario", "scenario", "metric", "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
         gdx <- collapseDim(gdx, dim = "mergeScenario")
+
+        gdx[is.na(gdx)] <- 0
+        test <- dimSums(gdx, dim = 3)
+
+        if (length(where(test == 0)$true$regions) > 0) {
+            warning("Some countries have NAs and are therefore filled with other timesteps.",
+                    " Please manually check in case of data update")
+        }
+
+        # Inspect the problematic regions
+        # test[where(test == 0)$true$regions, , ]
+
+        tmp <- where(test[, "y2005", ] == 0)$true$regions
+        gdx[tmp, c("y1995", "y2000", "y2005"), ] <- setYears(gdx[tmp, "y2010", ], NULL)
+
+        tmp <- where(test[, "y1995", ] == 0)$true$regions
+        gdx[tmp, "y1995", ] <- setYears(gdx[tmp, "y2000", ], NULL)
+
+        tmp <- where(test[, "y2020", ] == 0)$true$regions
+        gdx[tmp, c("y2020", "y2030", "y2040", "y2050"), ] <- setYears(gdx[tmp, "y2015", ], NULL)
+
+        tmp <- where(test[, "y2015", ] == 0)$true$regions
+        gdx[tmp, c("y2015", "y2020", "y2030", "y2040", "y2050"), ] <- setYears(gdx[tmp, "y2010", ], NULL)
+
     } else {
-        gdx <- readGDX(healthImpacts_gdx, "report_health_s", spatial = "uni_6", temporal = "uni_8")
+        gdx <- suppressMessages(readGDX(healthImpacts_gdx, "report_health_s", spatial = "uni_6", temporal = "uni_8"))
         getSets(gdx) <- c("region", "year", "scenario", "metric", "TMREL", "riskFactor", "causeOfDeath", "sex", "stat")
     }
 
