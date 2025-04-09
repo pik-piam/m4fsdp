@@ -597,8 +597,8 @@ validationFSDP <-  function(repReg,
               hist = "Weindl_et_al2017",
               histName = "based on Weindl et al 2017 and FAOSTAT CBS 2016")
     p2 <-
-      plotVal(var = "Productivity|Feed conversion|Monogastric meat",
-              varName = "Monogastric feed conversion efficiency",
+      plotVal(var = "Productivity|Feed conversion|Pig meat",
+              varName = "Pig feed conversion efficiency",
               weight = "Production|+|Livestock products",
               histweight = "FAO",
               hist = "Weindl_et_al2017",

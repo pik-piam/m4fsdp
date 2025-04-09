@@ -65,7 +65,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   # otherSecondary <- dimSums(consumption[, , c("Brans", "Molasses", "Oils"), pmatch = TRUE], dim = 3)
 
   # fish <- consumption[, , "Fish ", pmatch = TRUE]
-  monogastric <- consumption[, , c("Monogastric"), pmatch = TRUE]
+  monogastric <- consumption[, , c("Pig"), pmatch = TRUE]
   ruminant <- consumption[, , c("Ruminant"), pmatch = TRUE]
   dairy <- consumption[, , c("Dairy"), pmatch = TRUE]
   poultryEggs <- dimSums(consumption[, , c("Poultry",  "Eggs"), pmatch = TRUE], dim = 3)
@@ -82,7 +82,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   # res <- .addRow(res, "Per-capita supply of other secondary products", "kcal/capita/day", otherSecondary, lmh = TRUE, digits = 0)
 
   # res <- .addRow(res, "Per-capita supply of fish", "kcal/capita/day", fish, lmh = TRUE, digits = 0)
-  res <- .addRow(res, "Per-capita supply of monogastric meat", "kcal/capita/day", monogastric, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita supply of pig meat", "kcal/capita/day", monogastric, lmh = TRUE, digits = 0)
   res <- .addRow(res, "Per-capita supply of ruminant meat", "kcal/capita/day", ruminant, lmh = TRUE, digits = 0)
   res <- .addRow(res, "Per-capita supply of dairy products", "kcal/capita/day", dairy, lmh = TRUE, digits = 0)
   res <- .addRow(res, "Per-capita supply of poultry and eggs", "kcal/capita/day", poultryEggs, lmh = TRUE, digits = 0)
@@ -104,7 +104,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   # otherSecondary <- dimSums(intake[, , c("Brans", "Molasses", "Oils"), pmatch = TRUE], dim = 3)
 
   # fish <- intake[, , "Fish ", pmatch = TRUE]
-  monogastric <- intake[, , c("Monogastric"), pmatch = TRUE]
+  monogastric <- intake[, , c("Pig"), pmatch = TRUE]
   ruminant <- intake[, , c("Ruminant"), pmatch = TRUE]
   dairy <- intake[, , c("Dairy"), pmatch = TRUE]
   poultryEggs <- dimSums(intake[, , c("Poultry",  "Eggs"), pmatch = TRUE], dim = 3)
@@ -121,7 +121,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   # res <- .addRow(res, "Per-capita intake of other secondary products", "kcal/capita/day", otherSecondary, lmh = TRUE, digits = 0)
 
   # res <- .addRow(res, "Per-capita intake of fish", "kcal/capita/day", fish, lmh = TRUE, digits = 0)
-  res <- .addRow(res, "Per-capita intake of monogastric meat", "kcal/capita/day", monogastric, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Per-capita intake of pig meat", "kcal/capita/day", monogastric, lmh = TRUE, digits = 0)
   res <- .addRow(res, "Per-capita intake of ruminant meat", "kcal/capita/day", ruminant, lmh = TRUE, digits = 0)
   res <- .addRow(res, "Per-capita intake of dairy products", "kcal/capita/day", dairy, lmh = TRUE, digits = 0)
   res <- .addRow(res, "Per-capita intake of poultry and eggs", "kcal/capita/day", poultryEggs, lmh = TRUE, digits = 0)
@@ -188,11 +188,11 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   feed <- toolAggregate(feed, rel = mapping, weight = productionLivst, from = "reg", to = "aggregate")
 
   rumDairy <- feed[, , "Productivity|Feed conversion|Ruminant meat and dairy (GE per GE)"]
-  monogastric <- feed[, , "Productivity|Feed conversion|Monogastric meat (GE per GE)"]
+  monogastric <- feed[, , "Productivity|Feed conversion|Pig meat (GE per GE)"]
   poultry <- feed[, , "Productivity|Feed conversion|Poultry meat and eggs (GE per GE)"]
 
   res <- .addRow(res, "Feed conversion for ruminant meat and dairy, global", "GE per GE", rumDairy, lmh = TRUE, digits = 1)
-  res <- .addRow(res, "Feed conversion for monogastric meat, global", "GE per GE", monogastric, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Feed conversion for pig meat, global", "GE per GE", monogastric, lmh = TRUE, digits = 1)
   res <- .addRow(res, "Feed conversion for poultry meat and eggs, global", "GE per GE", poultry, lmh = TRUE, digits = 1)
 
 
@@ -377,7 +377,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   poverty <- as.magpie(poverty)["GLO", , , invert = TRUE]
   poverty <- toolAggregate(poverty, rel = mapping, from = "reg", to = "aggregate")
 
-  res <- .addRow(res, "People below poverty line", "Mio people", poverty, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "People below poverty line of $3.20", "Mio people", poverty, lmh = TRUE, digits = 0)
 
 
   ## Mortality
