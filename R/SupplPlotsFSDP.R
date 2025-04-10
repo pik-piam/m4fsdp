@@ -1181,8 +1181,7 @@ health_df <- health_df[-which(health_df$period == 2020 & health_df$scenarioname 
 #   guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
 # # healthGloP
 
-healthReg <- filter(health_df, region != "GLO", period %in% c(2020, 2050),
-                    scenarioname %in% c("BASE_SSP2", "Agriculture",  "Diets", "CrossSector", "FST_SSP2", "FST_SDP")) %>%
+healthReg <- filter(health_df, region != "GLO", period %in% c(2020, 2050)) %>% 
   group_by(model, scenarioname, scenario, variable, period, RegionG) %>%
   summarise(value = sum(value)) %>%
   mutate(scenarioname = factor(scenarioname, levels = rev(levels(scenarioname))))
@@ -1210,10 +1209,10 @@ plotHealthReg <- ggplot(healthReg, aes(y = scenarioname)) +
 if (!is.null(outFolder)) {
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotHealth.png"),
-         plotHealthReg, width = 8.6, height = 6, scale = 1.5, bg = "white")
+         plotHealthReg, width = 8.6, height = 8, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotHealth.pdf"),
-         plotHealthReg, width = 8.6, height = 6, scale = 1.5, bg = "white")
+         plotHealthReg, width = 8.6, height = 8, scale = 1.5, bg = "white")
 }
 
 ## Marco health output indicators NOTE here the GLO region is "World", re-set appropriately if he fixes
