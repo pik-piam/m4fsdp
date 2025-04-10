@@ -1151,7 +1151,7 @@ if (!is.null(outFolder)) {
 ### Health
 message("health ...")
 healthVar <-  scens[grep("Nutrition\\|Anthropometrics\\|People", scens$variable), ]$variable %>%  unique()
-names(healthVar) <- c("Normal weight", "Obese", "Overweight", "Underweight")
+names(healthVar) <- c("Underweight", "Normal weight", "Overweight", "Obese")
 
 
 health_df <- filter(scens,

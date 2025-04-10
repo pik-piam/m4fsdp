@@ -271,9 +271,9 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Protected Areas
-  protected <- dimSums(reportProtectedArea(gdx), dim = 3)["GLO", , ]
+ # protected <- dimSums(reportProtectedArea(gdx), dim = 3)["GLO", , ]
 
-  res <- .addRow(res, "Protected areas, global", "Mha", protected, digits = 0)
+ # res <- .addRow(res, "Protected areas, global", "Mha", protected, digits = 0)
 
 
   ## Shannon index
