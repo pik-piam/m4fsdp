@@ -377,7 +377,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
     guides(fill = guide_colorbar(title.position = "top", title.hjust = 1, barwidth = 44, barheight = 0.4)) +
     geom_text(aes(label = scenario), x = labelXGrid, y = labelYGrid,
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
-  ggsave("test44.png",plotCROPDIV)
+  #ggsave("test44.png",plotCROPDIV)
 
 
   # Environment: Nutrient Surplus

@@ -957,6 +957,111 @@ validationFSDP <-  function(repReg,
     )
 
 
+    #Net-Trade
+    p1 <-
+      plotVal(var = "Trade|Net-Trade|+|Crops",
+              varName = "Trade|Net-Trade|+|Crops") +
+      scale_y_continuous(expand = c(0, 0), limits = c(NA, NA))
+    p2 <-
+      plotVal(var = "Trade|Net-Trade|+|Livestock products",
+              varName = "Trade|Net-Trade|+|Livestock products") +
+      scale_y_continuous(expand = c(0, 0), limits = c(NA, NA))
+    p3 <-
+      plotVal(var = "Trade|Net-Trade|+|Secondary products",
+              varName = "Trade|Net-Trade|+|Secondary products") +
+      scale_y_continuous(expand = c(0, 0), limits = c(NA, NA))
+
+    combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
+    combined <-
+      combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
+                             ncol = 2) &
+      theme(
+        legend.position = "bottom",
+        legend.box = ifelse(scens == "BAU_FSEC", "horizontal", "vertical")
+      )
+    ggsave(
+      filename = file.path(folder, paste(rev, "valTrade.png", sep = "_")),
+      combined,
+      width = 10,
+      height = 6.7,
+      scale = 1.3
+    )
+    ggsave(
+      filename = file.path(folder, paste(rev, "valTrade.pdf", sep = "_")),
+      combined,
+      width = 10,
+      height = 6.7,
+      scale = 1.3
+    )
+
+    #Production
+    p1 <-
+      plotVal(var = "Production|+|Crops",
+              varName = "Production|+|Crops")
+    p2 <-
+      plotVal(var = "Production|+|Livestock products",
+              varName = "Production|+|Livestock products")
+    p3 <-
+      plotVal(var = "Production|+|Secondary products",
+              varName = "Production|+|Secondary products")
+
+    combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
+    combined <-
+      combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
+                             ncol = 2) &
+      theme(
+        legend.position = "bottom",
+        legend.box = ifelse(scens == "BAU_FSEC", "horizontal", "vertical")
+      )
+    ggsave(
+      filename = file.path(folder, paste(rev, "valProduction.png", sep = "_")),
+      combined,
+      width = 10,
+      height = 6.7,
+      scale = 1.3
+    )
+    ggsave(
+      filename = file.path(folder, paste(rev, "valProduction.pdf", sep = "_")),
+      combined,
+      width = 10,
+      height = 6.7,
+      scale = 1.3
+    )
+
+    #Self-sufficiency
+    p1 <-
+      plotVal(var = "Trade|Self-sufficiency|Crops|Cereals",
+              varName = "Trade|Self-sufficiency|Crops|Cereals")
+    p2 <-
+      plotVal(var = "Trade|Self-sufficiency|Livestock products",
+              varName = "Trade|Self-sufficiency|Livestock products")
+    p3 <-
+      plotVal(var = "Trade|Self-sufficiency|Secondary products",
+              varName = "Trade|Self-sufficiency|Secondary products")
+
+    combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
+    combined <-
+      combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
+                             ncol = 2) &
+      theme(
+        legend.position = "bottom",
+        legend.box = ifelse(scens == "BAU_FSEC", "horizontal", "vertical")
+      )
+    ggsave(
+      filename = file.path(folder, paste(rev, "valSelfSuff.png", sep = "_")),
+      combined,
+      width = 10,
+      height = 6.7,
+      scale = 1.3
+    )
+    ggsave(
+      filename = file.path(folder, paste(rev, "valSelfSuff.pdf", sep = "_")),
+      combined,
+      width = 10,
+      height = 6.7,
+      scale = 1.3
+    )
+
     # Yields
 
     p1 <-

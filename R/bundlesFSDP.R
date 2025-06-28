@@ -78,9 +78,9 @@ bundlesFSDP <- function(repReg, regionSel = "GLO", file = NULL) {
     }
     for (count in seq_along(singles)) {
       if (count < length(singles)) {
-        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", names(singles)[count], "</span>", sep))
+        single_label <- paste0(single_label, paste0("<span style='color:", colors[paste0("single", count)],";'>", names(singles)[count], "</span>", sep))
       } else {
-        single_label <- paste0(single_label, paste0("<span style='color: ", colors[paste0("single", count)], "'>", names(singles)[count], "</span>"))
+        single_label <- paste0(single_label, paste0("<span style='color:", colors[paste0("single", count)],";'>", names(singles)[count], "</span>"))
       }
       x[, "bundle" := single_label]
       x[get("scenario") %in% singles[count], "scenCol" := paste0("single", count)]
