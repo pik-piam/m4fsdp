@@ -18,7 +18,7 @@ plotFSDP(
 \arguments{
 \item{outputfolder}{output folder}
 
-\item{reg}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.}
+\item{reg}{rds file of all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.}
 
 \item{iso}{rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.}
 
