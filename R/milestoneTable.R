@@ -1,3 +1,4 @@
+globalVariables(c("reportProtectedArea"))
 #' @title milestoneTable
 #' @description Creates csv with values for SI table on milestones
 #'
@@ -174,11 +175,11 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   yPasture <- toolAggregate(yPasture, rel = mapping, weight = aPasture, from = "reg", to = "aggregate")
   yBioenergy <- toolAggregate(yBioenergy, rel = mapping, weight = aBioenergy, from = "reg", to = "aggregate")
 
-  res <- .addRow(res, "Cereal yields with fixed area weights from 2020, global", "t DM/ha", yCereal, lmh = TRUE, digits = 1)
-  res <- .addRow(res, "Oil crop yields with fixed area weights from 2020, global", "t DM/ha", yOilcrops, lmh = TRUE, digits = 1)
-  res <- .addRow(res, "Fruits, vergetables and nuts yields with fixed area weights from 2020, global", "t DM/ha", yFruitsVegNuts, lmh = TRUE, digits = 1)
-  res <- .addRow(res, "Pasture yields with fixed area weights from 2020, global", "t DM/ha", yPasture, lmh = TRUE, digits = 1)
-  res <- .addRow(res, "Short rotation bioenergy crop yields with fixed area weights from 2020, global", "t DM/ha", yBioenergy, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Cereal yields with fixed area weights from 2020", "t DM/ha", yCereal, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Oil crop yields with fixed area weights from 2020", "t DM/ha", yOilcrops, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Fruits, vergetables and nuts yields with fixed area weights from 2020", "t DM/ha", yFruitsVegNuts, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Pasture yields with fixed area weights from 2020", "t DM/ha", yPasture, lmh = TRUE, digits = 1)
+  res <- .addRow(res, "Short rotation bioenergy crop yields with fixed area weights from 2020", "t DM/ha", yBioenergy, lmh = TRUE, digits = 1)
 
 
   ## Feed conversion
@@ -232,7 +233,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Total managed forest area
-  managed <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|+|Managed Forest (million ha)"]
+  managed <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|+|Planted Forest (million ha)"]
 
   res <- .addRow(res, "Managed forest area, global", "Mha", managed, digits = 0)
 
@@ -253,7 +254,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Timber plantation, global
-  plantations <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|Managed Forest|+|Plantations (million ha)"]
+  plantations <- reportLandUse(gdx)["GLO", , "Resources|Land Cover|Forest|Planted Forest|+|Plantations (million ha)"]
 
   res <- .addRow(res, "Timber plantations, global", "Mha", plantations, digits = 0)
 
@@ -271,9 +272,9 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Protected Areas
- # protected <- dimSums(reportProtectedArea(gdx), dim = 3)["GLO", , ]
+  protected <- dimSums(reportProtectedArea(gdx), dim = 3)["GLO", , ]
 
- # res <- .addRow(res, "Protected areas, global", "Mha", protected, digits = 0)
+  res <- .addRow(res, "Protected areas, global", "Mha", protected, digits = 0)
 
 
   ## Shannon index
@@ -326,12 +327,25 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Anthropogenic LUC emissions & AFOLU emissions
-  emissions <- reportEmissions(gdx)["GLO", , ]
-  luc <- emissions[, , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"] / 1000 # to giga tonnes
-  afolu <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
+  emissions <- reportEmissions(gdx)
+  luc <- emissions["GLO", , "Emissions|CO2|Land|+|Land-use Change (Mt CO2/yr)"] / 1000 # to giga tonnes
+  afolu <- emissions["GLO", , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
 
   res <- .addRow(res, "Anthropogenic LUC emissions, global", "Gt CO2/yr", luc, digits = 1)
   res <- .addRow(res, "AFOLU emissions, global", "Gt CO2eq/yr", afolu, digits = 1)
+
+  afolu <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"] 
+  afoluPc <- afolu["GLO", , , invert = TRUE] / pop * 10^3 # from Gt/mio people (= thousand t/capita) to t/capita
+  afoluPc <- toolAggregate(afoluPc, rel = mapping, from = "reg", to = "aggregate", weight = pop)
+
+  res <- .addRow(res, "AFOLU emissions per capita", "t CO2eq/capita/yr", afoluPc, lmh = TRUE, digits = 2)
+
+  # prod <- production(gdx = gdx, level = "reg", products = "kall")  # Mt DM/yr
+  # iniPrices <- readGDX(gdx, "f15_prices_initial")    # USD17MER per t DM
+  # value <- toolAggregate(prod * iniPrices, rel = mapping, from = "reg", to = "aggregate") # mio. USD17MER/yr
+  # afolu <- toolAggregate(afolu["GLO", , , invert = TRUE], rel = mapping, from = "reg", to = "aggregate") # Gt CO2e/yr
+  # afoluPerOutput <- afolu / dimSums(value, dim = 3) # Gt CO2e/mio. USD17MER = thousand t CO2eq / USD17MER
+  # afoluPerOutput <- afoluPerOutput * 10^6 # thousand t -> kg /USD17MER
 
 
   ## Labor productivity
@@ -367,39 +381,54 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
   ## Gini index
   gini <- reportRds[reportRds$variable == "Income|Gini Coefficient", ]
-  gini <- as.magpie(gini)["GLO", , ]
-
-  res <- .addRow(res, "Gini, global", "Index", gini)
+  if (nrow(gini) > 0) {
+    gini <- as.magpie(gini)["GLO", , ]
+    res <- .addRow(res, "Gini, global", "Index", gini)
+  } else {
+    warning("No Gini index found in report.rds. Skipping this row.")
+  }
 
 
   ## People below poverty line
   poverty <- reportRds[reportRds$variable == "Income|Number of People Below 3p20 USDppp11/day", ]
-  poverty <- as.magpie(poverty)["GLO", , , invert = TRUE]
-  poverty <- toolAggregate(poverty, rel = mapping, from = "reg", to = "aggregate")
+  if (nrow(poverty) > 0) {
+    poverty <- as.magpie(poverty)["GLO", , , invert = TRUE]
+    poverty <- toolAggregate(poverty, rel = mapping, from = "reg", to = "aggregate")
 
-  res <- .addRow(res, "People below poverty line of $3.20", "Mio people", poverty, lmh = TRUE, digits = 0)
+    res <- .addRow(res, "People below poverty line of $3.20", "Mio people", poverty, lmh = TRUE, digits = 0)
+  } else {
+    warning("No poverty data found in report.rds. Skipping this row.")
+  }
 
 
   ## Mortality
   mortality <- reportRds[reportRds$variable == "Health|Attributable deaths|Disease", ]
-  mortality <- as.magpie(mortality)["GLO", , , invert = TRUE]
-  mortality <- as.magpie(mortality)["World", , , invert = TRUE]
-  mortality <- toolAggregate(mortality, rel = mapping, from = "reg", to = "aggregate")
+  if (nrow(mortality) > 0) {
+    mortality <- as.magpie(mortality)["GLO", , , invert = TRUE]
+    mortality <- as.magpie(mortality)["World", , , invert = TRUE]
+    mortality <- toolAggregate(mortality, rel = mapping, from = "reg", to = "aggregate")
 
-  res <- .addRow(res, "Deaths attributed to dietary risks", "Mio people", mortality, lmh = TRUE, digits = 1)
+    res <- .addRow(res, "Deaths attributed to dietary risks", "Mio people", mortality, lmh = TRUE, digits = 1)
+  } else {
+    warning("No mortality data found in report.rds. Skipping this row.")
+  }
 
 
   ##  Decrease in mortality
   yll <- reportRds[reportRds$variable == "Health|Years of life lost|Disease" & reportRds$region == "World" & reportRds$period %in% c(2020, 2030, 2040, 2050), ]
 
-  popGlo <- as.data.frame(dimSums(pop, dim = 1)[, c(2020, 2030, 2040, 2050), ])[, c("Year", "Value")]
-  popGlo$Year <- as.integer(levels(popGlo$Year))
-  colnames(popGlo) <- c("Year", "Pop")
-  yll <- dplyr::right_join(yll, popGlo[, c("Year", "Pop")], by = c("period" = "Year"))
+  if (nrow(yll) == 0) {
+    popGlo <- as.data.frame(dimSums(pop, dim = 1)[, c(2020, 2030, 2040, 2050), ])[, c("Year", "Value")]
+    popGlo$Year <- as.integer(levels(popGlo$Year))
+    colnames(popGlo) <- c("Year", "Pop")
+    yll <- dplyr::right_join(yll, popGlo[, c("Year", "Pop")], by = c("period" = "Year"))
 
-  yll$YLLpc <- yll$value / yll$Pop * 365
+    yll$YLLpc <- yll$value / yll$Pop * 365
 
-  res <- .addRow(res, "Lifetime per capita lost due to dietary and metabolic risks, global", "Days per year", yll$YLLpc, digits = 0)
+    res <- .addRow(res, "Lifetime per capita lost due to dietary and metabolic risks, global", "Days per year", yll$YLLpc, digits = 0)
+  } else {
+    warning("No YLL data found in report.rds. Skipping this row.")
+  }
 
 
   # save results
