@@ -1316,7 +1316,7 @@ plotEmpGlo <- ggplot(emp_df, aes(x = period)) +
   theme(legend.position = "bottom") +
   guides(fill = guide_legend(ncol = 8, title.position = "left", byrow = TRUE, reverse = FALSE)) + xlab(NULL) +
   scale_color_manual(values = colors, name = "Scenario") +
-  labs(title = "a) Number of People Employed in Agriculture")
+  labs(title = "a) Labor Demand in Agriculture")
 
 
 ## Regional: abolute change 2020 to 2050 - barplot
@@ -1364,9 +1364,9 @@ plotEmpReg <- ggplot(empReg, aes(y = scenarioname)) +
   theme(legend.position = "bottom", strip.text = element_text(angle = 0, size = 14),
         axis.text = element_text(size = 14)) +
   guides(fill = element_blank()) +
-  xlab("Regional agricultural employment compared to 2020 in mio. people") +
+  xlab("Regional agricultural labor demand compared to 2020 in mio. people") +
   scale_x_continuous(guide = guide_axis(check.overlap = TRUE), breaks = pretty_breaks()) +
-  labs(title = "b) Regional agricultural employment 2050 rel. to 2020")
+  labs(title = "b) Regional agricultural labor demand 2050 rel. to 2020")
 
 plotEmpReg <- plotEmpReg + geom_blank(data = facet_bounds, aes(x = value, y = scenarioname))
 

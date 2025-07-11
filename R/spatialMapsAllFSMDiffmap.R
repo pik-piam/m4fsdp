@@ -312,7 +312,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title   <- "n) Agricultural Employment"
+  title   <- "n) Agricultural Labor Demand"
   unit    <- "Pop. share per world region"
   caption <- "Population-weighted cartogram"
 
@@ -340,7 +340,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   # Inclusion: Hourly labor costs in agriculture
   title   <- "o) Agricultural Wages"
   unit    <- "USD per hour"
-  caption <- "Employment-weighted cartogram" # with areas proportional to agricultural employment
+  caption <- "Labor Demand-weighted cartogram" # with areas proportional to agricultural employment
   b       <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
                     by = .(model, scenario, region, period)]
   b       <- bdiff(b=b,subset=subset)

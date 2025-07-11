@@ -292,7 +292,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
 
 
   # Inclusion: Share of working age population employed in agriculture
-  title <- "f) Agricultural Employment"
+  title <- "f) Agricultural Labor Demand"
   unit <- "Pop. share per world region"
   caption <- "Cartogram projections with areas proportional to population"
 
@@ -318,7 +318,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
   # Inclusion: Hourly labor costs in agriculture
   title <- "g) Agricultural Wages"
   unit <- "USD per hour"
-  caption <- "Cartogram projections with areas proportional to agricultural employment"
+  caption <- "Cartogram projections with areas proportional to agricultural labor demand"
   b     <- repReg[, .(value = value[variable %in% c("Hourly labor costs", "Labor|Wages|Hourly labor costs")]),
                     by = .(model, scenario, region, period)]
   all   <- merge(reg2iso, b)

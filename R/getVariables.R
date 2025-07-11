@@ -43,8 +43,8 @@ getVariables <- function(reportVariables = NULL) {
                   "Environment|9|Global Surface Air Warming|deg. C rel. to 1951-1980|decrease|2|1",
                   "Inclusion|10|Expenditure on Ag. Products|USD/person/yr|decrease|0|1",
                   "Inclusion|11|Poverty|Mio people below 3.20$/day|decrease|0|1",
-                  "Inclusion|12|Ag. Employment|Mio people|increase|0|1",
-                  "Inclusion|12|Ag. Employment|Mio people|increase|0|1",
+                  "Inclusion|12|Ag. Labor Demand|Mio people|increase|0|1",
+                  "Inclusion|12|Ag. Labor Demand|Mio people|increase|0|1",
                   "Inclusion|13|Ag. Wages|Index rel. to 2010|increase|2|1",
                   "Economy|14|Bioeconomy Supply|Billion US$05/yr|increase|0|0.001",
                   "Economy|15|Production Costs|Billion US$05/yr|decrease|0|0.001")

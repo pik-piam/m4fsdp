@@ -376,7 +376,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
   emplShare <- (empl / popWa) * 100
 
-  res <- .addRow(res, "Share of working age population employed in agriculture, global", "Percent", emplShare, lmh = TRUE, digits = 0)
+  res <- .addRow(res, "Labor demand in agriculture as share of working age population, global", "Percent", emplShare, lmh = TRUE, digits = 0)
 
 
   ## Gini index
