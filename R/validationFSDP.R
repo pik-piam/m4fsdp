@@ -1030,14 +1030,26 @@ validationFSDP <-  function(repReg,
 
     #Self-sufficiency
     p1 <-
-      plotVal(var = "Trade|Self-sufficiency|Crops|Cereals",
-              varName = "Trade|Self-sufficiency|Crops|Cereals")
+      plotVal(var = "Trade|Self-sufficiency|Crops",
+              varName = "Trade|Self-sufficiency|Crops",
+              weight = "Demand|++|Crops",
+              histweight = "FAO",
+              histName = "based on FAOSTAT CBS 2016"
+              )
     p2 <-
       plotVal(var = "Trade|Self-sufficiency|Livestock products",
-              varName = "Trade|Self-sufficiency|Livestock products")
+              varName = "Trade|Self-sufficiency|Livestock products",
+              weight = "Demand|++|Livestock products",
+              histweight = "FAO",
+              histName = "based on FAOSTAT CBS 2016"
+      )
     p3 <-
       plotVal(var = "Trade|Self-sufficiency|Secondary products",
-              varName = "Trade|Self-sufficiency|Secondary products")
+              varName = "Trade|Self-sufficiency|Secondary products",
+              weight = "Demand|++|Secondary products",
+              histweight = "Ostberg2023",
+              histName = "based on FAOSTAT CBS 2016"
+      )
 
     combined <- p1 + p2 + p3 + plot_annotation(tag_levels = "a")
     combined <-
