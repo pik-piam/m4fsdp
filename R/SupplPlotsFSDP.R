@@ -551,14 +551,14 @@ cropVar <- c(scens[grep("Cropland\\|Croparea\\|Crops\\|Cereals\\|\\+", scens$var
              scens[grep("Cropland\\|Croparea\\|Crops\\|Sugar crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              scens[grep("Cropland\\|Croparea\\|Crops\\|Other crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              scens[grep("Cropland\\|Croparea\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             "Resources|Land Cover|Cropland|+|fallow")
+             "Resources|Land Cover|Cropland|+|Fallow Cropland")
 
 cereals <- cropVar[grep("Cereals", cropVar)]
 legumes <- cropVar[grep("Soy|Pulse|Groundnut", cropVar)]
 plantations <- cropVar[grep("Bioenergy|cane|Oilpalm", cropVar)]
 fruits <- cropVar[grep("Fruits", cropVar)]
 other <- cropVar[grep("beet|Sunflower|rapeseed|Potato|Cotton|roots", cropVar)]
-fallow <- "Resources|Land Cover|Cropland|+|fallow"
+fallow <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
 
 crop_df <- filter(scens,
                   period <= 2050,

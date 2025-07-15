@@ -70,6 +70,8 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   if (!is.data.frame(val)) val <- readRDS(val)
   if (!is.data.frame(reg2iso)) reg2iso <- readRDS(reg2iso)
 
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Cropland|+|fallow"] <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
+
   message("Plotting figures ...")
   message("heatmaps ...")
   try(heatmapFSDP(reg, tableType = 1,    file = file.path(outputfolder, paste0(rev, "_FSDP_heatmap1.png"))))
