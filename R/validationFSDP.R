@@ -1050,7 +1050,7 @@ validationFSDP <-  function(repReg,
               varName = "Trade|Self-sufficiency|Secondary products",
               weight = "Demand|++|Secondary products",
               hist = "FAO",
-              histweight = "Ostberg2023",
+              histweight = "FAO",
               histName = "based on FAOSTAT CBS 2016"
       )
 
