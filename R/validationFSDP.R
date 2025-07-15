@@ -280,7 +280,7 @@ validationFSDP <-  function(repReg,
           b <- droplevels(b)
           units <- levels(b$unit)
           unitHist <-
-            levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
+            levels(val$unit)[which(levels(val$unit) == units)][1]
           if (is.null(hist)) {
             h <-
               val[val$variable == var &
