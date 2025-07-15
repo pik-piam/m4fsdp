@@ -1033,6 +1033,7 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Trade|Self-sufficiency|Crops",
               varName = "Trade|Self-sufficiency|Crops",
               weight = "Demand|++|Crops",
+              hist = "FAO",
               histweight = "FAO",
               histName = "based on FAOSTAT CBS 2016"
               )
@@ -1040,6 +1041,7 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Trade|Self-sufficiency|Livestock products",
               varName = "Trade|Self-sufficiency|Livestock products",
               weight = "Demand|++|Livestock products",
+              hist = "FAO",
               histweight = "FAO",
               histName = "based on FAOSTAT CBS 2016"
       )
@@ -1047,6 +1049,7 @@ validationFSDP <-  function(repReg,
       plotVal(var = "Trade|Self-sufficiency|Secondary products",
               varName = "Trade|Self-sufficiency|Secondary products",
               weight = "Demand|++|Secondary products",
+              hist = "FAO",
               histweight = "Ostberg2023",
               histName = "based on FAOSTAT CBS 2016"
       )

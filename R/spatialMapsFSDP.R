@@ -480,7 +480,7 @@ spatialMapsFSDP <- function(repReg, repIso, repGrid, reg2iso, file = NULL, recal
               hjust = 0, vjust = 0, color = "white", size = 18 / .pt, lineheight = 0.7)
 
   # Cost:Production cost agriculture per capita
-  title <- "o) Production Costs"
+  title <- "o) Production-Factor Use"
   unit  <- "US$05/capita/yr"
   caption <- "Cartogram projections with areas proportional to population"
   b     <- repReg[, .(value = value[variable == "Costs Without Incentives"] /

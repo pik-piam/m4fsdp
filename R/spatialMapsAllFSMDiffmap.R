@@ -524,7 +524,7 @@ spatialMapsAllFSMDiffmap <- function(repReg, repIso, repGrid, reg2iso, file = NU
   #ggsave("plotBIOECON.png",plotBIOECON)
 
   # Cost: Production cost agriculture per capita
-  title   <- "k) Production Costs"
+  title   <- "k) Production-Factor Use"
   unit    <- "US$05/capita/yr"
   caption <- "Population-weighted cartogram"
   b     <- repReg[, .(value = value[variable == "Costs Without Incentives"] /
