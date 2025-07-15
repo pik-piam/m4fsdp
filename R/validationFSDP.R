@@ -280,7 +280,7 @@ validationFSDP <-  function(repReg,
           b <- droplevels(b)
           units <- levels(b$unit)
           unitHist <-
-            levels(val$unit)[grep(units, levels(val$unit), fixed = TRUE)][1]
+            levels(val$unit)[which(levels(val$unit) == units)][1]
           if (is.null(hist)) {
             h <-
               val[val$variable == var &
@@ -710,7 +710,7 @@ validationFSDP <-  function(repReg,
               histName = "based on FAOSTAT CBS 2016")
     p2 <-
       plotVal(var = "Production|+|Secondary products",
-              varName = "Primary-processed production of oils, sugar, alcohol and byproducts",
+              varName = "Primary-processed production: oils, sugar, alcohol, byproducts",
               hist = "FAO",
               histName = "based on FAOSTAT CBS 2016")
     p3 <-
@@ -822,7 +822,7 @@ validationFSDP <-  function(repReg,
               varName = "Croparea cropped",
               unitName = "Mha physical area")
     p2 <-
-      plotVal(var = "Resources|Land Cover|Cropland|+|Fallow Cropland",
+      plotVal(var = "Resources|Land Cover|Cropland|+|fallow",
               varName = "Croparea fallow",
               unitName = "Mha physical area")
     p3 <-

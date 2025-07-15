@@ -551,14 +551,14 @@ cropVar <- c(scens[grep("Cropland\\|Croparea\\|Crops\\|Cereals\\|\\+", scens$var
              scens[grep("Cropland\\|Croparea\\|Crops\\|Sugar crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              scens[grep("Cropland\\|Croparea\\|Crops\\|Other crops\\|\\+", scens$variable), ]$variable %>%  unique() %>% as.vector(),
              scens[grep("Cropland\\|Croparea\\|\\+\\|Bioenergy crops", scens$variable), ]$variable %>%  unique() %>% as.vector(),
-             "Resources|Land Cover|Cropland|+|Fallow Cropland")
+             "Resources|Land Cover|Cropland|+|fallow")
 
 cereals <- cropVar[grep("Cereals", cropVar)]
 legumes <- cropVar[grep("Soy|Pulse|Groundnut", cropVar)]
 plantations <- cropVar[grep("Bioenergy|cane|Oilpalm", cropVar)]
 fruits <- cropVar[grep("Fruits", cropVar)]
 other <- cropVar[grep("beet|Sunflower|rapeseed|Potato|Cotton|roots", cropVar)]
-fallow <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
+fallow <- "Resources|Land Cover|Cropland|+|fallow"
 
 crop_df <- filter(scens,
                   period <= 2050,
@@ -1181,7 +1181,7 @@ health_df <- health_df[-which(health_df$period == 2020 & health_df$scenarioname 
 #   guides(fill = guide_legend(ncol = 5, title.position = "left", byrow = TRUE, reverse = TRUE)) + xlab(NULL)
 # # healthGloP
 
-healthReg <- filter(health_df, region != "GLO", period %in% c(2020, 2050)) %>% 
+healthReg <- filter(health_df, region != "GLO", period %in% c(2020, 2050)) %>%
   group_by(model, scenarioname, scenario, variable, period, RegionG) %>%
   summarise(value = sum(value)) %>%
   mutate(scenarioname = factor(scenarioname, levels = rev(levels(scenarioname))))
