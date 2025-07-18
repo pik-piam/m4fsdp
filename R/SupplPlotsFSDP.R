@@ -1586,9 +1586,9 @@ names(cegdfVars) <- c("Population", "Expenditure", "Income", "Production Factor 
 
 # TODO: Check whether Food|Expediture is already the right variable
 cegdf <- filter(scens,
-                        period <= 2050,
-                        period > 2015,
-                        variable %in% cegdfVars) %>%
+                period <= 2050,
+                period > 2015,
+                variable %in% cegdfVars) %>%
   droplevels() %>%
   pivot_wider(names_from = "variable", values_from = "value",
               id_cols = c("model", "scenario", "region", "period", "version", "scenset", "RegionG", "scenarioname")) %>%
@@ -1610,22 +1610,41 @@ cegdf <- filter(scens,
     cols=c(
       regionGExpenditure, 
       regionGIncome, 
-      regionGCostsWOI)) %>%
+      regionGCostsWOI))
 
+cegdf <- mutate(cegdf, variable = factor(variable, 
+                                  levels = c("regionGIncome", "regionGExpenditure", "regionGCostsWOI"),
+                                  labels = c("Gross Domestic Product", # (USD_05MER / capita)",
+                                             "Expenditure for Agricultural Products",# (USD_05MER / capita)",
+                                             "Production Factor Use")))# (USD_05MER / capita)")))
 
 plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
   facet_grid(scenarioname~RegionG) + 
-  geom_line(aes(y = value)) +
+  # breaks at roughly the thresholds for low-income, lower-middle income, high income
+  scale_y_continuous(breaks=c(1000, 10000, 30000)) + 
+  geom_line(aes(y = value), size = 1) +
   # Styling
-  themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90)
+  themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
+  theme(legend.position = "bottom", legend.direction = "vertical") +
+  ylab("USD<sub>05MER</sub> / capita") +
+  xlab(NULL) +
+  guides(color = guide_legend("Indicator",
+         nrow = 3,
+         title.position = "left",
+         byrow = TRUE,
+         reverse = TRUE)) +
+  scale_fill_manual(values = brewer.pal(n = 3, "Dark2")) +
+  theme(legend.position = "bottom", legend.text = element_text(size = 18),
+        strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+        axis.text.x = element_text(size = 18), axis.title.y = element_markdown())
 
 if (!is.null(outFolder)) {
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotCEGReg.png"),
-         plotCEGReg, width = 20, height = 30, scale = 1.5, bg = "white")
+         plotCEGReg, width = 7.5, height = 11, scale = 1.5, bg = "white")
   ggsave(filename = file.path(outFolder, "supplPlots",
                               "plotCEGReg.pdf"),
-         plotCEGReg, width = 20, height = 30, scale = 1.5, bg = "white")
+         plotCEGReg, width = 7.5, height = 11, scale = 1.5, bg = "white")
 }
 
 }
