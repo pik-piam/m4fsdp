@@ -1566,6 +1566,66 @@ if (!is.null(outFolder)) {
          plotBelowPov, width = 9, height = 10, scale = 1.5, bg = "white")
 }
 
+#                                                 #
+   ### # # Costs, Expenditures and GDP # # ######
+#                                                 #
+
+# For "Household Expenditure|Food|Expenditure", multiply with Population first to get 
+#  total expenditure, and then aggregeate total expenditure and population 
+#  to the 3 regions and divide them again
+# For "Income" the same as for household expenditure
+# For  "Costs Without Incentives" / "Population", you aggregate the quotient 
+#  and divident separately and then make the division
+message("costs, expenditures, and GDP ...")
+
+cegdfVars <- c("Population",
+            "Household Expenditure|Food|Expenditure",
+            "Income",
+            "Costs Without Incentives")
+names(cegdfVars) <- c("Population", "Expenditure", "Income", "Production Factor Use")                     
+
+# TODO: Check whether Food|Expediture is already the right variable
+cegdf <- filter(scens,
+                        period <= 2050,
+                        period > 2015,
+                        variable %in% cegdfVars) %>%
+  droplevels() %>%
+  pivot_wider(names_from = "variable", values_from = "value",
+              id_cols = c("model", "scenario", "region", "period", "version", "scenset", "RegionG", "scenarioname")) %>%
+  # Region Group Expenditure and Income per Capita
+  mutate(totalExpenditure = `Household Expenditure|Food|Expenditure` * `Population`) %>%
+  mutate(totalIncome = `Income` * `Population`) %>%
+  ## Entering Region Groups
+  group_by(model, scenario, period, version, RegionG, scenarioname) %>% # The relevant part is RegionG here
+  mutate(regionGExpenditure = sum(totalExpenditure) / sum(`Population`)) %>%
+  mutate(regionGIncome = sum(totalIncome) / sum(`Population`)) %>%
+  # Region Group Costs Without Incentives per Capita
+  group_by(model, scenario, period, version, RegionG, scenarioname) %>% # The relevant part is RegionG here
+  mutate(regionGCostsWOI = sum(`Costs Without Incentives`) / sum(`Population`)) %>%
+  summarise(regionGExpenditure = regionGExpenditure[[1]], 
+            regionGIncome = regionGIncome[[1]], 
+            regionGCostsWOI = regionGCostsWOI[[1]]) %>%
+  pivot_longer(
+    names_to = "variable",
+    cols=c(
+      regionGExpenditure, 
+      regionGIncome, 
+      regionGCostsWOI)) %>%
+
+
+plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
+  facet_grid(scenarioname~RegionG) + 
+  geom_line(aes(y = value)) +
+  # Styling
+  themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90)
+
+if (!is.null(outFolder)) {
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotCEGReg.png"),
+         plotCEGReg, width = 20, height = 30, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotCEGReg.pdf"),
+         plotCEGReg, width = 20, height = 30, scale = 1.5, bg = "white")
 }
 
-
+}
