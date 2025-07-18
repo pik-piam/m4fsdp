@@ -24,6 +24,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom tidyr pivot_wider
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom stringr str_detect
+#' @importFrom rlang .data
 
 SupplPlotsFSDP <- function(repReg, scenarioType = "manuscript", outFolder, calorieSupply = TRUE, caseRegion = NULL) {
 
@@ -1585,7 +1586,7 @@ cegdfVars <- c("Population",
             "Household Expenditure|Food|Expenditure",
             "Income",
             "Costs Without Incentives")
-names(cegdfVars) <- c("Population", "Expenditure", "Income", "Production Factor Use")                     
+names(cegdfVars) <- c("Population", "FoodExpenditure", "Income", "ProductionFactorUse")                     
 
 # TODO: Check whether Food|Expediture is already the right variable
 cegdf <- filter(scens,
@@ -1593,30 +1594,32 @@ cegdf <- filter(scens,
                 period > 2015,
                 variable %in% cegdfVars) %>%
   droplevels() %>%
+  mutate(variable = factor(variable, levels = rev(cegdfVars),
+                           labels = names(rev(cegdfVars)))) %>%
   pivot_wider(names_from = "variable", values_from = "value",
               id_cols = c("model", "scenario", "region", "period", "version", "scenset", "RegionG", "scenarioname")) %>%
   # Region Group Expenditure and Income per Capita
-  mutate(totalExpenditure = `Household Expenditure|Food|Expenditure` * `Population`) %>%
-  mutate(totalIncome = `Income` * `Population`) %>%
+  mutate(totalExpenditure = .data$FoodExpenditure * .data$Population) %>%
+  mutate(totalIncome = .data$Income * .data$Population) %>%
   ## Entering Region Groups
   group_by(model, scenario, period, version, RegionG, scenarioname) %>% # The relevant part is RegionG here
-  mutate(groupIncome = sum(totalIncome) / sum(`Population`)) %>%
-  mutate(groupExpendRatio = (sum(totalExpenditure) / sum(`Population`)) / groupIncome) %>%
-  mutate(groupCostsRatio = (sum(`Costs Without Incentives`) / sum(`Population`)) / groupIncome) %>%
+  mutate(groupIncome = sum(.data$totalIncome) / sum(.data$Population)) %>%
+  mutate(groupExpendRatio = (sum(.data$totalExpenditure) / sum(.data$Population)) / .data$groupIncome) %>%
+  mutate(groupCostsRatio = (sum(.data$ProductionFactorUse) / sum(.data$Population)) / .data$groupIncome) %>%
   # Collapse
-  summarise(groupExpendRatio = groupExpendRatio[[1]], 
-            groupIncome = groupIncome[[1]], 
-            groupCostsRatio = groupCostsRatio[[1]]) %>%
+  summarise(groupExpendRatio = .data$groupExpendRatio[[1]], 
+            groupIncome = .data$groupIncome[[1]], 
+            groupCostsRatio = .data$groupCostsRatio[[1]]) %>%
   pivot_longer(
     names_to = "variable",
     cols=c(
-      groupExpendRatio, 
-      groupCostsRatio))
+      "groupExpendRatio", 
+      "groupCostsRatio"))
 
 cegdf <- mutate(cegdf, variable = factor(variable, 
                                   levels = c("groupExpendRatio", "groupCostsRatio"),
-                                  labels = c("Expenditure for Agricultural Products / GDP",
-                                             "Production Factor Use / GDP")))
+                                  labels = c("Expenditure for Agricultural Products as share of GDP",
+                                             "Production Factor Use as share of GDP")))
 
 plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
   facet_grid(scenarioname~RegionG) + 
