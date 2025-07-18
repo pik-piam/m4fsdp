@@ -24,6 +24,7 @@ globalVariables(c("CalorieSupply", "CropGroup", "FoodGroup", "RegionG", "negativ
 #' @importFrom tidyr pivot_wider
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom stringr str_detect
+#' @importFrom rlang .data
 
 SupplPlotsFSDP <- function(repReg, scenarioType = "manuscript", outFolder, calorieSupply = TRUE, caseRegion = NULL) {
 
@@ -1566,6 +1567,85 @@ if (!is.null(outFolder)) {
          plotBelowPov, width = 9, height = 10, scale = 1.5, bg = "white")
 }
 
+#                                                 #
+   ### # # Costs, Expenditures and GDP # # ######
+#                                                 #
+
+# For "Household Expenditure|Food|Expenditure", multiply with Population first to get 
+#  total expenditure, and then aggregeate total expenditure and population 
+#  to the 3 regions and divide them again
+# For "Income" the same as for household expenditure
+# For  "Costs Without Incentives" / "Population", you aggregate the quotient 
+#  and divident separately and then make the division
+# THEN
+# We calculate the ratio of costs w/o incentives per income
+# and expenditure per income
+message("costs, expenditures, and GDP ...")
+
+cegdfVars <- c("Population",
+            "Household Expenditure|Food|Expenditure",
+            "Income",
+            "Costs Without Incentives")
+names(cegdfVars) <- c("Population", "FoodExpenditure", "Income", "ProductionFactorUse")                     
+
+# TODO: Check whether Food|Expediture is already the right variable
+cegdf <- filter(scens,
+                period <= 2050,
+                period > 2015,
+                variable %in% cegdfVars) %>%
+  droplevels() %>%
+  mutate(variable = factor(variable, levels = rev(cegdfVars),
+                           labels = names(rev(cegdfVars)))) %>%
+  pivot_wider(names_from = "variable", values_from = "value",
+              id_cols = c("model", "scenario", "region", "period", "version", "scenset", "RegionG", "scenarioname")) %>%
+  # Region Group Expenditure and Income per Capita
+  mutate(totalExpenditure = .data$FoodExpenditure * .data$Population) %>%
+  mutate(totalIncome = .data$Income * .data$Population) %>%
+  ## Entering Region Groups
+  group_by(model, scenario, period, version, RegionG, scenarioname) %>% # The relevant part is RegionG here
+  mutate(groupIncome = sum(.data$totalIncome) / sum(.data$Population)) %>%
+  mutate(groupExpendRatio = (sum(.data$totalExpenditure) / sum(.data$Population)) / .data$groupIncome) %>%
+  mutate(groupCostsRatio = (sum(.data$ProductionFactorUse) / sum(.data$Population)) / .data$groupIncome) %>%
+  # Collapse
+  summarise(groupExpendRatio = .data$groupExpendRatio[[1]], 
+            groupIncome = .data$groupIncome[[1]], 
+            groupCostsRatio = .data$groupCostsRatio[[1]]) %>%
+  pivot_longer(
+    names_to = "variable",
+    cols=c(
+      "groupExpendRatio", 
+      "groupCostsRatio"))
+
+cegdf <- mutate(cegdf, variable = factor(variable, 
+                                  levels = c("groupExpendRatio", "groupCostsRatio"),
+                                  labels = c("Expenditure for Agricultural Products as share of GDP",
+                                             "Production Factor Use as share of GDP")))
+
+plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
+  facet_grid(scenarioname~RegionG) + 
+  geom_line(aes(y = value), size = 1) +
+  # Styling
+  themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
+  theme(legend.position = "bottom", legend.direction = "vertical") +
+  ylab("USD<sub>05MER</sub> / capita") +
+  xlab(NULL) +
+  guides(color = guide_legend("Indicator",
+         nrow = 2,
+         title.position = "left",
+         byrow = TRUE,
+         reverse = TRUE)) +
+  scale_fill_manual(values = brewer.pal(n = 2, "Dark2")) +
+  theme(legend.position = "bottom", legend.text = element_text(size = 18),
+        strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
+        axis.text.x = element_text(size = 18), axis.title.y = element_markdown())
+
+if (!is.null(outFolder)) {
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotCEGReg.png"),
+         plotCEGReg, width = 7.5, height = 11, scale = 1.5, bg = "white")
+  ggsave(filename = file.path(outFolder, "supplPlots",
+                              "plotCEGReg.pdf"),
+         plotCEGReg, width = 7.5, height = 11, scale = 1.5, bg = "white")
 }
 
-
+}
