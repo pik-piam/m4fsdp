@@ -1576,6 +1576,9 @@ if (!is.null(outFolder)) {
 # For "Income" the same as for household expenditure
 # For  "Costs Without Incentives" / "Population", you aggregate the quotient 
 #  and divident separately and then make the division
+# THEN
+# We calculate the ratio of costs w/o incentives per income
+# and expenditure per income
 message("costs, expenditures, and GDP ...")
 
 cegdfVars <- c("Population",
@@ -1597,31 +1600,26 @@ cegdf <- filter(scens,
   mutate(totalIncome = `Income` * `Population`) %>%
   ## Entering Region Groups
   group_by(model, scenario, period, version, RegionG, scenarioname) %>% # The relevant part is RegionG here
-  mutate(regionGExpenditure = sum(totalExpenditure) / sum(`Population`)) %>%
-  mutate(regionGIncome = sum(totalIncome) / sum(`Population`)) %>%
-  # Region Group Costs Without Incentives per Capita
-  group_by(model, scenario, period, version, RegionG, scenarioname) %>% # The relevant part is RegionG here
-  mutate(regionGCostsWOI = sum(`Costs Without Incentives`) / sum(`Population`)) %>%
-  summarise(regionGExpenditure = regionGExpenditure[[1]], 
-            regionGIncome = regionGIncome[[1]], 
-            regionGCostsWOI = regionGCostsWOI[[1]]) %>%
+  mutate(groupIncome = sum(totalIncome) / sum(`Population`)) %>%
+  mutate(groupExpendRatio = (sum(totalExpenditure) / sum(`Population`)) / groupIncome) %>%
+  mutate(groupCostsRatio = (sum(`Costs Without Incentives`) / sum(`Population`)) / groupIncome) %>%
+  # Collapse
+  summarise(groupExpendRatio = groupExpendRatio[[1]], 
+            groupIncome = groupIncome[[1]], 
+            groupCostsRatio = groupCostsRatio[[1]]) %>%
   pivot_longer(
     names_to = "variable",
     cols=c(
-      regionGExpenditure, 
-      regionGIncome, 
-      regionGCostsWOI))
+      groupExpendRatio, 
+      groupCostsRatio))
 
 cegdf <- mutate(cegdf, variable = factor(variable, 
-                                  levels = c("regionGIncome", "regionGExpenditure", "regionGCostsWOI"),
-                                  labels = c("Gross Domestic Product", # (USD_05MER / capita)",
-                                             "Expenditure for Agricultural Products",# (USD_05MER / capita)",
-                                             "Production Factor Use")))# (USD_05MER / capita)")))
+                                  levels = c("groupExpendRatio", "groupCostsRatio"),
+                                  labels = c("Expenditure for Agricultural Products / GDP",
+                                             "Production Factor Use / GDP")))
 
 plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
   facet_grid(scenarioname~RegionG) + 
-  # breaks at roughly the thresholds for low-income, lower-middle income, high income
-  scale_y_continuous(breaks=c(1000, 10000, 30000)) + 
   geom_line(aes(y = value), size = 1) +
   # Styling
   themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
@@ -1629,11 +1627,11 @@ plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
   ylab("USD<sub>05MER</sub> / capita") +
   xlab(NULL) +
   guides(color = guide_legend("Indicator",
-         nrow = 3,
+         nrow = 2,
          title.position = "left",
          byrow = TRUE,
          reverse = TRUE)) +
-  scale_fill_manual(values = brewer.pal(n = 3, "Dark2")) +
+  scale_fill_manual(values = brewer.pal(n = 2, "Dark2")) +
   theme(legend.position = "bottom", legend.text = element_text(size = 18),
         strip.text.y = element_text(size = 16), axis.text.y = element_text(size = 16),
         axis.text.x = element_text(size = 18), axis.title.y = element_markdown())
