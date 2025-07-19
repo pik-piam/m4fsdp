@@ -429,7 +429,7 @@ validationFSDP <-  function(repReg,
     p2 <-
       plotVal(
         var = "Income",
-        units = "US$05 PPP/cap/yr",
+        units = "US$05 MER/cap/yr",
         varName = "Per-capita income",
         weight = "Population",
         histweight = "WDI-UN_PopDiv-MI"

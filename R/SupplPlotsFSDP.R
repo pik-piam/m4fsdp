@@ -1571,11 +1571,11 @@ if (!is.null(outFolder)) {
    ### # # Costs, Expenditures and GDP # # ######
 #                                                 #
 
-# For "Household Expenditure|Food|Expenditure", multiply with Population first to get 
-#  total expenditure, and then aggregeate total expenditure and population 
+# For "Household Expenditure|Food|Expenditure", multiply with Population first to get
+#  total expenditure, and then aggregeate total expenditure and population
 #  to the 3 regions and divide them again
 # For "Income" the same as for household expenditure
-# For  "Costs Without Incentives" / "Population", you aggregate the quotient 
+# For  "Costs Without Incentives" / "Population", you aggregate the quotient
 #  and divident separately and then make the division
 # THEN
 # We calculate the ratio of costs w/o incentives per income
@@ -1586,7 +1586,7 @@ cegdfVars <- c("Population",
             "Household Expenditure|Food|Expenditure",
             "Income",
             "Costs Without Incentives")
-names(cegdfVars) <- c("Population", "FoodExpenditure", "Income", "ProductionFactorUse")                     
+names(cegdfVars) <- c("Population", "FoodExpenditure", "Income", "ProductionFactorUse")
 
 # TODO: Check whether Food|Expediture is already the right variable
 cegdf <- filter(scens,
@@ -1607,22 +1607,22 @@ cegdf <- filter(scens,
   mutate(groupExpendRatio = (sum(.data$totalExpenditure) / sum(.data$Population)) / .data$groupIncome) %>%
   mutate(groupCostsRatio = (sum(.data$ProductionFactorUse) / sum(.data$Population)) / .data$groupIncome) %>%
   # Collapse
-  summarise(groupExpendRatio = .data$groupExpendRatio[[1]], 
-            groupIncome = .data$groupIncome[[1]], 
+  summarise(groupExpendRatio = .data$groupExpendRatio[[1]],
+            groupIncome = .data$groupIncome[[1]],
             groupCostsRatio = .data$groupCostsRatio[[1]]) %>%
   pivot_longer(
     names_to = "variable",
     cols=c(
-      "groupExpendRatio", 
+      "groupExpendRatio",
       "groupCostsRatio"))
 
-cegdf <- mutate(cegdf, variable = factor(variable, 
+cegdf <- mutate(cegdf, variable = factor(variable,
                                   levels = c("groupExpendRatio", "groupCostsRatio"),
                                   labels = c("Expenditure for Agricultural Products as share of GDP",
                                              "Production Factor Use as share of GDP")))
 
 plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
-  facet_grid(scenarioname~RegionG) + 
+  facet_grid(scenarioname~RegionG) +
   geom_line(aes(y = value), size = 1) +
   # Styling
   themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +

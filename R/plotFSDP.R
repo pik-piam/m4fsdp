@@ -71,6 +71,7 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   if (!is.data.frame(reg2iso)) reg2iso <- readRDS(reg2iso)
 
   levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Cropland|+|fallow"] <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
+  levels(reg$variable)[levels(reg$variable) == "Income MER"] <- "Income"
 
   message("Plotting figures ...")
   message("heatmaps ...")
