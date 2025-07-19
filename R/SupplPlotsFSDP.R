@@ -1618,8 +1618,8 @@ cegdf <- filter(scens,
 
 cegdf <- mutate(cegdf, variable = factor(variable,
                                   levels = c("groupExpendRatio", "groupCostsRatio"),
-                                  labels = c("Expenditure for Agricultural Products as share of GDP",
-                                             "Production Factor Use as share of GDP")))
+                                  labels = c("Expenditure for Ag. Products as share of per-capita income",
+                                             "Production Factor Use as share of total income")))
 
 plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
   facet_grid(scenarioname~RegionG) +
@@ -1627,7 +1627,7 @@ plotCEGReg <- ggplot(cegdf, aes(x = period, color = variable)) +
   # Styling
   themeSupplReg(base_size = 20, panel.spacing = 3, rotate_x = 90) +
   theme(legend.position = "bottom", legend.direction = "vertical") +
-  ylab("USD<sub>05MER</sub> / capita") +
+  ylab("share") +
   xlab(NULL) +
   guides(color = guide_legend("Indicator",
          nrow = 2,
