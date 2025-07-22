@@ -92,10 +92,11 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   try(SupplPlotsCropShr(outputfolder,  file = "supplPlotCropShr.png", scenarios = c("BAU", "FSDP"), plotyears = c("2020", "2050"), combined = FALSE, HR = TRUE))
   message("SI validation ...")
   try(validationFSDP(repReg = reg, val = val, regionSel = "aggregate", folder = file.path(outputfolder), scens = "BAU_FSEC"))
-  message("Dashboard...")
-  try(dashboardFSDP(repReg = reg, repIso = iso, repGrid = grid, outputDir = file.path(outputfolder), file = paste0(rev, "_FSDP_dashboard.html")))
   message("Milestones table...")
   try(milestoneTable(dirFsdp, outFolder = file.path(outputfolder), file = paste0(rev, "_FSDP_milestones.csv")))
+  message("Dashboard...")
+  try(dashboardFSDP(repReg = reg, repIso = iso, repGrid = grid, outputDir = file.path(outputfolder), file = paste0(rev, "_FSDP_dashboard.html")))
+
   message("Finished")
 
   }

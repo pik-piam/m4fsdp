@@ -281,7 +281,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   shannon <- reportRds[reportRds$variable == "Biodiversity|Shannon crop area diversity index", ]
   shannon <- as.magpie(shannon)["GLO", , , invert = TRUE]
 
-  cropland <- dimSums(readGDX(gdx, "vm_land")[, , "crop.l"], dim = 1.2)
+  cropland <- dimSums(readGDX(gdx, "vm_land")[, , "crop.level"], dim = 1.2)
   shannon <- toolAggregate(shannon, rel = mapping, weight = cropland, from = "reg", to = "aggregate")
   res <- .addRow(res, "Croparea diversity Shannon Index", "Index", shannon, lmh = TRUE, digits = 2)
 
@@ -334,7 +334,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   res <- .addRow(res, "Anthropogenic LUC emissions, global", "Gt CO2/yr", luc, digits = 1)
   res <- .addRow(res, "AFOLU emissions, global", "Gt CO2eq/yr", afolu, digits = 1)
 
-  afolu <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"] 
+  afolu <- emissions[, , "Emissions|GWP100AR6|Land (Gt CO2e/yr)"]
   afoluPc <- afolu["GLO", , , invert = TRUE] / pop * 10^3 # from Gt/mio people (= thousand t/capita) to t/capita
   afoluPc <- toolAggregate(afoluPc, rel = mapping, from = "reg", to = "aggregate", weight = pop)
 
