@@ -767,7 +767,7 @@ validationFSDP <-  function(repReg,
       )
     p3 <-
       plotVal(
-        var = "Resources|Land Cover|Forest|+|Managed Forest",
+        var = "Resources|Land Cover|Forest|+|Planted Forest",
         varName = "Managed forest incl. afforestation",
         hist = "MAgPIEown",
         histName = "FRA"

@@ -417,7 +417,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   ##  Decrease in mortality
   yll <- reportRds[reportRds$variable == "Health|Years of life lost|Disease" & reportRds$region == "World" & reportRds$period %in% c(2020, 2030, 2040, 2050), ]
 
-  if (nrow(yll) == 0) {
+  if (nrow(yll) > 0) {
     popGlo <- as.data.frame(dimSums(pop, dim = 1)[, c(2020, 2030, 2040, 2050), ])[, c("Year", "Value")]
     popGlo$Year <- as.integer(levels(popGlo$Year))
     colnames(popGlo) <- c("Year", "Pop")
