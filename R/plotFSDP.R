@@ -73,6 +73,10 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Cropland|+|fallow"] <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
   levels(reg$variable)[levels(reg$variable) == "Income MER"] <- "Income"
 
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover Change|Forest|Planted Forest|+|Plantations"]   <- "Resources|Land Cover|Forest|Managed Forest|+|Plantations"
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover Change|Forest|Planted Forest|+|NPI/NDC"]       <- "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC"
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover Change|Forest|Planted Forest|+|Afforestation"] <- "Resources|Land Cover|Forest|Managed Forest|+|Afforestation"
+
   message("Plotting figures ...")
   message("heatmaps ...")
   try(heatmapFSDP(reg, tableType = 1,    file = file.path(outputfolder, paste0(rev, "_FSDP_heatmap1.png"))))
