@@ -62,8 +62,13 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
 
   if(tableType==1){
     b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2050"], by = "variable"]
+    b[scenario == "EconDevelop" & get("variableName") == "Ag. Labor Demand", "valuefill" := 0]
+    tmp <- b[get("scenario") == "EconDevelop" & get("period") == "2050" & get("variableName") == "Ag. Labor Demand",]
+    b[scenario == "ExternalPressures" & get("variableName") == "Ag. Labor Demand", "valuefill" := get("value") - tmp[,get("value")], by = "variable"]
+    b[scenario == "FSDP" & get("variableName") == "Ag. Labor Demand", "valuefill" := get("value") - tmp[,get("value")], by = "variable"]
   } else {
     b[, "valuefill" := get("value") - get("value")[get("scenario") == "BAU" & get("period") == "2020"], by = "variable"]
+    b[get("variableName") == "Ag. Labor Demand", c("valuefill") := 0]
   }
 
   b[get("variableName") == "Poverty", "valuefill" := ifelse(get("valuefill") < -100,-100,get("valuefill"))]
@@ -135,7 +140,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   } else if (tableType == 2) {
     legendPosition <- theme(legend.position = c(-0.10, 1.12), plot.margin = margin(5, 5, 5, 5, "pt"))
   } else if (tableType == 3) {
-    legendPosition <- theme(legend.position = c(-0.05, 1.35), plot.margin = margin(5, 5, 5, 5, "pt"))
+    legendPosition <- theme(legend.position = c(-0.065, 1.35), plot.margin = margin(5, 5, 5, 5, "pt"))
   }
 
   a <- strsplit(scenGrouping,"\\::")
@@ -168,7 +173,7 @@ heatmapFSDP <- function(repReg, regionSel = "GLO", tableType = 1, file = NULL, w
   b$scenGroup <- factor(b$scenGroup,levels = scenGroupOrder)
   b$scenario <- factor(b$scenario,levels = scenarioOrder,ordered = TRUE)
 
-  b[, valuefill := valuefill / max(abs(valuefill), na.rm = TRUE), by = .(variable)]
+  b[, valuefill := valuefill / fifelse(max(abs(valuefill), na.rm = TRUE)==0,1,max(abs(valuefill), na.rm = TRUE)), by = .(variable)]
 
   makeExp <- function(x, y) {
     exp <- vector(length = 0, mode = "expression")
