@@ -73,9 +73,10 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Cropland|+|fallow"] <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
   levels(reg$variable)[levels(reg$variable) == "Income MER"] <- "Income"
 
-  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover Change|Forest|Planted Forest|+|Plantations"]   <- "Resources|Land Cover|Forest|Managed Forest|+|Plantations"
-  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover Change|Forest|Planted Forest|+|NPI/NDC"]       <- "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC"
-  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover Change|Forest|Planted Forest|+|Afforestation"] <- "Resources|Land Cover|Forest|Managed Forest|+|Afforestation"
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|+|Planted Forest"]   <-             "Resources|Land Cover|Forest|+|Managed Forest"
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|Planted Forest|+|Plantations"]   <- "Resources|Land Cover|Forest|Managed Forest|+|Plantations"
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|Planted Forest|+|NPI/NDC"]       <- "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC"
+  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|Planted Forest|+|Afforestation"] <- "Resources|Land Cover|Forest|Managed Forest|+|Afforestation"
 
   message("Plotting figures ...")
   message("heatmaps ...")
