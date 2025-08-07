@@ -4,7 +4,7 @@
 #' @export
 #'
 #' @param outputfolder output folder
-#' @param reg rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.
+#' @param reg rds file of all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.
 #' @param iso rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.
 #' @param grid rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @details uses the most recent vXX_reg/grid/iso.rds files in the "output" folder by default
 #' @param val rds file or data.frame with all MAgPIE runs, produced with FSDP_collect.R output script. NULL will automatically detect the most recent version.#' @return plots in "output" folder
@@ -19,6 +19,11 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
     a <- list.files(outputfolder,pattern = glob2rx("v*FSDP_reg.rds"))
     a <- a[order(a,decreasing = TRUE)][1]
     reg <- file.path(outputfolder,a)
+  } else if (is.data.frame(reg)) {
+    # Passing a data.frame will fail when passing dirFsdp = NULL,
+    # as the initialization of dirFsdp currently assumes that
+    # reg is a filename
+    warning("Passing a data.frame to reg in plotFSDP is currently not supported.")
   }
 
   if(is.null(iso)) {
@@ -45,7 +50,7 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   }
 
   if(is.null(dirFsdp)) {
-    if (grepl("HRc1000", reg) & !grepl("HRc1000", outputfolder)) {
+    if (grepl("HRc1000", reg) && !grepl("HRc1000", outputfolder)) {
       a <- list.dirs(paste0(outputfolder, "/HRc1000"), recursive = FALSE)
       a <- a[grep("FSECe_FSDP", a)]
       dirFsdp <- a[order(a, decreasing = TRUE)][1]
