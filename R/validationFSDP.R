@@ -1234,54 +1234,54 @@ validationFSDP <-  function(repReg,
     )
 
     # Validation ag com. price index
-    p1 <-
-      plotVal(
-        var = "Productivity|Landuse Intensity Indicator Tau",
-        varName = "Landuse Intensity Indicator Tau",
-        weight = "Resources|Land Cover|+|Cropland",
-        histweight = "FAO_crop_past",
-        hist = "dietrich_et_al_2012",
-        histName = "Dietrich et al 2012"
-      )
-    p2 <- plotVal(var = "Costs|TC",
-                  weight = "Population",
-                  histweight = "WDI-UN_PopDiv-MI")
-    p3 <- plotVal(var = "Agricultural Research Intensity",
-                  weight = "Population",
-                  histweight = "WDI-UN_PopDiv-MI")
-    p4 <- plotVal(var = "SDG|SDG02|Investment in AgR&D",
-                  weight = "Population",
-                  histweight = "WDI-UN_PopDiv-MI")
-    p5 <- plotVal(var = "Prices|Index2020|Agriculture|Food products",
-                  weight = "Population",
-                  histweight = "WDI-UN_PopDiv-MI")
-    p6 <-
-      plotVal(var = "Prices|Index2020|Agriculture|Food products|Plant-based",
-              weight = "Population",
-              histweight = "WDI-UN_PopDiv-MI")
+    # p1 <-
+    #   plotVal(
+    #     var = "Productivity|Landuse Intensity Indicator Tau",
+    #     varName = "Landuse Intensity Indicator Tau",
+    #     weight = "Resources|Land Cover|+|Cropland",
+    #     histweight = "FAO_crop_past",
+    #     hist = "dietrich_et_al_2012",
+    #     histName = "Dietrich et al 2012"
+    #   )
+    # p2 <- plotVal(var = "Costs|TC",
+    #               weight = "Population",
+    #               histweight = "WDI-UN_PopDiv-MI")
+    # p3 <- plotVal(var = "Agricultural Research Intensity",
+    #               weight = "Population",
+    #               histweight = "WDI-UN_PopDiv-MI")
+    # p4 <- plotVal(var = "SDG|SDG02|Investment in AgR&D",
+    #               weight = "Population",
+    #               histweight = "WDI-UN_PopDiv-MI")
+    # p5 <- plotVal(var = "Prices|Index2020|Agriculture|Food products",
+    #               weight = "Population",
+    #               histweight = "WDI-UN_PopDiv-MI")
+    # p6 <-
+    #   plotVal(var = "Prices|Index2020|Agriculture|Food products|Plant-based",
+    #           weight = "Population",
+    #           histweight = "WDI-UN_PopDiv-MI")
 
-    combined <-
-      p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
-    combined <-
-      combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
-                             ncol = 2) &
-      theme(
-        legend.position = "bottom",
-        legend.box = ifelse(scens == "BAU_FSEC", "horizontal", "vertical")
-      )
-    ggsave(
-      filename = file.path(folder, paste(rev, "valPricesCosts.png", sep = "_")),
-      combined,
-      width = 10,
-      height = 10,
-      scale = 1.3
-    )
-    ggsave(
-      filename = file.path(folder, paste(rev, "valPricesCosts.pdf", sep = "_")),
-      combined,
-      width = 10,
-      height = 10,
-      scale = 1.3
-    )
+    # combined <-
+    #   p1 + p2 + p3 + p4 + p5 + p6 + plot_annotation(tag_levels = "a")
+    # combined <-
+    #   combined + plot_layout(guides = ifelse(showHistLegend, "keep", "collect"),
+    #                          ncol = 2) &
+    #   theme(
+    #     legend.position = "bottom",
+    #     legend.box = ifelse(scens == "BAU_FSEC", "horizontal", "vertical")
+    #   )
+    # ggsave(
+    #   filename = file.path(folder, paste(rev, "valPricesCosts.png", sep = "_")),
+    #   combined,
+    #   width = 10,
+    #   height = 10,
+    #   scale = 1.3
+    # )
+    # ggsave(
+    #   filename = file.path(folder, paste(rev, "valPricesCosts.pdf", sep = "_")),
+    #   combined,
+    #   width = 10,
+    #   height = 10,
+    #   scale = 1.3
+    # )
 
   }

@@ -78,10 +78,12 @@ plotFSDP <- function(outputfolder = "output", reg = NULL, iso = NULL, grid = NUL
   levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Cropland|+|fallow"] <- "Resources|Land Cover|Cropland|+|Fallow Cropland"
   levels(reg$variable)[levels(reg$variable) == "Income MER"] <- "Income"
 
-  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|+|Planted Forest"]   <-             "Resources|Land Cover|Forest|+|Managed Forest"
-  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|Planted Forest|+|Plantations"]   <- "Resources|Land Cover|Forest|Managed Forest|+|Plantations"
-  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|Planted Forest|+|NPI/NDC"]       <- "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC"
-  levels(reg$variable)[levels(reg$variable) == "Resources|Land Cover|Forest|Planted Forest|+|Afforestation"] <- "Resources|Land Cover|Forest|Managed Forest|+|Afforestation"
+  levels(val$variable)[levels(val$variable) == "Resources|Land Cover|Forest|+|Managed Forest"] <- "Resources|Land Cover|Forest|+|Planted Forest"
+  levels(val$variable)[levels(val$variable) == "Productivity|Feed conversion|Monogastric meat"] <- "Productivity|Feed conversion|Pig meat"
+  levels(val$variable)[levels(val$variable) == "Nutrition|Calorie Intake|Livestock products|+|Monogastric meat"] <- "Nutrition|Calorie Intake|Livestock products|+|Pig meat"
+  levels(val$variable)[levels(val$variable) == "Nutrition|Calorie Supply|Livestock products|+|Monogastric meat"] <- "Nutrition|Calorie Supply|Livestock products|+|Pig meat"
+  levels(val$variable)[levels(val$variable) == "Trade|Net-Trade|Livestock products|+|Monogastric meat"] <- "Trade|Net-Trade|Livestock products|+|Pig meat"
+  levels(val$variable)[levels(val$variable) == "Trade|Self-sufficiency|Livestock products|Monogastric meat"] <- "Trade|Self-sufficiency|Livestock products|Pig meat"
 
   message("Plotting figures ...")
   message("heatmaps ...")
