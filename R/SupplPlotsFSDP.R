@@ -459,9 +459,9 @@ landVar <- c("Resources|Land Cover|+|Cropland",
              "Resources|Land Cover|+|Pastures and Rangelands",
              "Resources|Land Cover|Forest|Natural Forest|+|Primary Forest",
              "Resources|Land Cover|Forest|Natural Forest|+|Secondary Forest",
-             "Resources|Land Cover|Forest|Managed Forest|+|Plantations",
-             "Resources|Land Cover|Forest|Managed Forest|+|NPI/NDC",
-             "Resources|Land Cover|Forest|Managed Forest|+|Afforestation",
+             "Resources|Land Cover|Forest|Planted Forest|+|Plantations",
+             "Resources|Land Cover|Forest|Planted Forest|+|NPI/NDC",
+             "Resources|Land Cover|Forest|Planted Forest|+|Afforestation",
              "Resources|Land Cover|Cropland|Croparea|+|Bioenergy crops",
             "Resources|Land Cover|+|Other Land",
              "Resources|Land Cover|+|Urban Area")
@@ -500,7 +500,6 @@ landGlo <- filter(land_df, region == "GLO")
 #   guides(fill = guide_legend(ncol = 3, title.position = "left", byrow = TRUE, reverse = TRUE)) +
 #   xlab(NULL) +
 #   labs(title = "a) Global Land-Use Change")
-
 
 landReg <- filter(land_df, region != "GLO", period == 2050) %>%
   group_by(model, scenarioname, scenario, variable, period, RegionG) %>%
