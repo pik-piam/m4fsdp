@@ -312,7 +312,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
 
 
   ## Nitrogen surplus
-  nSurp <- reportNitrogenPollution(gdx, dir = scenarioFolder)["GLO", , ]
+  nSurp <- reportNitrogenPollution(gdx)["GLO", , ]
 
   res <- .addRow(res, "Nitrogen surplus from cropland, global", "Mt N/yr", nSurp[, , "Cropland", pmatch = TRUE], digits = 0)
   res <- .addRow(res, "Nitrogen surplus from pasture, global", "Mt N/yr", nSurp[, , "Pasture", pmatch = TRUE], digits = 0)
@@ -371,7 +371,7 @@ milestoneTable <- function(scenarioFolder, outFolder = NULL, file = NULL) {
   ## Ag. employment share
   workingAge <- c("15--19", "20--24", "25--29", "30--34", "35--39", "40--44",
                   "45--49", "50--54", "55--59", "60--64")
-  popWa <- dimSums(population(gdx, level = "reg", age = TRUE, dir = outFolder)[, , workingAge], dim = 3)
+  popWa <- dimSums(population(gdx, level = "reg", age = TRUE)[, , workingAge], dim = 3)
   popWa <- toolAggregate(popWa, rel = mapping, from = "reg", to = "aggregate")
 
   emplShare <- (empl / popWa) * 100
